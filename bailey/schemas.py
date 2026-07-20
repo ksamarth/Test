@@ -43,6 +43,20 @@ class Severity(str, Enum):
     low = "low"
 
 
+class Verdict(str, Enum):
+    favorable = "favorable"
+    typical = "typical"
+    unfavorable = "unfavorable"
+    missing = "missing"
+
+
+class ScoreCategory(str, Enum):
+    compensation = "compensation"
+    restrictive_covenants = "restrictive_covenants"
+    insurance_and_benefits = "insurance_and_benefits"
+    termination_and_flexibility = "termination_and_flexibility"
+
+
 class Compensation(BaseModel):
     base_salary_annual: Optional[float] = Field(
         None, description="Annual base salary in USD, if stated. Null if not specified."
@@ -154,6 +168,81 @@ class OfferExtraction(BaseModel):
     )
 
 
+class CategoryScore(BaseModel):
+    category: ScoreCategory
+    score: int = Field(description="0-100 for this category, per the scoring rubric.")
+    rationale: str = Field(description="One or two sentences justifying the score, citing the decisive terms.")
+
+
+class OfferScore(BaseModel):
+    overall: int = Field(
+        description="0-100 overall score per the scoring rubric, weighting categories by financial impact for a new graduate."
+    )
+    grade: str = Field(
+        description="Letter grade from the overall score: A (90+), A- (85-89), B+ (80-84), B (75-79), B- (70-74), C+ (65-69), C (55-64), C- (45-54), D (35-44), F (<35)."
+    )
+    headline: str = Field(
+        description="One punchy sentence a well-informed friend would text you about this offer."
+    )
+    categories: List[CategoryScore] = Field(description="Exactly four entries, one per ScoreCategory value.")
+
+
+class EarningsScenario(BaseModel):
+    label: str = Field(description="Scenario name: 'Conservative', 'Expected', or 'Strong'.")
+    assumed_daily_production: Optional[float] = Field(
+        None, description="Assumed daily production (or equivalent volume driver) in USD for this scenario. Null for pure-salary offers."
+    )
+    estimated_annual_gross: float = Field(
+        description="Estimated first-year gross compensation in USD under this scenario, accounting for guarantee periods, splits, and stated deductions."
+    )
+    how_calculated: str = Field(
+        description="One or two sentences showing the arithmetic so the reader can check it."
+    )
+
+
+class FinancialAnalysis(BaseModel):
+    scenarios: List[EarningsScenario] = Field(
+        description="Three first-year earnings scenarios: Conservative, Expected, Strong. For pure-salary offers, model realistic variations (bonus attainment, call pay) instead."
+    )
+    break_even_daily_production: Optional[float] = Field(
+        None, description="Daily production in USD at which percentage pay equals any stated guarantee. Null if not applicable."
+    )
+    break_even_explanation: Optional[str] = Field(
+        None, description="Plain-English explanation of the break-even number and what happens below it."
+    )
+    effective_split_note: Optional[str] = Field(
+        None, description="If deductions (lab fees, supplies) reduce the stated percentage, quantify the effective percentage on a realistic example."
+    )
+    assumptions: List[str] = Field(
+        description="Every assumption used (working days per year, collection rate, lab fee share, typical production ranges for this profession), stated explicitly so the reader can adjust."
+    )
+
+
+class ExitCostItem(BaseModel):
+    item: str = Field(description="The cost, e.g. 'Sign-on bonus repayment'.")
+    estimated_cost: str = Field(description="Dollar figure or range as a string, e.g. '$15,000' or '$4,000-$8,000'.")
+    basis: str = Field(description="Which clause creates this cost and how the estimate was derived.")
+
+
+class ExitCostAnalysis(BaseModel):
+    scenario: str = Field(description="The modeled exit point, e.g. 'If you leave — or are let go — 12 months in'.")
+    items: List[ExitCostItem]
+    estimated_total: str = Field(description="Total estimated cost as a string or range.")
+    note: str = Field(
+        description="One or two sentences of context, including non-dollar costs like the non-compete's effect on where you can work next."
+    )
+
+
+class MarketComparisonRow(BaseModel):
+    term: str = Field(description="The contract term being compared, e.g. 'Production split'.")
+    this_offer: str = Field(description="What this contract says, compactly.")
+    typical_range: str = Field(description="The typical market range for comparable new-grad positions.")
+    verdict: Verdict = Field(
+        description="favorable = better than typical for the reader; unfavorable = worse; missing = the contract is silent where it shouldn't be."
+    )
+    note: Optional[str] = Field(None, description="Optional one-line nuance.")
+
+
 class RedFlag(BaseModel):
     title: str = Field(description="Short name for the issue, e.g. 'Collections-based pay with no collections control'.")
     severity: Severity = Field(description="high = could cost serious money or freedom; medium = unfavorable but common; low = worth knowing.")
@@ -163,14 +252,21 @@ class RedFlag(BaseModel):
     explanation: str = Field(
         description="Plain-English explanation of why this matters, written for a new grad with no business background. 2-4 sentences."
     )
+    cost_if_ignored: Optional[str] = Field(
+        None, description="Where quantifiable, the realistic dollar exposure of leaving this clause as-is, e.g. 'roughly $6,000-$12,000 over the initial term'."
+    )
     what_to_do: str = Field(
         description="Concrete next step: what to ask the employer, what change to request, or what to verify. Phrase as guidance, not a directive."
     )
 
 
 class NegotiationPoint(BaseModel):
-    topic: str = Field(description="What to negotiate, e.g. 'Daily guarantee duration'.")
+    priority: int = Field(description="1 = highest leverage. Order by expected dollar impact.")
+    topic: str = Field(description="What to negotiate, e.g. 'Tail coverage'.")
     rationale: str = Field(description="Why this is reasonable to ask for, in plain English.")
+    estimated_value: Optional[str] = Field(
+        None, description="What winning this ask is realistically worth in dollars, as a string range."
+    )
     suggested_ask: str = Field(
         description="A polite, specific way to phrase the request to the employer."
     )
@@ -178,8 +274,14 @@ class NegotiationPoint(BaseModel):
 
 class OfferAnalysis(BaseModel):
     extraction: OfferExtraction
+    score: OfferScore
     summary: str = Field(
         description="3-5 sentence plain-English summary of the offer: who it's from, how you get paid, and the overall shape of the deal."
+    )
+    financial_analysis: FinancialAnalysis
+    exit_costs: ExitCostAnalysis
+    market_comparison: List[MarketComparisonRow] = Field(
+        description="8-14 rows covering the terms that matter most, ordered with unfavorable/missing verdicts first."
     )
     strengths: List[str] = Field(
         description="Genuinely favorable terms in this offer, one short sentence each. Be honest — don't pad."
@@ -187,11 +289,14 @@ class OfferAnalysis(BaseModel):
     red_flags: List[RedFlag] = Field(
         description="Issues ordered most severe first. Include missing-but-expected terms (e.g. no tail coverage mentioned) as flags."
     )
-    negotiation_points: List[NegotiationPoint] = Field(
-        description="The 3-6 highest-leverage things worth negotiating, ordered by impact."
+    negotiation_playbook: List[NegotiationPoint] = Field(
+        description="The 3-6 highest-leverage asks, ordered by priority."
     )
-    questions_for_attorney: List[str] = Field(
-        description="Specific questions the reader should bring to a healthcare contract attorney, referencing this contract's actual clauses."
+    negotiation_email: str = Field(
+        description="A complete, ready-to-send email to the employer raising the top 3-4 playbook items. Warm, professional, appreciative in tone — written as the candidate, not as a lawyer. Use [Name] placeholders for the greeting and signature unless the document names the hiring contact."
+    )
+    value_at_stake: str = Field(
+        description="One sentence quantifying what successfully negotiating this playbook is typically worth over the initial term, e.g. 'Winning even two of these asks is typically worth $15,000-$40,000 over the two-year term.'"
     )
     overall_read: str = Field(
         description="2-3 sentence bottom line: how this offer compares to typical new-grad offers of this type, and the biggest thing to resolve before signing. Educational framing — never 'you should sign' or 'don't sign'."

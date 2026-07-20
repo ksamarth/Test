@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bailey — the contract review your mentor would give you</title>
+<style>
+  :root {
+    --bg: #f7f6f3;
+    --card: #ffffff;
+    --ink: #23211c;
+    --muted: #6d685e;
+    --line: #e4e1d8;
+    --accent: #1f6f5c;
+    --accent-deep: #14483c;
+    --accent-soft: #e3f0ec;
+    --high: #b3372c;
+    --high-soft: #f9e9e7;
+    --medium: #a06a1b;
+    --medium-soft: #f7efdf;
+    --low: #4a6fa5;
+    --low-soft: #e8eef7;
+    --gold: #8a6d1f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.55 Georgia, 'Times New Roman', serif;
+  }
+  header { padding: 2.2rem 1.5rem 1rem; max-width: 920px; margin: 0 auto; }
+  .brand { display: flex; align-items: center; gap: .8rem; }
+  .brand svg { flex: none; }
+  .brand h1 { font-size: 2rem; margin: 0; letter-spacing: -.01em; }
+  .brand .tag { margin: .1rem 0 0; color: var(--muted); font-style: italic; }
+  header .pitch { margin: 1rem 0 0; color: var(--muted); max-width: 64ch; }
+  .disclaimer {
+    max-width: 920px; margin: .8rem auto 0; padding: .5rem 1.5rem;
+    font-size: .85rem; color: var(--muted);
+  }
+  main { max-width: 920px; margin: 0 auto; padding: 0 1.5rem 4rem; }
+  .drop {
+    border: 2px dashed var(--line); border-radius: 12px; background: var(--card);
+    padding: 2rem 1.5rem; text-align: center; cursor: pointer; transition: border-color .15s;
+    margin-top: 1rem;
+  }
+  .drop:hover, .drop.over { border-color: var(--accent); }
+  .drop strong { color: var(--accent); }
+  .drop small { display: block; margin-top: .4rem; color: var(--muted); }
+  #file-input { display: none; }
+  .tabs { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1.6rem 0 0; }
+  .tab {
+    border: 1px solid var(--line); background: var(--card); border-radius: 999px;
+    padding: .35rem .95rem; cursor: pointer; font: inherit; font-size: .9rem;
+  }
+  .tab.active { background: var(--ink); color: var(--card); border-color: var(--ink); }
+  .status { margin-top: 1.4rem; color: var(--muted); }
+  .status.error { color: var(--high); }
+  .spinner {
+    display: inline-block; width: 14px; height: 14px; margin-right: .5rem;
+    border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%;
+    animation: spin .8s linear infinite; vertical-align: -2px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  section.card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 1.4rem 1.6rem; margin-top: 1.4rem;
+  }
+  section.card h2 {
+    margin: 0 0 .8rem; font-size: 1.02rem; text-transform: uppercase;
+    letter-spacing: .08em; color: var(--muted); font-weight: 600;
+  }
+
+  /* Score hero */
+  .hero { display: flex; gap: 1.8rem; align-items: center; flex-wrap: wrap; }
+  .grade-ring {
+    flex: none; width: 130px; height: 130px; border-radius: 50%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: var(--card);
+  }
+  .grade-ring b { font-size: 2.6rem; line-height: 1; }
+  .grade-ring span { font-size: .78rem; opacity: .9; margin-top: .2rem; }
+  .hero-body { flex: 1; min-width: 260px; }
+  .hero-body .headline { font-size: 1.25rem; margin: 0 0 .9rem; line-height: 1.35; }
+  .subscore { margin: .5rem 0; }
+  .subscore .row { display: flex; justify-content: space-between; font-size: .88rem; }
+  .subscore .row span:last-child { color: var(--muted); }
+  .bar { height: 7px; background: var(--line); border-radius: 4px; overflow: hidden; margin-top: .25rem; }
+  .bar i { display: block; height: 100%; border-radius: 4px; }
+  .value-callout {
+    margin-top: 1.2rem; padding: .85rem 1.1rem; border-radius: 8px;
+    background: var(--accent-soft); border-left: 4px solid var(--accent);
+    font-size: 1rem;
+  }
+
+  /* Money */
+  table.terms { width: 100%; border-collapse: collapse; font-size: .92rem; }
+  table.terms td, table.terms th { padding: .45rem .6rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  table.terms th { color: var(--muted); font-weight: 600; }
+  table.terms tr.head th { white-space: nowrap; }
+  .table-wrap { overflow-x: auto; }
+  .money-num { font-size: 1.15rem; font-weight: 700; white-space: nowrap; }
+  .calc { color: var(--muted); font-size: .85rem; }
+  .breakeven {
+    margin-top: 1rem; padding: .8rem 1rem; background: var(--medium-soft);
+    border-left: 4px solid var(--medium); border-radius: 6px; font-size: .95rem;
+  }
+  details.assumptions { margin-top: .9rem; font-size: .88rem; color: var(--muted); }
+  details.assumptions summary { cursor: pointer; }
+  details.assumptions ul { margin: .5rem 0 0; padding-left: 1.2rem; }
+
+  /* Exit costs */
+  .exit-item { display: flex; justify-content: space-between; gap: 1rem; padding: .6rem 0; border-bottom: 1px solid var(--line); }
+  .exit-item .what b { display: block; }
+  .exit-item .what span { font-size: .88rem; color: var(--muted); }
+  .exit-item .cost { white-space: nowrap; font-weight: 700; }
+  .exit-total { display: flex; justify-content: space-between; padding: .8rem 0 0; font-size: 1.05rem; }
+  .exit-total b:last-child { color: var(--high); }
+
+  /* Market comparison */
+  .chip { display: inline-block; padding: .1rem .55rem; border-radius: 999px; font-size: .74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+  .chip.favorable { background: var(--accent-soft); color: var(--accent-deep); }
+  .chip.typical { background: var(--line); color: var(--muted); }
+  .chip.unfavorable { background: var(--high-soft); color: var(--high); }
+  .chip.missing { background: var(--medium-soft); color: var(--medium); }
+
+  /* Flags */
+  .flag { border-left: 4px solid; border-radius: 6px; padding: .8rem 1rem; margin: .8rem 0; }
+  .flag.high { border-color: var(--high); background: var(--high-soft); }
+  .flag.medium { border-color: var(--medium); background: var(--medium-soft); }
+  .flag.low { border-color: var(--low); background: var(--low-soft); }
+  .flag .head { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; }
+  .flag .head b { font-size: 1rem; }
+  .badge { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; }
+  .flag.high .badge { color: var(--high); }
+  .flag.medium .badge { color: var(--medium); }
+  .flag.low .badge { color: var(--low); }
+  .flag p { margin: .45rem 0 0; font-size: .95rem; }
+  .flag .cost-tag { font-weight: 700; color: var(--high); font-size: .92rem; }
+  .flag .todo { font-size: .9rem; }
+  .flag .todo::before { content: "→ "; color: var(--accent); font-weight: 700; }
+  .clause { font-size: .8rem; color: var(--muted); font-style: italic; }
+  ul.plain { padding-left: 1.2rem; margin: 0; }
+  ul.plain li { margin: .45rem 0; }
+
+  /* Playbook */
+  .nego { margin: 1rem 0; padding-bottom: 1rem; border-bottom: 1px solid var(--line); }
+  .nego:last-of-type { border-bottom: none; }
+  .nego .top { display: flex; gap: .7rem; align-items: baseline; flex-wrap: wrap; }
+  .nego .prio {
+    flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--ink);
+    color: var(--card); display: inline-flex; align-items: center; justify-content: center;
+    font-size: .85rem; font-weight: 700; align-self: center;
+  }
+  .nego b { font-size: 1.02rem; }
+  .nego .worth { color: var(--gold); font-weight: 700; font-size: .88rem; }
+  .nego .why { color: var(--muted); font-size: .92rem; margin: .3rem 0 0; }
+  .nego .ask { margin-top: .45rem; padding: .55rem .8rem; background: var(--accent-soft); border-radius: 6px; font-size: .92rem; }
+  .email-box {
+    margin-top: 1.2rem; border: 1px solid var(--line); border-radius: 8px;
+    background: #fbfaf7;
+  }
+  .email-box .email-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: .6rem 1rem; border-bottom: 1px solid var(--line);
+    font-size: .85rem; color: var(--muted);
+  }
+  .email-box button {
+    font: inherit; font-size: .82rem; border: 1px solid var(--accent); color: var(--accent);
+    background: none; border-radius: 6px; padding: .25rem .7rem; cursor: pointer;
+  }
+  .email-box button:hover { background: var(--accent-soft); }
+  .email-box pre {
+    margin: 0; padding: 1rem; white-space: pre-wrap; font: .9rem/1.5 Georgia, serif;
+  }
+  .overall { font-size: 1.02rem; }
+  .compare-note { color: var(--muted); font-size: .9rem; margin-top: .5rem; }
+  footer { max-width: 920px; margin: 0 auto; padding: 0 1.5rem 2.5rem; color: var(--muted); font-size: .82rem; }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <svg width="52" height="52" viewBox="0 0 52 52" aria-label="Bailey logo">
+      <!-- shield -->
+      <path d="M26 3 L46 10 V24 C46 37 37.5 45 26 49 C14.5 45 6 37 6 24 V10 Z"
+            fill="#1f6f5c"/>
+      <path d="M26 7 L42 12.7 V24 C42 34.6 35.2 41.4 26 45 C16.8 41.4 10 34.6 10 24 V12.7 Z"
+            fill="#f7f6f3"/>
+      <!-- check that curls into a stethoscope -->
+      <path d="M16 25 L23 32 L36 17" fill="none" stroke="#1f6f5c" stroke-width="4.2"
+            stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M36 17 C40 21 39 27 34.5 29.5" fill="none" stroke="#1f6f5c" stroke-width="2.6"
+            stroke-linecap="round"/>
+      <circle cx="33" cy="31.5" r="3" fill="none" stroke="#1f6f5c" stroke-width="2.2"/>
+    </svg>
+    <div>
+      <h1>Bailey</h1>
+      <p class="tag">Before you sign, ask Bailey.</p>
+    </div>
+  </div>
+  <p class="pitch">The contract review your mentor would give you: a grade for your offer, the money modeled out, the cost of leaving priced, every term benchmarked against market — and the negotiation email already written.</p>
+</header>
+<div class="disclaimer">
+  Bailey is an educational tool. It does not provide legal, financial, or tax advice, and it is not a substitute for review by a licensed attorney or CPA. Earnings figures are illustrative estimates built on stated assumptions, not income promises. Have any contract reviewed by a professional before you sign.
+</div>
+<main>
+  <div class="drop" id="drop">
+    <strong>Upload an offer</strong> — drag a file here or click to browse
+    <small>PDF, DOCX, or TXT · analyzed privately · nothing is stored server-side in this prototype</small>
+  </div>
+  <input type="file" id="file-input" accept=".pdf,.docx,.txt" multiple>
+  <div class="tabs" id="tabs"></div>
+  <div class="status" id="status"></div>
+  <div id="view"></div>
+</main>
+<footer>
+  Built as a prototype. Regional benchmark data from real offers is a planned feature; current ranges reflect published survey data and common contract patterns.
+</footer>
+<script>
+const offers = [];          // {filename, analysis}
+let active = -1;            // index into offers, or -2 for compare view
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = v => v == null ? "—" : "$" + Number(v).toLocaleString();
+const dash = v => (v === null || v === undefined || v === "" ? "—" : v);
+
+const CATEGORY_LABELS = {
+  compensation: "Compensation",
+  restrictive_covenants: "Restrictive covenants",
+  insurance_and_benefits: "Insurance & benefits",
+  termination_and_flexibility: "Termination & flexibility",
+};
+
+function gradeColor(score) {
+  if (score >= 75) return "#1f6f5c";
+  if (score >= 55) return "#a06a1b";
+  return "#b3372c";
+}
+
+$("drop").addEventListener("click", () => $("file-input").click());
+$("drop").addEventListener("dragover", e => { e.preventDefault(); $("drop").classList.add("over"); });
+$("drop").addEventListener("dragleave", () => $("drop").classList.remove("over"));
+$("drop").addEventListener("drop", e => {
+  e.preventDefault(); $("drop").classList.remove("over");
+  uploadAll([...e.dataTransfer.files]);
+});
+$("file-input").addEventListener("change", e => uploadAll([...e.target.files]));
+
+async function uploadAll(files) {
+  for (const f of files) await upload(f);
+}
+
+async function upload(file) {
+  $("status").className = "status";
+  $("status").innerHTML = `<span class="spinner"></span>Reviewing <b>${esc(file.name)}</b>… a full review takes a minute or two.`;
+  const body = new FormData();
+  body.append("file", file);
+  try {
+    const res = await fetch("/api/analyze", { method: "POST", body });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || res.statusText);
+    offers.push(data);
+    active = offers.length - 1;
+    $("status").textContent = "";
+    render();
+  } catch (err) {
+    $("status").className = "status error";
+    $("status").textContent = "Could not review " + file.name + ": " + err.message;
+  }
+}
+
+function render() {
+  const tabs = $("tabs");
+  tabs.innerHTML = "";
+  offers.forEach((o, i) => {
+    const b = document.createElement("button");
+    b.className = "tab" + (active === i ? " active" : "");
+    b.textContent = o.analysis.extraction.employer_name || o.filename;
+    b.onclick = () => { active = i; render(); };
+    tabs.appendChild(b);
+  });
+  if (offers.length >= 2) {
+    const b = document.createElement("button");
+    b.className = "tab" + (active === -2 ? " active" : "");
+    b.textContent = "Compare offers";
+    b.onclick = () => { active = -2; render(); };
+    tabs.appendChild(b);
+  }
+  $("view").innerHTML = active === -2 ? renderCompare() : (active >= 0 ? renderOffer(offers[active]) : "");
+  const copyBtn = document.getElementById("copy-email");
+  if (copyBtn) copyBtn.onclick = () => {
+    navigator.clipboard.writeText(offers[active].analysis.negotiation_email);
+    copyBtn.textContent = "Copied ✓";
+    setTimeout(() => (copyBtn.textContent = "Copy email"), 1600);
+  };
+}
+
+function renderOffer({ analysis: a }) {
+  return renderScore(a) + renderSummary(a) + renderMoney(a) + renderExit(a)
+    + renderMarket(a) + renderStrengths(a) + renderFlags(a) + renderPlaybook(a)
+    + renderBottomLine(a) + renderTerms(a);
+}
+
+function renderScore(a) {
+  const s = a.score;
+  const ring = gradeColor(s.overall);
+  const subs = s.categories.map(c => `
+    <div class="subscore">
+      <div class="row"><span>${esc(CATEGORY_LABELS[c.category] || c.category)}</span><span>${c.score}/100</span></div>
+      <div class="bar"><i style="width:${Math.max(3, Math.min(100, c.score))}%; background:${gradeColor(c.score)}"></i></div>
+    </div>`).join("");
+  return `
+    <section class="card">
+      <div class="hero">
+        <div class="grade-ring" style="background:${ring}">
+          <b>${esc(s.grade)}</b><span>${s.overall}/100</span>
+        </div>
+        <div class="hero-body">
+          <p class="headline">${esc(s.headline)}</p>
+          ${subs}
+        </div>
+      </div>
+      <div class="value-callout">💰 ${esc(a.value_at_stake)}</div>
+    </section>`;
+}
+
+function renderSummary(a) {
+  return `<section class="card"><h2>The offer in plain English</h2><p>${esc(a.summary)}</p></section>`;
+}
+
+function renderMoney(a) {
+  const f = a.financial_analysis;
+  const rows = f.scenarios.map(s => `
+    <tr>
+      <th>${esc(s.label)}</th>
+      <td>${s.assumed_daily_production == null ? "—" : money(s.assumed_daily_production) + "/day"}</td>
+      <td class="money-num">${money(s.estimated_annual_gross)}</td>
+      <td class="calc">${esc(s.how_calculated)}</td>
+    </tr>`).join("");
+  const breakeven = f.break_even_daily_production == null ? "" : `
+    <div class="breakeven"><b>Break-even: ${money(f.break_even_daily_production)}/day.</b> ${esc(f.break_even_explanation || "")}</div>`;
+  const split = f.effective_split_note ? `<p style="margin-top:.9rem">${esc(f.effective_split_note)}</p>` : "";
+  return `
+    <section class="card"><h2>What you'd actually earn (year one)</h2>
+      <div class="table-wrap"><table class="terms">
+        <tr class="head"><th>Scenario</th><th>Assumed production</th><th>Est. gross</th><th>How it's calculated</th></tr>
+        ${rows}
+      </table></div>
+      ${breakeven}${split}
+      <details class="assumptions"><summary>Assumptions behind these numbers — adjust for your situation</summary>
+        <ul>${f.assumptions.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+      </details>
+    </section>`;
+}
+
+function renderExit(a) {
+  const e = a.exit_costs;
+  const items = e.items.map(it => `
+    <div class="exit-item">
+      <div class="what"><b>${esc(it.item)}</b><span>${esc(it.basis)}</span></div>
+      <div class="cost">${esc(it.estimated_cost)}</div>
+    </div>`).join("");
+  return `
+    <section class="card"><h2>The price of leaving</h2>
+      <p style="margin-top:0">${esc(e.scenario)}:</p>
+      ${items}
+      <div class="exit-total"><b>Estimated total</b><b>${esc(e.estimated_total)}</b></div>
+      <p class="compare-note">${esc(e.note)}</p>
+    </section>`;
+}
+
+function renderMarket(a) {
+  const rows = a.market_comparison.map(r => `
+    <tr>
+      <th>${esc(r.term)}</th>
+      <td>${esc(r.this_offer)}</td>
+      <td>${esc(r.typical_range)}</td>
+      <td><span class="chip ${esc(r.verdict)}">${esc(r.verdict)}</span>${r.note ? `<div class="calc">${esc(r.note)}</div>` : ""}</td>
+    </tr>`).join("");
+  return `
+    <section class="card"><h2>How it compares to market</h2>
+      <div class="table-wrap"><table class="terms">
+        <tr class="head"><th>Term</th><th>This offer</th><th>Typical for new grads</th><th>Verdict</th></tr>
+        ${rows}
+      </table></div>
+    </section>`;
+}
+
+function renderStrengths(a) {
+  return `<section class="card"><h2>What's genuinely good here</h2>
+    <ul class="plain">${a.strengths.map(s => `<li>${esc(s)}</li>`).join("")}</ul></section>`;
+}
+
+function renderFlags(a) {
+  const flags = a.red_flags.map(f => `
+    <div class="flag ${esc(f.severity)}">
+      <div class="head"><b>${esc(f.title)}</b><span class="badge">${esc(f.severity)}</span></div>
+      ${f.clause_reference ? `<div class="clause">${esc(f.clause_reference)}</div>` : ""}
+      <p>${esc(f.explanation)}</p>
+      ${f.cost_if_ignored ? `<p class="cost-tag">Cost if ignored: ${esc(f.cost_if_ignored)}</p>` : ""}
+      <p class="todo">${esc(f.what_to_do)}</p>
+    </div>`).join("");
+  return `<section class="card"><h2>Red flags</h2>${flags || "<p>No significant red flags identified.</p>"}</section>`;
+}
+
+function renderPlaybook(a) {
+  const nego = a.negotiation_playbook.map(n => `
+    <div class="nego">
+      <div class="top"><span class="prio">${n.priority}</span><b>${esc(n.topic)}</b>
+        ${n.estimated_value ? `<span class="worth">worth ${esc(n.estimated_value)}</span>` : ""}</div>
+      <p class="why">${esc(n.rationale)}</p>
+      <div class="ask">“${esc(n.suggested_ask)}”</div>
+    </div>`).join("");
+  return `
+    <section class="card"><h2>Your negotiation playbook</h2>
+      ${nego}
+      <div class="email-box">
+        <div class="email-head"><span>Ready-to-send negotiation email</span><button id="copy-email">Copy email</button></div>
+        <pre>${esc(a.negotiation_email)}</pre>
+      </div>
+    </section>`;
+}
+
+function renderBottomLine(a) {
+  return `<section class="card"><h2>Bottom line</h2><p class="overall">${esc(a.overall_read)}</p></section>`;
+}
+
+function renderTerms(a) {
+  const rows = extractionRows(a.extraction).map(([k, v]) => `<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join("");
+  return `<section class="card"><h2>Every extracted term</h2>
+    <div class="table-wrap"><table class="terms">${rows}</table></div></section>`;
+}
+
+function extractionRows(x) {
+  const c = x.compensation, r = x.restrictive_covenants, t = x.term_and_termination, b = x.benefits;
+  return [
+    ["Employer", dash(x.employer_name)],
+    ["Position", dash(x.position_title)],
+    ["Location", dash(x.location)],
+    ["Practice type", dash(x.practice_type).replace(/_/g, " ")],
+    ["Employment status", dash(x.employment_status)],
+    ["Base salary", money(c.base_salary_annual)],
+    ["Daily guarantee", money(c.daily_guarantee)],
+    ["Production %", c.production_percentage == null ? "—" : c.production_percentage + "%"],
+    ["Comp basis", dash(c.compensation_basis).replace(/_/g, " ")],
+    ["Guarantee duration", c.guarantee_duration_months == null ? "—" : c.guarantee_duration_months + " months"],
+    ["Sign-on bonus", money(c.sign_on_bonus)],
+    ["Sign-on clawback", dash(c.sign_on_bonus_clawback)],
+    ["Lab fees", dash(c.lab_fee_deduction)],
+    ["Non-compete", r.non_compete_radius_miles == null && r.non_compete_duration_months == null ? "—"
+      : `${r.non_compete_radius_miles ?? "?"} mi · ${r.non_compete_duration_months ?? "?"} months`],
+    ["Non-compete scope", dash(r.non_compete_scope)],
+    ["Patient non-solicit", r.non_solicit_patients_months == null ? "—" : r.non_solicit_patients_months + " months"],
+    ["Covenant penalty", dash(r.liquidated_damages)],
+    ["Term", t.initial_term_months == null ? "—" : t.initial_term_months + " months" + (t.auto_renewal ? " (auto-renews)" : "")],
+    ["Notice to leave", t.termination_notice_days_provider == null ? "—" : t.termination_notice_days_provider + " days"],
+    ["Malpractice", dash(b.malpractice_type).replace(/_/g, " ")],
+    ["Tail paid by", dash(b.tail_coverage_paid_by)],
+    ["CE allowance", dash(b.ce_allowance)],
+    ["PTO", dash(b.pto)],
+    ["Patient records", dash(x.patient_records_ownership)],
+  ];
+}
+
+function renderCompare() {
+  const headers = offers.map(o => esc(o.analysis.extraction.employer_name || o.filename));
+  const rowSets = offers.map(o => extractionRows(o.analysis.extraction));
+  const labels = rowSets[0].map(r => r[0]);
+  const gradeRow = `<tr><th>Bailey grade</th>${offers.map(o =>
+    `<td><b style="color:${gradeColor(o.analysis.score.overall)}">${esc(o.analysis.score.grade)}</b> (${o.analysis.score.overall}/100)</td>`).join("")}</tr>`;
+  const expectedRow = `<tr><th>Expected year-one gross</th>${offers.map(o => {
+    const exp = o.analysis.financial_analysis.scenarios.find(s => s.label.toLowerCase() === "expected") || o.analysis.financial_analysis.scenarios[1];
+    return `<td class="money-num">${exp ? money(exp.estimated_annual_gross) : "—"}</td>`;
+  }).join("")}</tr>`;
+  const exitRow = `<tr><th>Cost of leaving early</th>${offers.map(o =>
+    `<td>${esc(o.analysis.exit_costs.estimated_total)}</td>`).join("")}</tr>`;
+  const flagRow = `<tr><th>High-severity flags</th>${offers.map(o =>
+    `<td>${o.analysis.red_flags.filter(f => f.severity === "high").length}</td>`).join("")}</tr>`;
+  const body = labels.map((label, i) =>
+    `<tr><th>${esc(label)}</th>${rowSets.map(rs => `<td>${esc(rs[i][1])}</td>`).join("")}</tr>`
+  ).join("");
+  return `
+    <section class="card"><h2>Side-by-side comparison</h2>
+      <div class="table-wrap"><table class="terms">
+        <tr class="head"><th></th>${headers.map(h => `<th>${h}</th>`).join("")}</tr>
+        ${gradeRow}${expectedRow}${exitRow}${flagRow}${body}
+      </table></div>
+      <p class="compare-note">Numbers are extracted as written in each document — a higher production % on collections can pay less than a lower % on production. Check each offer's red flags before comparing on price alone.</p>
+    </section>`;
+}
+</script>
+</body>
+</html>

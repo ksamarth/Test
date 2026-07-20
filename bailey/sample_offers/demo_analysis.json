@@ -1,0 +1,348 @@
+{
+  "extraction": {
+    "employer_name": "BrightSmile Dental Partners, LLC",
+    "position_title": "Associate Dentist",
+    "profession": "general dentistry",
+    "location": "Frisco, Texas",
+    "practice_type": "dso",
+    "employment_status": "W-2 employee (implied; not explicitly stated)",
+    "full_time": true,
+    "days_per_week": 5,
+    "compensation": {
+      "base_salary_annual": null,
+      "daily_guarantee": 650,
+      "production_percentage": 30,
+      "compensation_basis": "collections",
+      "guarantee_duration_months": 3,
+      "sign_on_bonus": 15000,
+      "sign_on_bonus_clawback": "Full repayment if employment ends for any reason within 24 months, due within 30 days of termination (Section 3.4).",
+      "relocation_assistance": null,
+      "student_loan_repayment": null,
+      "lab_fee_deduction": "Lab fees, implant/specialty supply costs, refunds, and chargebacks are deducted from collections before the 30% split (Section 3.3)."
+    },
+    "restrictive_covenants": {
+      "non_compete_radius_miles": 15,
+      "non_compete_duration_months": 24,
+      "non_compete_scope": "Practicing dentistry within 15 miles of ANY employer or affiliate office where the provider worked even once — not just the home office (Section 7.1).",
+      "non_solicit_patients_months": 24,
+      "non_solicit_staff_months": 24,
+      "liquidated_damages": "$100,000 liquidated damages for breach, plus injunctive relief (Section 7.3)."
+    },
+    "term_and_termination": {
+      "initial_term_months": 24,
+      "auto_renewal": true,
+      "termination_notice_days_employer": 30,
+      "termination_notice_days_provider": 90,
+      "for_cause_provisions": "For-cause triggers include failure to meet unspecified production standards and conduct 'in Employer's sole judgment' detrimental to reputation (Section 6.2) — broad and subjective."
+    },
+    "benefits": {
+      "malpractice_type": "claims_made_no_tail",
+      "tail_coverage_paid_by": "Provider, at provider's sole expense, on termination for any reason (Section 5).",
+      "health_insurance": "Eligible for group health plan per plan terms.",
+      "retirement": "Eligible for 401(k) per plan terms; no match specified.",
+      "ce_allowance": "$500 per year; no paid CE days specified.",
+      "pto": "5 days per contract year.",
+      "licensure_dues_covered": null
+    },
+    "patient_records_ownership": "All patient records, charts, and goodwill belong solely to the employer (Section 8).",
+    "other_notable_clauses": [
+      "Employer may reassign the provider to other locations it 'reasonably designates' (Section 1).",
+      "Clinical judgment clause is qualified by required compliance with employer treatment-planning protocols (Section 9)."
+    ]
+  },
+  "score": {
+    "overall": 46,
+    "grade": "C-",
+    "headline": "Market-rate headline pay wrapped around fine print that could cost you $20,000 on the way out.",
+    "categories": [
+      {
+        "category": "compensation",
+        "score": 52,
+        "rationale": "The 30% split and $650/day floor are within market range, but the collections basis plus pre-split lab-fee deductions quietly cost roughly five points of the stated split, and the guarantee expires after only 90 days."
+      },
+      {
+        "category": "restrictive_covenants",
+        "score": 25,
+        "rationale": "A 24-month, 15-mile non-compete measured from every office you ever cover, backed by $100,000 in liquidated damages, is among the most aggressive covenant packages seen in associate agreements."
+      },
+      {
+        "category": "insurance_and_benefits",
+        "score": 38,
+        "rationale": "Provider-paid tail coverage is a four-to-five-figure exit cost, and 5 PTO days with $500 of CE sit well below the typical 10-15 days and $1,500-$3,000."
+      },
+      {
+        "category": "termination_and_flexibility",
+        "score": 45,
+        "rationale": "Notice is lopsided (they give 30 days, you give 90), for-cause triggers are vague and employer-judged, and the sign-on clawback applies in full even if they terminate you."
+      }
+    ]
+  },
+  "summary": "This is a two-year associate dentist offer from BrightSmile Dental Partners, a DSO in Frisco, Texas. Pay is a $650 daily guarantee for only the first 90 days, after which you are paid 30% of net collections — meaning 30% of what the office actually collects for your work, after lab fees and supply costs are subtracted. It includes a $15,000 signing bonus with a two-year full-repayment clawback, a 24-month/15-mile non-compete measured from every office you ever work at, and claims-made malpractice insurance where you pay for tail coverage yourself when you leave.",
+  "financial_analysis": {
+    "scenarios": [
+      {
+        "label": "Conservative",
+        "assumed_daily_production": 2500,
+        "estimated_annual_gross": 143000,
+        "how_calculated": "$2,500 production × 92% collections − 10% lab fees = $2,050 net collections/day; 30% = $615/day. The $650 floor applies for the first ~62 working days, then $615 × the remaining 168 days: about $143,000."
+      },
+      {
+        "label": "Expected",
+        "assumed_daily_production": 3200,
+        "estimated_annual_gross": 181000,
+        "how_calculated": "$3,200 production × 92% − lab fees = $2,624 net collections/day; 30% = $787/day × 230 working days ≈ $181,000. The guarantee never applies because $787 beats the $650 floor."
+      },
+      {
+        "label": "Strong",
+        "assumed_daily_production": 4000,
+        "estimated_annual_gross": 226000,
+        "how_calculated": "$4,000 production × 92% − lab fees = $3,280 net collections/day; 30% = $984/day × 230 working days ≈ $226,000."
+      }
+    ],
+    "break_even_daily_production": 2650,
+    "break_even_explanation": "You need to produce about $2,650 per day before your 30% of net collections beats the $650 guarantee. New grads in their first months at a new office frequently produce below this while their schedule fills — and this contract's guarantee disappears after 90 days, exactly when many associates are still ramping.",
+    "effective_split_note": "On a $3,200 production day you receive $787 — which is 24.6% of your production, not 30%. The collections basis and pre-split lab-fee deduction together cost about 5.4 points of the stated split, roughly $20,000 per year at mid-range production.",
+    "assumptions": [
+      "230 working days per year (5 days/week less holidays and PTO).",
+      "92% collection rate — a healthy office; many collect 88-95%, and you bear the difference under this contract.",
+      "Lab and specialty supply costs averaging 10% of production across a general-dentistry mix; crown/implant-heavy schedules run higher.",
+      "Typical new-grad GP production of $2,500-$4,000/day based on published dental-economics survey ranges; your local market and patient flow may differ.",
+      "All figures are pre-tax gross compensation estimates for education, not income projections or promises."
+    ]
+  },
+  "exit_costs": {
+    "scenario": "If you leave — or are let go — 12 months in",
+    "items": [
+      {
+        "item": "Sign-on bonus repayment",
+        "estimated_cost": "$15,000",
+        "basis": "Section 3.4 requires full repayment within 30 days if employment ends for any reason within 24 months — no pro-rating, and it applies even if the employer terminates you without cause."
+      },
+      {
+        "item": "Malpractice tail coverage",
+        "estimated_cost": "$4,000-$8,000",
+        "basis": "Section 5 makes tail your sole expense. Tail policies typically cost 1-2x the annual claims-made premium for general dentistry."
+      },
+      {
+        "item": "Non-compete relocation drag",
+        "estimated_cost": "Hard to price — potentially your next job",
+        "basis": "Section 7.1 blocks practice within 15 miles of every office you ever covered for 24 months; if you floated between several offices, much of the metro may be off-limits."
+      }
+    ],
+    "estimated_total": "$19,000-$23,000 in direct costs",
+    "note": "That is the cash price of leaving in year one — before counting the $100,000 liquidated-damages exposure if the non-compete is breached, or the income gap while you find work outside the restricted zone."
+  },
+  "market_comparison": [
+    {
+      "term": "Compensation basis",
+      "this_offer": "30% of collections, lab fees deducted before the split",
+      "typical_range": "Production-based, or collections with lab fees deducted after the split",
+      "verdict": "unfavorable",
+      "note": "The single most expensive difference in this contract — worth about $20,000/year at mid-range production."
+    },
+    {
+      "term": "Tail coverage",
+      "this_offer": "Provider pays, on termination for any reason",
+      "typical_range": "Employer-paid, split, or employer-paid if terminated without cause",
+      "verdict": "unfavorable",
+      "note": null
+    },
+    {
+      "term": "Non-compete",
+      "this_offer": "15 mi / 24 mo, from every office worked",
+      "typical_range": "5-10 mi / 12-24 mo, primary office only",
+      "verdict": "unfavorable",
+      "note": "The 'every office' measurement is the aggressive part, more than the radius."
+    },
+    {
+      "term": "Covenant penalty",
+      "this_offer": "$100,000 liquidated damages",
+      "typical_range": "Usually absent; injunctive relief only",
+      "verdict": "unfavorable",
+      "note": null
+    },
+    {
+      "term": "Sign-on clawback",
+      "this_offer": "Full repayment, 24 months, any reason",
+      "typical_range": "Pro-rated monthly, waived if terminated without cause",
+      "verdict": "unfavorable",
+      "note": null
+    },
+    {
+      "term": "Guarantee duration",
+      "this_offer": "90 days",
+      "typical_range": "6-12 months for new graduates",
+      "verdict": "unfavorable",
+      "note": "Ends right when most new associates are still building a schedule."
+    },
+    {
+      "term": "Notice periods",
+      "this_offer": "Employer 30 days / you 90 days",
+      "typical_range": "Mutual 60-90 days",
+      "verdict": "unfavorable",
+      "note": null
+    },
+    {
+      "term": "PTO",
+      "this_offer": "5 days",
+      "typical_range": "10-15 days",
+      "verdict": "unfavorable",
+      "note": null
+    },
+    {
+      "term": "CE allowance",
+      "this_offer": "$500/year",
+      "typical_range": "$1,500-$3,000 plus paid CE days",
+      "verdict": "unfavorable",
+      "note": null
+    },
+    {
+      "term": "Daily guarantee",
+      "this_offer": "$650/day",
+      "typical_range": "$600-$800/day for new-grad GPs",
+      "verdict": "typical",
+      "note": "Varies by region; DFW-metro offers commonly land in this band."
+    },
+    {
+      "term": "Production split",
+      "this_offer": "30%",
+      "typical_range": "28-35% of collections for DSO associates",
+      "verdict": "typical",
+      "note": "The rate is fine — it's the basis and deductions that cost you."
+    },
+    {
+      "term": "Sign-on bonus",
+      "this_offer": "$15,000",
+      "typical_range": "$5,000-$25,000 at DSOs",
+      "verdict": "typical",
+      "note": null
+    }
+  ],
+  "strengths": [
+    "The 30% rate itself is within the normal range for DSO associate agreements.",
+    "A daily guarantee during ramp-up is standard and $650/day is a reasonable floor while it lasts.",
+    "The $15,000 signing bonus is a real benefit if you stay the full two years.",
+    "Health insurance and 401(k) eligibility are included."
+  ],
+  "red_flags": [
+    {
+      "title": "Pay is based on collections, with deductions taken before your split",
+      "severity": "high",
+      "clause_reference": "Section 3.3 — 'Net Collections'",
+      "explanation": "You are paid on what the office collects, not what you produce. If the office bills $30,000 for your work but only collects $24,000 — and then subtracts lab fees and implant supplies — your 30% applies to the smaller number. You bear the risk of the office's billing performance, and lab-heavy procedures can pay you dramatically less than expected.",
+      "cost_if_ignored": "Roughly $20,000 per year at mid-range production versus the same split with lab fees deducted after the split.",
+      "what_to_do": "Ask for the office's historical collection rate in writing, and ask whether the split can be based on production — or at minimum whether lab fees can be deducted after the split. Both are commonly negotiated."
+    },
+    {
+      "title": "You pay your own malpractice tail coverage",
+      "severity": "high",
+      "clause_reference": "Section 5",
+      "explanation": "The employer provides claims-made insurance, which only covers claims filed while the policy is active. When you leave — even if they fire you — you must buy 'tail' coverage for later-filed claims, at your own expense. Tail typically costs one to two times the annual premium, due right when you're changing jobs.",
+      "cost_if_ignored": "$4,000-$8,000 payable whenever you leave, for any reason.",
+      "what_to_do": "Ask the employer to pay the tail — or split it, or cover it if they terminate you without cause. This is one of the most commonly won asks in healthcare contract negotiation."
+    },
+    {
+      "title": "Non-compete measured from every office you ever touch",
+      "severity": "high",
+      "clause_reference": "Section 7.1",
+      "explanation": "The 15-mile, 24-month restriction applies around any employer or affiliate office where you provided services 'on one or more occasions.' If they float you between offices, the restricted zones stack and can blanket the metro area, severely limiting where you can work next.",
+      "cost_if_ignored": "Unquantifiable but potentially your next job — relocation or a long commute for up to two years.",
+      "what_to_do": "Ask to limit the non-compete to your primary office only, and to have it waived if the employer terminates you without cause. Have any final language reviewed professionally for enforceability under Texas law."
+    },
+    {
+      "title": "$100,000 liquidated damages for covenant breach",
+      "severity": "high",
+      "clause_reference": "Section 7.3",
+      "explanation": "Beyond the non-compete itself, breaching it triggers an automatic $100,000 payment plus court orders — a large fixed penalty that applies regardless of how much harm, if any, the employer actually suffered.",
+      "cost_if_ignored": "$100,000 exposure hanging over any post-employment move inside the restricted zone.",
+      "what_to_do": "Ask for this clause to be removed or substantially reduced; a fixed six-figure penalty is not a standard feature of associate agreements."
+    },
+    {
+      "title": "Sign-on bonus is fully repayable for two years, even if they fire you",
+      "severity": "medium",
+      "clause_reference": "Section 3.4",
+      "explanation": "The $15,000 must be repaid in full if employment ends 'for any reason' within 24 months — including the employer terminating you without cause on 30 days' notice. There is no pro-rating: leaving in month 23 costs the same as leaving in month 2.",
+      "cost_if_ignored": "Up to $15,000 due within 30 days of any early exit.",
+      "what_to_do": "Ask for the clawback to pro-rate monthly and to be waived if the employer terminates without cause."
+    },
+    {
+      "title": "Vague for-cause termination triggers",
+      "severity": "medium",
+      "clause_reference": "Section 6.2",
+      "explanation": "The employer can fire you immediately for failing 'production standards' that aren't defined anywhere, or for conduct they alone judge harmful to their reputation. Vague triggers like these can convert a without-cause firing (with notice) into a for-cause one — immediate, and reputationally worse.",
+      "cost_if_ignored": null,
+      "what_to_do": "Ask for production standards to be defined in writing and for a cure period — written notice and 15-30 days to fix the issue — before for-cause termination."
+    },
+    {
+      "title": "Notice periods are lopsided: they give 30 days, you give 90",
+      "severity": "medium",
+      "clause_reference": "Section 6.1",
+      "explanation": "The employer can end the agreement on 30 days' notice while you must give 90. Combined with the 90-day non-renewal window and auto-renewal, leaving cleanly requires careful calendar math.",
+      "cost_if_ignored": null,
+      "what_to_do": "Ask to make notice periods mutual — 60/60 or 90/90."
+    },
+    {
+      "title": "Thin PTO and CE support",
+      "severity": "low",
+      "clause_reference": "Section 4",
+      "explanation": "Five PTO days and $500 of CE per year are on the low end; many offers include 10+ days and $1,500-$3,000 in CE with dedicated CE days.",
+      "cost_if_ignored": "$2,000-$4,000 per year in below-market benefits.",
+      "what_to_do": "Ask for additional PTO and a larger CE allowance — low-cost items employers often concede."
+    },
+    {
+      "title": "Employer owns all patient records and goodwill",
+      "severity": "low",
+      "clause_reference": "Section 8",
+      "explanation": "Standard for DSO agreements, but combined with the patient non-solicit it means the patients you build relationships with cannot follow you when you leave.",
+      "cost_if_ignored": null,
+      "what_to_do": "Understand this going in; ask whether departing providers may notify patients of their departure, which some states require regardless of contract."
+    }
+  ],
+  "negotiation_playbook": [
+    {
+      "priority": 1,
+      "topic": "Compensation basis and lab fees",
+      "rationale": "Collections-based pay with pre-split lab deductions is the biggest driver of lower-than-expected take-home for new associates — about five points of your effective split.",
+      "estimated_value": "$15,000-$40,000 over the two-year term",
+      "suggested_ask": "Would you be open to basing my percentage on adjusted production, or alternatively deducting lab fees after the split? I'd also appreciate the office's collection-rate history for the past year."
+    },
+    {
+      "priority": 2,
+      "topic": "Tail coverage",
+      "rationale": "Provider-paid tail is a four-to-five-figure exit cost and is very commonly shifted to the employer in negotiation.",
+      "estimated_value": "$4,000-$8,000",
+      "suggested_ask": "I'd like the agreement to provide employer-paid tail coverage, or at minimum employer-paid tail if my employment is terminated without cause."
+    },
+    {
+      "priority": 3,
+      "topic": "Sign-on clawback terms",
+      "rationale": "A pro-rated, no-fault-protected clawback is the market norm; full repayment after 23 months, or after being fired, is not.",
+      "estimated_value": "Up to $15,000",
+      "suggested_ask": "Could the signing-bonus repayment pro-rate monthly over the 24 months, and be waived if the company terminates me without cause?"
+    },
+    {
+      "priority": 4,
+      "topic": "Guarantee duration",
+      "rationale": "Ninety days is a short ramp; new-patient flow and credentialing often take longer, and a longer floor protects you while your schedule fills.",
+      "estimated_value": "$2,000-$8,000 in ramp-up months",
+      "suggested_ask": "Given typical ramp-up time, would you extend the $650 daily guarantee to the first 6 months?"
+    },
+    {
+      "priority": 5,
+      "topic": "Non-compete scope",
+      "rationale": "As written, the restriction stacks around every office you ever cover, which can lock you out of the whole metro.",
+      "estimated_value": "Hard to price — protects your ability to keep working locally",
+      "suggested_ask": "Can we limit the non-compete to my primary practice location, and waive it entirely if I'm terminated without cause?"
+    },
+    {
+      "priority": 6,
+      "topic": "PTO and CE allowance",
+      "rationale": "Both sit well below market and are inexpensive for the employer to improve — a common easy 'yes' that builds momentum in the negotiation.",
+      "estimated_value": "$2,000-$4,000 per year",
+      "suggested_ask": "Would you consider 10 days of PTO and a $1,500 CE allowance with two paid CE days, in line with comparable associate positions?"
+    }
+  ],
+  "negotiation_email": "Subject: BrightSmile associate agreement — a few questions before I sign\n\nHi Dr. [Name],\n\nThank you again for the offer to join the Frisco team — I'm genuinely excited about the practice, and everyone I met made a great impression. I've been through the agreement carefully and I'd love to talk through four items before we finalize:\n\n1. Compensation basis. As drafted, my 30% applies to collections after lab and supply deductions. Would you be open to basing the split on adjusted production, or deducting lab fees after the split? I'd also appreciate seeing the office's collection-rate history so I can plan realistically.\n\n2. Tail coverage. The agreement currently has me purchasing tail at my own expense on any exit. Employer-paid tail — or employer-paid if termination is without cause — would mean a lot to me, and I understand it's a common structure.\n\n3. Signing bonus repayment. Could the repayment obligation pro-rate monthly over the 24 months, and be waived if the company ends my employment without cause?\n\n4. Guarantee period. Since new-patient flow takes time to build, would you consider extending the $650 daily guarantee from 90 days to six months?\n\nNone of these change my enthusiasm about the role — I'd just like the agreement to reflect a structure we're both comfortable with for the long term. Happy to hop on a call this week if that's easier.\n\nBest,\n[Name]",
+  "value_at_stake": "Winning even two or three of these asks is typically worth $20,000-$45,000 over the two-year term — against an employer cost of a single email to their attorney.",
+  "overall_read": "This offer has a market-typical headline — 30% with a $650/day floor and a $15,000 bonus — attached to below-market fine print: collections-based pay with pre-split lab deductions, provider-paid tail, a stacking metro-wide non-compete with a $100,000 penalty, and a two-year full clawback. Offers like this are frequently improved substantially in negotiation; the biggest items to resolve before signing are the compensation basis, the tail coverage, and the non-compete scope."
+}
