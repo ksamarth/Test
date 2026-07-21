@@ -144,6 +144,10 @@ details summary::-webkit-details-marker { color: var(--color-accent); }
   .stats-grid { grid-template-columns: 1fr 1fr !important; }
   .stats-grid > div { border-right: none !important; }
   .stats-grid > div:nth-child(1), .stats-grid > div:nth-child(2) { border-bottom: 1px solid var(--color-divider); }
+  /* collapsed feature grids: drop the desktop column dividers and indents so the
+     i-vi markers align flush down the single column */
+  .feature-grid { row-gap: 10px !important; }
+  .feature-grid > div { border-right: none !important; padding-left: 0 !important; padding-right: 0 !important; }
 }
 
 /* Phone */
@@ -398,7 +402,7 @@ function landing() {
     <section class="pad" style="max-width:1060px;margin:0 auto;padding:0 48px 64px;">
       <div class="card grid-collapse" style="padding:32px 36px;display:grid;grid-template-columns:220px 1fr;gap:40px;align-items:center;">
         <div style="text-align:center;border-right:1px solid var(--color-divider);padding-right:36px;">
-          <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:10px;">Sample verdict</div>
+          <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:10px;">Sample diagnosis</div>
           <div style="width:150px;height:150px;margin:0 auto;border-radius:50%;border:1.5px solid var(--color-accent);background:var(--color-accent-100);display:flex;flex-direction:column;align-items:center;justify-content:center;">
             <span style="font-family:var(--font-heading);font-size:56px;line-height:1;">C−</span>
             <span style="font-size:12px;font-feature-settings:'tnum';color:var(--color-accent-700);letter-spacing:0.1em;">46 / 100</span>
@@ -417,22 +421,22 @@ function landing() {
 
     <section style="border-top:1px solid var(--color-accent-300);border-bottom:1px solid var(--color-accent-300);background:var(--color-accent-100);">
       <div class="pad stats-grid" style="max-width:1060px;margin:0 auto;padding:0 48px;display:grid;grid-template-columns:repeat(4,1fr);">
-        ${[["31","Clauses read per contract"],["$20k+","Hidden cost found in the sample"],["6","Asks ranked by dollar value"],["4 min","Upload to verdict"]].map(([n,l],i) => `
+        ${[["31","Clauses read per contract"],["$20k+","Hidden cost found in the sample"],["6","Asks ranked by dollar value"],["4 min","Upload to diagnosis"]].map(([n,l],i) => `
           <div style="padding:26px 24px;${i<3?'border-right:1px solid var(--color-divider);':''}text-align:center;"><div style="font-family:var(--font-heading);font-size:40px;font-feature-settings:'tnum';line-height:1;color:var(--color-accent-700);">${n}</div><div class="text-muted" style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;margin-top:8px;">${l}</div></div>`).join("")}
       </div>
     </section>
 
     <section id="how" class="pad" style="max-width:1060px;margin:0 auto;padding:72px 48px 0;">
       <div style="text-align:center;margin-bottom:36px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">How it works</div><h2 style="font-size:38px;margin:8px 0 0;">Four minutes from PDF to plan.</h2></div>
-      <div class="grid-collapse" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;">
-        ${[["Upload the offer","PDF or pasted text — any clinical employment contract or offer letter."],["Bailey reads every clause","Every term benchmarked, your earnings modeled, exit costs totaled."],["You get the verdict","A grade, red flags with price tags — and the negotiation email, written."]].map(([t,b],i) => `
+      <div class="grid-collapse feature-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;">
+        ${[["Upload the offer","PDF or pasted text — any clinical employment contract or offer letter."],["Bailey reads every clause","Every term benchmarked, your earnings modeled, exit costs totaled."],["You get the diagnosis","A grade, red flags with price tags — and the negotiation email, written."]].map(([t,b],i) => `
           <div style="padding:0 32px;${i<2?'border-right:1px solid var(--color-divider);':''}${i===0?'padding-left:0;':''}${i===2?'padding-right:0;':''}"><div style="font-family:var(--font-heading);font-size:30px;color:var(--color-accent);font-feature-settings:'tnum';">${ROMAN[i]}</div><strong style="font-size:15px;">${t}</strong><p class="text-muted" style="font-size:13px;margin-top:5px;">${b}</p></div>`).join("")}
       </div>
     </section>
 
     <section id="inside" class="pad" style="max-width:1060px;margin:0 auto;padding:72px 48px 0;">
-      <div style="text-align:center;margin-bottom:32px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">What's inside every review</div><h2 style="font-size:38px;margin:8px 0 0;">More than a pros-and-cons list.<br><em style="color:var(--color-accent-700);">A verdict with receipts.</em></h2></div>
-      <div class="grid-collapse" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--color-divider);">
+      <div style="text-align:center;margin-bottom:32px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">What's inside every review</div><h2 style="font-size:38px;margin:8px 0 0;">More than a pros-and-cons list.<br><em style="color:var(--color-accent-700);">A diagnosis with receipts.</em></h2></div>
+      <div class="grid-collapse feature-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--color-divider);">
         ${[["The offer grade","One letter, four scored categories."],["What you'd actually earn","Three earnings scenarios, arithmetic shown."],["The price of leaving","Clawbacks, tail, non-compete — itemized and totaled."],["Every term vs. the market","Each clause held against real market ranges."],["Red flags with price tags","\"Cost if ignored: $20,000/year.\" Numbers get acted on."],["The email that fixes it","Ranked asks, folded into a ready-to-send email."]].map(([t,b],i) => `
           <div style="padding:24px 28px;border-bottom:1px solid var(--color-divider);${i%3<2?'border-right:1px solid var(--color-divider);':''}${i%3===0?'padding-left:0;':''}${i%3===2?'padding-right:0;':''}"><div style="font-family:var(--font-heading);font-size:20px;color:var(--color-accent);">${ROMAN[i]}</div><strong style="font-size:14.5px;">${t}</strong><p class="text-muted" style="font-size:12.5px;margin-top:4px;">${b}</p></div>`).join("")}
       </div>
