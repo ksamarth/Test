@@ -180,14 +180,21 @@ details summary::-webkit-details-marker { color: var(--color-accent); }
 <div id="app" style="min-height:100vh;display:flex;flex-direction:column;"></div>
 
 <script>
-/* Guarantee a responsive viewport as early as possible. The artifact host wraps
-   this page in its own <head>; without width=device-width, phones render at a
-   ~980px layout and zoom out, and the mobile breakpoints never fire. This runs
-   during parse (before the body is laid out) and updates any existing tag. */
+/* Guarantee a responsive viewport. The artifact host wraps this page in its own
+   <head>; without width=device-width, phones render at a ~980px layout and zoom
+   out, and the mobile breakpoints never fire. Assert it during parse AND again
+   on DOMContentLoaded/load, in case the host sets its own viewport after us. */
 (function () {
-  var m = document.querySelector('meta[name="viewport"]');
-  if (!m) { m = document.createElement("meta"); m.name = "viewport"; document.head.appendChild(m); }
-  m.setAttribute("content", "width=device-width, initial-scale=1");
+  function forceViewport() {
+    var m = document.querySelector('meta[name="viewport"]');
+    if (!m) { m = document.createElement("meta"); m.name = "viewport"; document.head.appendChild(m); }
+    if (m.getAttribute("content") !== "width=device-width, initial-scale=1") {
+      m.setAttribute("content", "width=device-width, initial-scale=1");
+    }
+  }
+  forceViewport();
+  document.addEventListener("DOMContentLoaded", forceViewport);
+  window.addEventListener("load", forceViewport);
 })();
 </script>
 
