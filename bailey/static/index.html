@@ -174,10 +174,29 @@ const ANALYZE_STEPS = [
 ];
 
 const app = document.getElementById("app");
-const state = { stage: "landing", analysis: null, filename: "", step: 0, error: "", copied: false };
+const STORE_KEY = "bailey.offers.v1";
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+function loadOffers() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; } catch (e) { return []; }
+}
+function saveOffers() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state.offers)); } catch (e) { /* quota / private mode */ }
+}
+
+/* A session library of analyzed offers, persisted client-side. */
+const state = {
+  stage: "landing",     // landing | analyzing | report | compare
+  offers: loadOffers(), // [{ id, filename, analysis }]
+  activeId: null,       // offer shown in the report view
+  filename: "",         // file being analyzed (for the analyzing stage)
+  step: 0, error: "", copied: false,
+};
 let stepTimer = null;
 
 function set(patch) { Object.assign(state, patch); render(); }
+function activeOffer() { return state.offers.find(o => o.id === state.activeId) || null; }
+function offerLabel(o) { return (o.analysis && o.analysis.extraction && o.analysis.extraction.employer_name) || o.filename || "Offer"; }
 
 /* ─────────────────────────  flow  ───────────────────────── */
 function beginAnalysis(runFetch, filename) {
@@ -189,24 +208,34 @@ function beginAnalysis(runFetch, filename) {
   promise.then(d => { resolved = d; }).catch(e => { failed = e; });
 
   stepTimer = setInterval(() => {
-    if (failed) {
-      clearInterval(stepTimer);
-      set({ stage: "landing", error: failed.message || "Something went wrong." });
-      return;
-    }
-    if (state.step < ANALYZE_STEPS.length - 1) {
-      set({ step: state.step + 1 });
-      return;
-    }
+    if (failed) { clearInterval(stepTimer); finishFail(failed); return; }
+    if (state.step < ANALYZE_STEPS.length - 1) { set({ step: state.step + 1 }); return; }
     // On the last step: wait for the network before showing the report.
-    if (resolved) {
-      clearInterval(stepTimer);
-      set({ stage: "report", analysis: resolved.analysis, filename: resolved.filename || filename });
-    } else if (failed) {
-      clearInterval(stepTimer);
-      set({ stage: "landing", error: failed.message || "Something went wrong." });
-    }
+    if (resolved) { clearInterval(stepTimer); finishOk(resolved, filename); }
+    else if (failed) { clearInterval(stepTimer); finishFail(failed); }
   }, 900);
+}
+function finishOk(resolved, filename) {
+  const offer = { id: uid(), filename: resolved.filename || filename, analysis: resolved.analysis };
+  state.offers = state.offers.concat([offer]);
+  saveOffers();
+  set({ stage: "report", activeId: offer.id, error: "" });
+}
+function finishFail(failed) {
+  set({ stage: "landing", error: failed.message || "Something went wrong." });
+}
+
+/* ─────────────────────────  library navigation  ───────────────────────── */
+function openReport(id) { set({ stage: "report", activeId: id, error: "" }); }
+function openCompare() { if (state.offers.length >= 2) set({ stage: "compare", error: "" }); }
+function newReview() { set({ stage: "landing", error: "" }); }
+function removeOffer(id) {
+  state.offers = state.offers.filter(o => o.id !== id);
+  saveOffers();
+  if (state.offers.length === 0) return set({ stage: "landing", activeId: null });
+  if (state.stage === "compare" && state.offers.length < 2) return set({ stage: "report", activeId: state.offers[0].id });
+  if (state.activeId === id) return set({ activeId: state.offers[0].id });
+  render();
 }
 
 async function post(url, opts) {
@@ -251,12 +280,47 @@ function navBar() {
   </nav>`;
 }
 
+/* Your-reviews strip, shown on the landing page once you have offers. */
+function reviewsBar() {
+  if (!state.offers.length) return "";
+  const chips = state.offers.map(o => `
+    <button class="btn btn-secondary" data-open="${o.id}" style="font-size:13px;padding:6px 14px;">${esc(offerLabel(o))} · <span style="color:var(--color-accent-700);">${esc(o.analysis.score.grade)}</span></button>`).join("");
+  const compareBtn = state.offers.length >= 2
+    ? `<button class="btn btn-primary" data-compare style="font-size:13px;padding:6px 14px;">Compare ${state.offers.length} offers</button>` : "";
+  return `
+  <div style="background:var(--color-surface);border-bottom:1px solid var(--color-divider);">
+    <div class="pad" style="max-width:1060px;margin:0 auto;padding:14px 48px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);margin-right:2px;">Your reviews</span>
+      ${chips}${compareBtn}
+    </div>
+  </div>`;
+}
+
+/* Review switcher used atop the report and compare views. */
+function switcher(current) {
+  const chips = state.offers.map(o => {
+    const on = o.id === current;
+    return `<span style="display:inline-flex;align-items:center;gap:4px;border:1px solid ${on ? 'var(--color-accent)' : 'var(--color-divider)'};border-radius:999px;padding:5px 8px 5px 14px;font-size:13px;${on ? 'color:var(--color-accent-800);background:var(--color-accent-100);' : ''}">
+      <button data-open="${o.id}" style="background:none;border:none;cursor:pointer;font:inherit;color:inherit;padding:0;">${esc(offerLabel(o))} · ${esc(o.analysis.score.grade)}</button>
+      <button data-remove="${o.id}" title="Remove review" aria-label="Remove review" style="background:none;border:none;cursor:pointer;color:var(--color-neutral-500);font-size:16px;line-height:1;padding:0 2px;">×</button>
+    </span>`;
+  }).join("");
+  const compareBtn = state.offers.length >= 2
+    ? `<button class="btn ${current === 'compare' ? 'btn-primary' : 'btn-secondary'}" data-compare style="font-size:13px;padding:6px 14px;">Compare</button>` : "";
+  return `
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:28px;flex-wrap:wrap;">
+    ${chips}
+    <button class="btn btn-secondary" data-new style="font-size:13px;padding:6px 14px;">+ New review</button>
+    ${compareBtn}
+  </div>`;
+}
+
 /* ─────────────────────────  landing  ───────────────────────── */
 function landing() {
   const err = state.error
     ? `<div style="max-width:1060px;margin:16px auto 0;padding:0 48px;"><div class="card" style="border-color:var(--color-accent);color:var(--color-accent-800);background:var(--color-accent-100);">${esc(state.error)}</div></div>`
     : "";
-  return navBar() + err + `
+  return navBar() + reviewsBar() + err + `
   <main style="flex:1;width:100%;">
     <div style="background:var(--color-accent-100);border-bottom:1px solid var(--color-accent-300);">
       <div class="pad" style="max-width:1060px;margin:0 auto;padding:11px 48px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;">
@@ -399,7 +463,8 @@ function sectionHead(i, title) {
 }
 
 function report() {
-  const a = state.analysis;
+  const offer = activeOffer();
+  const a = offer.analysis;
   const x = a.extraction;
   const s = a.score;
 
@@ -469,9 +534,9 @@ function report() {
 
   return navBar() + `
   <main class="pad" style="flex:1;width:100%;max-width:960px;margin:0 auto;padding:40px 48px 80px;">
+    ${switcher(offer.id)}
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px;flex-wrap:wrap;">
-      ${tags}<span style="flex:1;"></span>
-      <button class="btn btn-ghost" data-restart>← New review</button>
+      ${tags}
     </div>
 
     <section class="grid-collapse" style="display:grid;grid-template-columns:250px 1fr;gap:44px;padding-bottom:32px;border-bottom:1px solid var(--color-divider);">
@@ -540,10 +605,94 @@ function report() {
   </main>`;
 }
 
+/* ─────────────────────────  compare  ───────────────────────── */
+function gradeTone(overall) {
+  if (overall >= 70) return "var(--color-accent-800)";
+  if (overall >= 55) return "var(--color-accent-700)";
+  return "#9e3b2b"; // a warm brick for caution, kept within the palette's temperature
+}
+function expectedGross(a) {
+  const sc = a.financial_analysis.scenarios || [];
+  const e = sc.find(s => /expected/i.test(s.label)) || sc[Math.floor(sc.length / 2)] || sc[0];
+  return e ? money(e.estimated_annual_gross) : "—";
+}
+function highFlags(a) { return (a.red_flags || []).filter(fl => fl.severity === "high").length; }
+
+function compareRows() {
+  const c = a => a.extraction.compensation;
+  const r = a => a.extraction.restrictive_covenants;
+  const b = a => a.extraction.benefits;
+  return [
+    { label: "Expected year-one gross", get: a => `<span style="font-family:var(--font-heading);font-size:18px;font-feature-settings:'tnum';">${expectedGross(a)}</span>` },
+    { label: "Exit bill (month 12)", get: a => esc(dash(a.exit_costs && a.exit_costs.estimated_total)) },
+    { label: "High-severity flags", get: a => `<span style="font-feature-settings:'tnum';">${highFlags(a)}</span>` },
+    { label: "Compensation basis", get: a => esc(dash(c(a).compensation_basis).replace(/_/g, " ")) },
+    { label: "Daily guarantee", get: a => money(c(a).daily_guarantee) },
+    { label: "Production %", get: a => c(a).production_percentage == null ? "—" : c(a).production_percentage + "%" },
+    { label: "Guarantee duration", get: a => c(a).guarantee_duration_months == null ? "—" : c(a).guarantee_duration_months + " mo" },
+    { label: "Sign-on bonus", get: a => money(c(a).sign_on_bonus) },
+    { label: "Non-compete", get: a => (r(a).non_compete_radius_miles == null && r(a).non_compete_duration_months == null) ? "—" : `${r(a).non_compete_radius_miles ?? "?"} mi · ${r(a).non_compete_duration_months ?? "?"} mo` },
+    { label: "Tail paid by", get: a => esc(dash(b(a).tail_coverage_paid_by)) },
+    { label: "PTO", get: a => esc(dash(b(a).pto)) },
+    { label: "CE allowance", get: a => esc(dash(b(a).ce_allowance)) },
+  ];
+}
+
+function compare() {
+  const offers = state.offers;
+  const cols = offers.length;
+
+  const headers = offers.map(o => {
+    const x = o.analysis.extraction;
+    return `<th style="min-width:190px;vertical-align:top;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+        <button data-open="${o.id}" style="text-align:left;background:none;border:none;cursor:pointer;font:inherit;padding:0;color:var(--color-text);">
+          <div style="font-family:var(--font-heading);font-size:16px;letter-spacing:0;text-transform:none;">${esc(offerLabel(o))}</div>
+          <div style="font-size:11px;letter-spacing:0.02em;text-transform:none;color:var(--color-neutral-600);margin-top:2px;">${esc([x.position_title, x.location].filter(Boolean).join(" · "))}</div>
+        </button>
+        <button data-remove="${o.id}" title="Remove review" aria-label="Remove review" style="background:none;border:none;cursor:pointer;color:var(--color-neutral-500);font-size:16px;line-height:1;">×</button>
+      </div>
+    </th>`;
+  }).join("");
+
+  const gradeCells = offers.map(o => {
+    const s = o.analysis.score;
+    return `<td><div style="font-family:var(--font-heading);font-size:40px;line-height:1;color:${gradeTone(s.overall)};">${esc(s.grade)}</div>
+      <div style="font-size:12px;font-feature-settings:'tnum';color:var(--color-accent-700);letter-spacing:0.08em;">${s.overall} / 100</div></td>`;
+  }).join("");
+
+  const labelTh = txt => `<th style="text-transform:none;letter-spacing:0.02em;font-size:12px;color:var(--color-neutral-700);white-space:nowrap;">${txt}</th>`;
+  const rows = compareRows().map(row => `
+    <tr>${labelTh(esc(row.label))}${offers.map(o => `<td style="font-size:13.5px;">${row.get(o.analysis)}</td>`).join("")}</tr>`).join("");
+  const viewRow = `<tr><td></td>${offers.map(o => `<td><button class="btn btn-secondary" data-open="${o.id}" style="font-size:12px;padding:5px 12px;">View full review →</button></td>`).join("")}</tr>`;
+
+  const best = offers.slice().sort((p, q) => q.analysis.score.overall - p.analysis.score.overall)[0];
+
+  return navBar() + `
+  <main class="pad" style="flex:1;width:100%;max-width:1060px;margin:0 auto;padding:40px 48px 80px;">
+    ${switcher("compare")}
+    <div style="text-align:center;margin-bottom:8px;">
+      <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Side by side</div>
+      <h2 style="font-size:34px;margin:8px 0 0;">Compare your offers</h2>
+    </div>
+    <p class="text-muted" style="text-align:center;font-size:14px;max-width:72ch;margin:6px auto 26px;">By Bailey's grade, <em>${esc(offerLabel(best))}</em> comes out ahead — but read each full review before comparing on price alone. A higher production % on collections can pay less than a lower % on production.</p>
+    <div class="table-wrap"><table class="table" style="min-width:${Math.max(560, 190 * cols + 200)}px;">
+      <thead><tr><th style="min-width:190px;"></th>${headers}</tr></thead>
+      <tbody>
+        <tr>${labelTh("Offer grade")}${gradeCells}</tr>
+        ${rows}
+        ${viewRow}
+      </tbody>
+    </table></div>
+    <p class="text-muted" style="font-size:11.5px;max-width:88ch;margin-top:24px;">Bailey is an educational tool, not legal, financial, or tax advice. Figures are illustrative estimates drawn from each offer's stated terms.</p>
+  </main>`;
+}
+
 /* ─────────────────────────  render + events  ───────────────────────── */
 function render() {
   if (state.stage === "analyzing") app.innerHTML = analyzing();
-  else if (state.stage === "report") app.innerHTML = report();
+  else if (state.stage === "compare" && state.offers.length >= 2) app.innerHTML = compare();
+  else if (state.stage === "report" && activeOffer()) app.innerHTML = report();
   else app.innerHTML = landing();
   wire();
 }
@@ -555,14 +704,20 @@ function wire() {
     if (file) analyzeFile(file);
   });
   app.querySelectorAll("[data-sample]").forEach(b => b.addEventListener("click", analyzeSample));
-  app.querySelectorAll("[data-restart]").forEach(b => b.addEventListener("click", () => set({ stage: "landing", analysis: null, error: "" })));
-  app.querySelectorAll("[data-nav]").forEach(a => a.addEventListener("click", ev => {
+  app.querySelectorAll("[data-open]").forEach(b => b.addEventListener("click", () => openReport(b.getAttribute("data-open"))));
+  app.querySelectorAll("[data-remove]").forEach(b => b.addEventListener("click", ev => { ev.stopPropagation(); removeOffer(b.getAttribute("data-remove")); }));
+  app.querySelectorAll("[data-compare]").forEach(b => b.addEventListener("click", openCompare));
+  app.querySelectorAll("[data-new]").forEach(b => b.addEventListener("click", newReview));
+  app.querySelectorAll("[data-nav]").forEach(el => el.addEventListener("click", ev => {
     ev.preventDefault();
-    const el = document.querySelector(a.getAttribute("href"));
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+    const target = document.querySelector(el.getAttribute("href"));
+    if (target) target.scrollIntoView({ behavior: "smooth" });
   }));
   const copyBtn = app.querySelector("[data-copy]");
-  if (copyBtn && state.analysis) copyBtn.addEventListener("click", () => copyEmail(state.analysis.negotiation_email));
+  if (copyBtn) copyBtn.addEventListener("click", () => {
+    const o = activeOffer();
+    if (o) copyEmail(o.analysis.negotiation_email);
+  });
 }
 
 render();

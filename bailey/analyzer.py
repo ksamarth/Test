@@ -133,7 +133,18 @@ def analyze_offer(filename: str, data: bytes) -> OfferAnalysis:
     return response.parsed_output
 
 
+_DEMO_FILES = ["demo_analysis.json", "demo_analysis_b.json"]
+_demo_counter = 0
+
+
 def _demo_analysis() -> OfferAnalysis:
-    """Canned analysis of the bundled sample offer, for running without an API key."""
-    demo_path = Path(__file__).parent / "sample_offers" / "demo_analysis.json"
+    """Canned analysis for running without an API key.
+
+    Alternates between two contrasting sample offers so consecutive demo runs
+    produce distinct reviews — enough to exercise the side-by-side compare view.
+    """
+    global _demo_counter
+    name = _DEMO_FILES[_demo_counter % len(_DEMO_FILES)]
+    _demo_counter += 1
+    demo_path = Path(__file__).parent / "sample_offers" / name
     return OfferAnalysis.model_validate(json.loads(demo_path.read_text()))

@@ -1,0 +1,199 @@
+{
+  "extraction": {
+    "employer_name": "Cedar Park Family Dental",
+    "position_title": "Associate Dentist",
+    "profession": "general dentistry",
+    "location": "Austin, Texas",
+    "practice_type": "private_practice",
+    "employment_status": "W-2 employee",
+    "full_time": true,
+    "days_per_week": 4,
+    "compensation": {
+      "base_salary_annual": null,
+      "daily_guarantee": 700,
+      "production_percentage": 32,
+      "compensation_basis": "production",
+      "guarantee_duration_months": 12,
+      "sign_on_bonus": 10000,
+      "sign_on_bonus_clawback": "Pro-rated monthly over 24 months; the unearned portion is repayable, and it is waived if the practice terminates you without cause (Section 3.5).",
+      "relocation_assistance": null,
+      "student_loan_repayment": null,
+      "lab_fee_deduction": "Lab fees are a practice expense and are not deducted from the provider's production before the split (Section 3.2)."
+    },
+    "restrictive_covenants": {
+      "non_compete_radius_miles": 7,
+      "non_compete_duration_months": 12,
+      "non_compete_scope": "Limited to the practice's single Austin location; measured only from the primary office (Section 7.1).",
+      "non_solicit_patients_months": 12,
+      "non_solicit_staff_months": 12,
+      "liquidated_damages": "None specified; the practice may seek injunctive relief only."
+    },
+    "term_and_termination": {
+      "initial_term_months": 24,
+      "auto_renewal": true,
+      "termination_notice_days_employer": 60,
+      "termination_notice_days_provider": 60,
+      "for_cause_provisions": "For-cause triggers are defined and limited to loss of licensure, exclusion from federal programs, and uncured material breach with a 30-day cure period (Section 6.2)."
+    },
+    "benefits": {
+      "malpractice_type": "occurrence",
+      "tail_coverage_paid_by": "Not applicable — occurrence coverage needs no tail (Section 5).",
+      "health_insurance": "Employer-subsidized group health plan.",
+      "retirement": "401(k) with 3% employer match.",
+      "ce_allowance": "$2,500 per year plus 3 paid CE days.",
+      "pto": "12 days per contract year.",
+      "licensure_dues_covered": "Licensure, DEA, and one association membership covered."
+    },
+    "patient_records_ownership": "Patient records remain the property of the practice (Section 8) — standard, with a provision allowing departing providers to send a patient-notification letter.",
+    "other_notable_clauses": [
+      "Schedule is a fixed four-day week with no mandatory reassignment to other locations.",
+      "Mentorship from the owner dentist is written into the first six months (Section 9)."
+    ]
+  },
+  "score": {
+    "overall": 82,
+    "grade": "B",
+    "headline": "A genuinely strong first offer — production-based pay, occurrence malpractice, and a fair, single-office non-compete.",
+    "categories": [
+      {
+        "category": "compensation",
+        "score": 84,
+        "rationale": "32% of production with lab fees kept off your split and a full-year $700/day guarantee is an above-average new-grad package; there's no collections risk to absorb."
+      },
+      {
+        "category": "restrictive_covenants",
+        "score": 80,
+        "rationale": "A 7-mile, 12-month non-compete tied to one office, with no liquidated-damages penalty, is on the reasonable end for private practice."
+      },
+      {
+        "category": "insurance_and_benefits",
+        "score": 86,
+        "rationale": "Occurrence malpractice (no tail ever owed), a 401(k) match, 12 PTO days, and $2,500 CE with paid days are all at or above market."
+      },
+      {
+        "category": "termination_and_flexibility",
+        "score": 78,
+        "rationale": "Mutual 60-day notice and defined for-cause triggers with a cure period are fair; the main open question is the auto-renewal window."
+      }
+    ]
+  },
+  "summary": "This is a two-year associate offer from Cedar Park Family Dental, an owner-operated private practice in Austin. You'd work a fixed four-day week at 32% of your production — with lab fees paid by the practice rather than deducted from your split — plus a $700/day guarantee for a full year. It carries occurrence malpractice (so you never owe tail coverage), a pro-rated and cause-protected $10,000 sign-on, and a modest 7-mile, 12-month non-compete limited to the single office.",
+  "financial_analysis": {
+    "scenarios": [
+      {
+        "label": "Conservative",
+        "assumed_daily_production": 2500,
+        "estimated_annual_gross": 147000,
+        "how_calculated": "$2,500 production × 32% = $800/day, which beats the $700 floor; $800 × 184 working days (4-day weeks) ≈ $147,000."
+      },
+      {
+        "label": "Expected",
+        "assumed_daily_production": 3400,
+        "estimated_annual_gross": 200000,
+        "how_calculated": "$3,400 production × 32% = $1,088/day × 184 working days ≈ $200,000. Because pay is on production, there is no collections haircut."
+      },
+      {
+        "label": "Strong",
+        "assumed_daily_production": 4200,
+        "estimated_annual_gross": 247000,
+        "how_calculated": "$4,200 production × 32% = $1,344/day × 184 working days ≈ $247,000."
+      }
+    ],
+    "break_even_daily_production": 2188,
+    "break_even_explanation": "You beat the $700/day guarantee once you produce about $2,188/day. Because the guarantee lasts a full 12 months, you're protected through your entire ramp-up rather than for just the first 90 days.",
+    "effective_split_note": "Because the split is on production and lab fees are the practice's expense, your effective take-home tracks the stated 32% — there's no hidden gap between the headline rate and what you actually earn.",
+    "assumptions": [
+      "184 working days per year (a fixed 4-day week less holidays and PTO).",
+      "Pay is on production, so no collection-rate assumption is needed.",
+      "Lab fees are borne by the practice per Section 3.2 and do not reduce the split.",
+      "Typical new-grad GP production of $2,500-$4,200/day based on published dental-economics survey ranges; your local market and patient flow may differ.",
+      "All figures are pre-tax gross compensation estimates for education, not income projections or promises."
+    ]
+  },
+  "exit_costs": {
+    "scenario": "If you leave — or are let go — 12 months in",
+    "items": [
+      {
+        "item": "Sign-on bonus repayment",
+        "estimated_cost": "$5,000",
+        "basis": "Section 3.5 pro-rates the $10,000 over 24 months, so about half remains unearned at month 12 — and none is owed if the practice terminates you without cause."
+      },
+      {
+        "item": "Malpractice tail coverage",
+        "estimated_cost": "$0",
+        "basis": "Coverage is occurrence-based (Section 5), which continues to cover claims from your employment period after you leave — no tail policy is ever required."
+      },
+      {
+        "item": "Non-compete impact",
+        "estimated_cost": "Low",
+        "basis": "The 7-mile, 12-month restriction applies to one office only, leaving most of the Austin metro open to you."
+      }
+    ],
+    "estimated_total": "About $5,000",
+    "note": "The exit cost here is modest and mostly within your control — leave after the sign-on fully vests, or on a without-cause termination, and it drops to roughly zero."
+  },
+  "market_comparison": [
+    { "term": "Compensation basis", "this_offer": "32% of production, lab fees excluded", "typical_range": "Production or collections; lab fees vary", "verdict": "favorable", "note": "Production-based with lab fees off your split is the provider-friendly structure." },
+    { "term": "Malpractice", "this_offer": "Occurrence (no tail ever)", "typical_range": "Often claims-made with provider-paid tail", "verdict": "favorable", "note": "Occurrence coverage removes a common four-figure exit cost." },
+    { "term": "Non-compete", "this_offer": "7 mi / 12 mo, single office", "typical_range": "5-10 mi / 12-24 mo", "verdict": "favorable", "note": null },
+    { "term": "Guarantee duration", "this_offer": "12 months", "typical_range": "6-12 months for new grads", "verdict": "favorable", "note": "A full year covers your entire ramp." },
+    { "term": "Sign-on clawback", "this_offer": "Pro-rated, waived if fired", "typical_range": "Often full repayment, any reason", "verdict": "favorable", "note": null },
+    { "term": "PTO", "this_offer": "12 days", "typical_range": "10-15 days", "verdict": "typical", "note": null },
+    { "term": "CE allowance", "this_offer": "$2,500 + 3 paid days", "typical_range": "$1,500-$3,000", "verdict": "typical", "note": null },
+    { "term": "Production split", "this_offer": "32%", "typical_range": "28-35% for associates", "verdict": "typical", "note": null },
+    { "term": "Daily guarantee", "this_offer": "$700/day", "typical_range": "$600-$800/day for new-grad GPs", "verdict": "typical", "note": null },
+    { "term": "Notice periods", "this_offer": "Mutual 60 days", "typical_range": "Mutual 60-90 days", "verdict": "typical", "note": null },
+    { "term": "Auto-renewal", "this_offer": "Auto-renews (window not stated)", "typical_range": "Auto-renew with a 60-90 day opt-out", "verdict": "missing", "note": "Confirm the non-renewal notice window." }
+  ],
+  "strengths": [
+    "Pay is on production with lab fees excluded — your effective rate matches the headline 32%.",
+    "Occurrence malpractice means you never owe tail coverage when you leave.",
+    "The non-compete is limited to one office with no liquidated-damages penalty.",
+    "A full 12-month guarantee protects your whole ramp-up period.",
+    "401(k) match, 12 PTO days, and a defined for-cause clause with a cure period."
+  ],
+  "red_flags": [
+    {
+      "title": "Auto-renewal window isn't specified",
+      "severity": "medium",
+      "clause_reference": "Section 6.1",
+      "explanation": "The contract auto-renews for successive terms, but the language doesn't state how many days before renewal you must give notice to exit. Without a defined window, you could be locked into another term by missing an unstated deadline.",
+      "cost_if_ignored": "Potentially a full extra year in the agreement if the opt-out window is missed.",
+      "what_to_do": "Ask for an explicit non-renewal window — 60 to 90 days before the term ends is standard — written into Section 6.1."
+    },
+    {
+      "title": "Guarantee-to-production transition isn't spelled out",
+      "severity": "low",
+      "clause_reference": "Section 3.1",
+      "explanation": "The $700/day guarantee runs 12 months, but the contract doesn't say whether any guarantee 'deficit' (days you were paid the floor above what you produced) can be recovered by the practice later. Most fair contracts make the guarantee non-recoverable.",
+      "cost_if_ignored": null,
+      "what_to_do": "Confirm in writing that the daily guarantee is a true floor and is not recoverable against future production."
+    }
+  ],
+  "negotiation_playbook": [
+    {
+      "priority": 1,
+      "topic": "Define the non-renewal window",
+      "rationale": "This is the one genuinely open term; pinning it down protects your ability to leave cleanly at the end of the term.",
+      "estimated_value": "Protects against an unwanted extra year",
+      "suggested_ask": "Could we add a 90-day non-renewal notice window to Section 6.1 so we both know the timeline to opt out?"
+    },
+    {
+      "priority": 2,
+      "topic": "Non-recoverable guarantee",
+      "rationale": "A guarantee that can be clawed back against later production isn't really a floor; confirming it's non-recoverable keeps the protection real.",
+      "estimated_value": "$2,000-$6,000 in ramp-up protection",
+      "suggested_ask": "Can we confirm in writing that the $700/day guarantee is a non-recoverable floor?"
+    },
+    {
+      "priority": 3,
+      "topic": "CE allowance",
+      "rationale": "Already solid, but bumping CE is a low-cost win that's easy for the owner to grant.",
+      "estimated_value": "$500-$1,000 per year",
+      "suggested_ask": "Would you consider $3,000 in annual CE given the specialty courses I'm hoping to take?"
+    }
+  ],
+  "negotiation_email": "Subject: Cedar Park associate agreement — two quick clarifications\n\nHi Dr. [Name],\n\nThank you so much for the offer — this is exactly the kind of practice I hoped to start my career in, and I appreciated how straightforward the agreement is. I have just two small items I'd love to confirm before signing:\n\n1. Non-renewal window. Section 6.1 auto-renews the term, but I didn't see how far in advance either of us needs to give notice to opt out. Could we add a 90-day non-renewal window so the timeline is clear for both sides?\n\n2. Guarantee. Could we confirm in writing that the $700/day guarantee is a non-recoverable floor rather than an advance against future production?\n\nIf it's easy to do, I'd also welcome a small bump in the CE allowance to $3,000, but that's secondary — the two items above are all I really need. I'm excited to get started.\n\nBest,\n[Name]",
+  "value_at_stake": "This is already a strong offer; nailing down the two open items mainly protects the downside — but it keeps a clean exit and a real guarantee, each worth a few thousand dollars if things don't go as planned.",
+  "overall_read": "Cedar Park is a well-structured private-practice offer that gets the fundamentals right: production-based pay with lab fees excluded, occurrence malpractice, a fair single-office non-compete, and a cause-protected, pro-rated sign-on. The only real gap is the unspecified non-renewal window; close that and confirm the guarantee is non-recoverable, and there's little left to worry about here."
+}

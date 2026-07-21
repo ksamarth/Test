@@ -21,12 +21,20 @@ the review a sharp mentor would give you:
   estimate and suggested phrasing, plus a complete ready-to-send negotiation
   email with a copy button
 
-Upload more than one offer and a side-by-side comparison view appears, led by
-grade, expected year-one gross, and cost-of-exit.
+The frontend is the "Classical" design direction: a marketing landing page, an
+animated analyzing stage, and the full scored report. Reviews accumulate into a
+persistent, client-side **library** (kept in `localStorage`), so you can switch
+between offers and — with two or more — open a **side-by-side compare view** led
+by grade, expected year-one gross, cost-of-exit, high-severity flag count, and
+the key contract terms.
 
 The name: Harvey (the legal AI) is named for Harvey Specter from the lawyer
 show. Bailey is named for Dr. Miranda Bailey — the mentor from the doctor show
 who looks out for new residents.
+
+Demo mode ships two contrasting sample contracts (a weak DSO offer and a strong
+private-practice offer) and alternates between them on each run, so you can try
+the compare view without an API key.
 
 > Bailey is an educational tool. It does not provide legal, financial, or tax
 > advice and is not a substitute for review by a licensed attorney or CPA.
