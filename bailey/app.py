@@ -1,10 +1,12 @@
 """Bailey — upload a healthcare job offer, get the review your mentor would give you."""
 
+import base64
 import os
+import secrets
 from pathlib import Path
 
-from fastapi import FastAPI, File, HTTPException, UploadFile
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi import FastAPI, File, HTTPException, Request, UploadFile
+from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from analyzer import analyze_offer
@@ -12,11 +14,35 @@ from analyzer import analyze_offer
 MAX_UPLOAD_BYTES = 25 * 1024 * 1024
 ALLOWED_SUFFIXES = {".pdf", ".docx", ".txt"}
 
+# Optional shared-access gate. When BAILEY_PASSWORD is set, every route except the
+# health check requires HTTP Basic auth (any username + this password). Use it when
+# hosting a public URL so a leaked link can't quietly spend your Anthropic API key.
+ACCESS_PASSWORD = os.environ.get("BAILEY_PASSWORD", "")
+
 app = FastAPI(title="Bailey")
 
 STATIC_DIR = Path(__file__).parent / "static"
 SAMPLE_OFFER = Path(__file__).parent / "sample_offers" / "sample_dso_offer.txt"
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+
+@app.middleware("http")
+async def _require_password(request: Request, call_next):
+    if ACCESS_PASSWORD and request.url.path != "/api/health":
+        supplied = ""
+        header = request.headers.get("authorization", "")
+        if header.startswith("Basic "):
+            try:
+                supplied = base64.b64decode(header[6:]).decode("utf-8").partition(":")[2]
+            except Exception:
+                supplied = ""
+        if not secrets.compare_digest(supplied, ACCESS_PASSWORD):
+            return Response(
+                "Authentication required.",
+                status_code=401,
+                headers={"WWW-Authenticate": 'Basic realm="Bailey"'},
+            )
+    return await call_next(request)
 
 
 def _demo_mode() -> bool:

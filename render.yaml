@@ -1,0 +1,31 @@
+# Render Blueprint for Bailey.
+#
+# Deploy: push this repo to GitHub, then in the Render dashboard choose
+# New ▸ Blueprint and pick this repository. Render reads this file, provisions
+# the service, and prompts you to fill in the secret env vars below.
+#
+# See bailey/DEPLOY.md for click-by-click instructions.
+services:
+  - type: web
+    name: bailey
+    runtime: python
+    plan: free
+    rootDir: bailey
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      # Your Anthropic API key. Leave blank and set BAILEY_DEMO=1 to run the
+      # free, no-cost demo (two canned sample offers) instead.
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      # Optional shared password. Set it so a leaked link can't spend your key;
+      # friends enter any username + this password once in the browser prompt.
+      - key: BAILEY_PASSWORD
+        sync: false
+      # Set to 1 to run in demo mode (no API key, no cost). Leave blank for real
+      # analysis with the key above.
+      - key: BAILEY_DEMO
+        sync: false
