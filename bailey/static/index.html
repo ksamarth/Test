@@ -3,227 +3,154 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bailey — the contract review your mentor would give you</title>
+<title>Bailey — before you sign, ask Bailey.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #f7f6f3;
-    --card: #ffffff;
-    --ink: #23211c;
-    --muted: #6d685e;
-    --line: #e4e1d8;
-    --accent: #1f6f5c;
-    --accent-deep: #14483c;
-    --accent-soft: #e3f0ec;
-    --high: #b3372c;
-    --high-soft: #f9e9e7;
-    --medium: #a06a1b;
-    --medium-soft: #f7efdf;
-    --low: #4a6fa5;
-    --low-soft: #e8eef7;
-    --gold: #8a6d1f;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; background: var(--bg); color: var(--ink);
-    font: 16px/1.55 Georgia, 'Times New Roman', serif;
-  }
-  header { padding: 2.2rem 1.5rem 1rem; max-width: 920px; margin: 0 auto; }
-  .brand { display: flex; align-items: center; gap: .8rem; }
-  .brand svg { flex: none; }
-  .brand h1 { font-size: 2rem; margin: 0; letter-spacing: -.01em; }
-  .brand .tag { margin: .1rem 0 0; color: var(--muted); font-style: italic; }
-  header .pitch { margin: 1rem 0 0; color: var(--muted); max-width: 64ch; }
-  .disclaimer {
-    max-width: 920px; margin: .8rem auto 0; padding: .5rem 1.5rem;
-    font-size: .85rem; color: var(--muted);
-  }
-  main { max-width: 920px; margin: 0 auto; padding: 0 1.5rem 4rem; }
-  .drop {
-    border: 2px dashed var(--line); border-radius: 12px; background: var(--card);
-    padding: 2rem 1.5rem; text-align: center; cursor: pointer; transition: border-color .15s;
-    margin-top: 1rem;
-  }
-  .drop:hover, .drop.over { border-color: var(--accent); }
-  .drop strong { color: var(--accent); }
-  .drop small { display: block; margin-top: .4rem; color: var(--muted); }
-  #file-input { display: none; }
-  .tabs { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1.6rem 0 0; }
-  .tab {
-    border: 1px solid var(--line); background: var(--card); border-radius: 999px;
-    padding: .35rem .95rem; cursor: pointer; font: inherit; font-size: .9rem;
-  }
-  .tab.active { background: var(--ink); color: var(--card); border-color: var(--ink); }
-  .status { margin-top: 1.4rem; color: var(--muted); }
-  .status.error { color: var(--high); }
-  .spinner {
-    display: inline-block; width: 14px; height: 14px; margin-right: .5rem;
-    border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%;
-    animation: spin .8s linear infinite; vertical-align: -2px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  section.card {
-    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
-    padding: 1.4rem 1.6rem; margin-top: 1.4rem;
-  }
-  section.card h2 {
-    margin: 0 0 .8rem; font-size: 1.02rem; text-transform: uppercase;
-    letter-spacing: .08em; color: var(--muted); font-weight: 600;
-  }
+/* ══ Classical — design-system tokens ══ */
+:root {
+  --color-bg: #f3f2f2;
+  --color-surface: #eae9e9;
+  --color-text: #201f1d;
+  --color-accent: #b68235;
+  --color-divider: color-mix(in srgb, #201f1d 16%, transparent);
 
-  /* Score hero */
-  .hero { display: flex; gap: 1.8rem; align-items: center; flex-wrap: wrap; }
-  .grade-ring {
-    flex: none; width: 130px; height: 130px; border-radius: 50%;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    color: var(--card);
-  }
-  .grade-ring b { font-size: 2.6rem; line-height: 1; }
-  .grade-ring span { font-size: .78rem; opacity: .9; margin-top: .2rem; }
-  .hero-body { flex: 1; min-width: 260px; }
-  .hero-body .headline { font-size: 1.25rem; margin: 0 0 .9rem; line-height: 1.35; }
-  .subscore { margin: .5rem 0; }
-  .subscore .row { display: flex; justify-content: space-between; font-size: .88rem; }
-  .subscore .row span:last-child { color: var(--muted); }
-  .bar { height: 7px; background: var(--line); border-radius: 4px; overflow: hidden; margin-top: .25rem; }
-  .bar i { display: block; height: 100%; border-radius: 4px; }
-  .value-callout {
-    margin-top: 1.2rem; padding: .85rem 1.1rem; border-radius: 8px;
-    background: var(--accent-soft); border-left: 4px solid var(--accent);
-    font-size: 1rem;
-  }
+  --color-neutral-100: #f8f4f4;
+  --color-neutral-200: #eae7e7;
+  --color-neutral-300: #d7d3d3;
+  --color-neutral-400: #bab6b6;
+  --color-neutral-500: #9b9797;
+  --color-neutral-600: #7d7979;
+  --color-neutral-700: #605d5d;
+  --color-neutral-800: #444141;
+  --color-neutral-900: #2d2b2b;
 
-  /* Money */
-  table.terms { width: 100%; border-collapse: collapse; font-size: .92rem; }
-  table.terms td, table.terms th { padding: .45rem .6rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
-  table.terms th { color: var(--muted); font-weight: 600; }
-  table.terms tr.head th { white-space: nowrap; }
-  .table-wrap { overflow-x: auto; }
-  .money-num { font-size: 1.15rem; font-weight: 700; white-space: nowrap; }
-  .calc { color: var(--muted); font-size: .85rem; }
-  .breakeven {
-    margin-top: 1rem; padding: .8rem 1rem; background: var(--medium-soft);
-    border-left: 4px solid var(--medium); border-radius: 6px; font-size: .95rem;
-  }
-  details.assumptions { margin-top: .9rem; font-size: .88rem; color: var(--muted); }
-  details.assumptions summary { cursor: pointer; }
-  details.assumptions ul { margin: .5rem 0 0; padding-left: 1.2rem; }
+  --color-accent-100: #fff3e4;
+  --color-accent-200: #ffe3bf;
+  --color-accent-300: #facb8d;
+  --color-accent-400: #e1ad66;
+  --color-accent-500: #c28d41;
+  --color-accent-600: #a06f24;
+  --color-accent-700: #7d5411;
+  --color-accent-800: #5a3b0a;
+  --color-accent-900: #3a270d;
 
-  /* Exit costs */
-  .exit-item { display: flex; justify-content: space-between; gap: 1rem; padding: .6rem 0; border-bottom: 1px solid var(--line); }
-  .exit-item .what b { display: block; }
-  .exit-item .what span { font-size: .88rem; color: var(--muted); }
-  .exit-item .cost { white-space: nowrap; font-weight: 700; }
-  .exit-total { display: flex; justify-content: space-between; padding: .8rem 0 0; font-size: 1.05rem; }
-  .exit-total b:last-child { color: var(--high); }
+  --color-accent-2-100: #fff3e4;
+  --color-accent-2-800: #573d14;
 
-  /* Market comparison */
-  .chip { display: inline-block; padding: .1rem .55rem; border-radius: 999px; font-size: .74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
-  .chip.favorable { background: var(--accent-soft); color: var(--accent-deep); }
-  .chip.typical { background: var(--line); color: var(--muted); }
-  .chip.unfavorable { background: var(--high-soft); color: var(--high); }
-  .chip.missing { background: var(--medium-soft); color: var(--medium); }
+  /* Page-level overrides for the Classical direction: Newsreader display serif,
+     Lora body, pill controls, softly rounded cards. */
+  --font-heading: 'Newsreader', Georgia, serif;
+  --font-body: 'Lora', Georgia, serif;
+  --font-heading-weight: 500;
 
-  /* Flags */
-  .flag { border-left: 4px solid; border-radius: 6px; padding: .8rem 1rem; margin: .8rem 0; }
-  .flag.high { border-color: var(--high); background: var(--high-soft); }
-  .flag.medium { border-color: var(--medium); background: var(--medium-soft); }
-  .flag.low { border-color: var(--low); background: var(--low-soft); }
-  .flag .head { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; }
-  .flag .head b { font-size: 1rem; }
-  .badge { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; }
-  .flag.high .badge { color: var(--high); }
-  .flag.medium .badge { color: var(--medium); }
-  .flag.low .badge { color: var(--low); }
-  .flag p { margin: .45rem 0 0; font-size: .95rem; }
-  .flag .cost-tag { font-weight: 700; color: var(--high); font-size: .92rem; }
-  .flag .todo { font-size: .9rem; }
-  .flag .todo::before { content: "→ "; color: var(--accent); font-weight: 700; }
-  .clause { font-size: .8rem; color: var(--muted); font-style: italic; }
-  ul.plain { padding-left: 1.2rem; margin: 0; }
-  ul.plain li { margin: .45rem 0; }
+  --radius-sm: 2px;
+  --radius-md: 14px;
+  --radius-lg: 7px;
 
-  /* Playbook */
-  .nego { margin: 1rem 0; padding-bottom: 1rem; border-bottom: 1px solid var(--line); }
-  .nego:last-of-type { border-bottom: none; }
-  .nego .top { display: flex; gap: .7rem; align-items: baseline; flex-wrap: wrap; }
-  .nego .prio {
-    flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--ink);
-    color: var(--card); display: inline-flex; align-items: center; justify-content: center;
-    font-size: .85rem; font-weight: 700; align-self: center;
-  }
-  .nego b { font-size: 1.02rem; }
-  .nego .worth { color: var(--gold); font-weight: 700; font-size: .88rem; }
-  .nego .why { color: var(--muted); font-size: .92rem; margin: .3rem 0 0; }
-  .nego .ask { margin-top: .45rem; padding: .55rem .8rem; background: var(--accent-soft); border-radius: 6px; font-size: .92rem; }
-  .email-box {
-    margin-top: 1.2rem; border: 1px solid var(--line); border-radius: 8px;
-    background: #fbfaf7;
-  }
-  .email-box .email-head {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: .6rem 1rem; border-bottom: 1px solid var(--line);
-    font-size: .85rem; color: var(--muted);
-  }
-  .email-box button {
-    font: inherit; font-size: .82rem; border: 1px solid var(--accent); color: var(--accent);
-    background: none; border-radius: 6px; padding: .25rem .7rem; cursor: pointer;
-  }
-  .email-box button:hover { background: var(--accent-soft); }
-  .email-box pre {
-    margin: 0; padding: 1rem; white-space: pre-wrap; font: .9rem/1.5 Georgia, serif;
-  }
-  .overall { font-size: 1.02rem; }
-  .compare-note { color: var(--muted); font-size: .9rem; margin-top: .5rem; }
-  footer { max-width: 920px; margin: 0 auto; padding: 0 1.5rem 2.5rem; color: var(--muted); font-size: .82rem; }
+  --shadow-sm: 0 1px 2px color-mix(in srgb, #2d2b2b 14%, transparent);
+  --shadow-md: 0 3px 10px color-mix(in srgb, #2d2b2b 16%, transparent);
+  --shadow-lg: 0 12px 32px color-mix(in srgb, #2d2b2b 22%, transparent);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--color-bg); color: var(--color-text);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.55; font-weight: 400;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  line-height: 1.12; letter-spacing: -0.015em; margin: 0 0 9px;
+}
+h1 { font-weight: 400; }
+p { margin: 0 0 14px; }
+em { font-style: italic; }
+a { color: var(--color-accent); text-underline-offset: 3px; }
+a:hover { color: var(--color-accent-700); }
+img { display: block; max-width: 100%; }
+.text-muted { color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+::selection { background: color-mix(in srgb, var(--color-accent) 30%, transparent); }
+
+/* — buttons (pill) — */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  cursor: pointer; text-decoration: none;
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 14px; line-height: 1.2; color: var(--color-text);
+  background: transparent; border: 1px solid transparent;
+  padding: 9px 17px; border-radius: 999px;
+}
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-primary { color: var(--color-accent); border-color: var(--color-accent); }
+.btn-primary:hover { background: color-mix(in srgb, var(--color-accent) 12%, transparent); }
+.btn-primary:active { background: color-mix(in srgb, var(--color-accent) 22%, transparent); }
+.btn-secondary { border-color: var(--color-divider); }
+.btn-secondary:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+.btn-ghost { color: var(--color-accent); padding-inline: 4px; }
+.btn-ghost:hover { background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
+.btn-block { width: 100%; }
+
+/* — cards — */
+.card {
+  display: flex; flex-direction: column; gap: 9px;
+  padding: 14px; border-radius: 22px; background: transparent;
+  border: 1px solid var(--color-divider);
+}
+.card-kicker { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent); }
+.elev-md { box-shadow: var(--shadow-md); }
+
+/* — tags (pill) — */
+.tag {
+  display: inline-flex; align-items: center; font-size: 11px;
+  letter-spacing: 0.02em; padding: 3px 10px; border-radius: 999px;
+}
+.tag-accent { background: var(--color-accent-100); color: var(--color-accent-800); }
+.tag-accent-2 { background: var(--color-accent-2-100); color: var(--color-accent-2-800); }
+.tag-neutral { background: var(--color-neutral-100); color: var(--color-neutral-800); }
+.tag-outline { border: 1px solid var(--color-accent); color: var(--color-accent); }
+
+/* — nav — */
+.nav {
+  display: flex; align-items: center; justify-content: space-between; gap: 18px;
+  border-bottom: 1px solid var(--color-divider); padding: 18px 48px;
+}
+.nav a { color: var(--color-text); text-decoration: none; font-size: 13px; }
+.nav a:hover { color: var(--color-accent-700); }
+
+/* — tables — */
+.table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.table th {
+  text-align: left; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  padding: 9px; border-bottom: 1px solid var(--color-divider);
+}
+.table td { padding: 9px; border-bottom: 1px solid var(--color-divider); vertical-align: top; }
+
+details summary::-webkit-details-marker { color: var(--color-accent); }
+.table-wrap { overflow-x: auto; }
+
+@media (max-width: 820px) {
+  .nav { padding: 16px 22px; }
+  .nav-links { display: none; }
+  .pad { padding-left: 22px !important; padding-right: 22px !important; }
+  .grid-collapse { grid-template-columns: 1fr !important; }
+  h1.hero-title { font-size: 40px !important; }
+}
 </style>
 </head>
 <body>
-<header>
-  <div class="brand">
-    <svg width="52" height="52" viewBox="0 0 52 52" aria-label="Bailey logo">
-      <!-- shield -->
-      <path d="M26 3 L46 10 V24 C46 37 37.5 45 26 49 C14.5 45 6 37 6 24 V10 Z"
-            fill="#1f6f5c"/>
-      <path d="M26 7 L42 12.7 V24 C42 34.6 35.2 41.4 26 45 C16.8 41.4 10 34.6 10 24 V12.7 Z"
-            fill="#f7f6f3"/>
-      <!-- check that curls into a stethoscope -->
-      <path d="M16 25 L23 32 L36 17" fill="none" stroke="#1f6f5c" stroke-width="4.2"
-            stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M36 17 C40 21 39 27 34.5 29.5" fill="none" stroke="#1f6f5c" stroke-width="2.6"
-            stroke-linecap="round"/>
-      <circle cx="33" cy="31.5" r="3" fill="none" stroke="#1f6f5c" stroke-width="2.2"/>
-    </svg>
-    <div>
-      <h1>Bailey</h1>
-      <p class="tag">Before you sign, ask Bailey.</p>
-    </div>
-  </div>
-  <p class="pitch">The contract review your mentor would give you: a grade for your offer, the money modeled out, the cost of leaving priced, every term benchmarked against market — and the negotiation email already written.</p>
-</header>
-<div class="disclaimer">
-  Bailey is an educational tool. It does not provide legal, financial, or tax advice, and it is not a substitute for review by a licensed attorney or CPA. Earnings figures are illustrative estimates built on stated assumptions, not income promises. Have any contract reviewed by a professional before you sign.
-</div>
-<main>
-  <div class="drop" id="drop">
-    <strong>Upload an offer</strong> — drag a file here or click to browse
-    <small>PDF, DOCX, or TXT · analyzed privately · nothing is stored server-side in this prototype</small>
-  </div>
-  <input type="file" id="file-input" accept=".pdf,.docx,.txt" multiple>
-  <div class="tabs" id="tabs"></div>
-  <div class="status" id="status"></div>
-  <div id="view"></div>
-</main>
-<footer>
-  Built as a prototype. Regional benchmark data from real offers is a planned feature; current ranges reflect published survey data and common contract patterns.
-</footer>
-<script>
-const offers = [];          // {filename, analysis}
-let active = -1;            // index into offers, or -2 for compare view
+<div id="app" style="min-height:100vh;display:flex;flex-direction:column;"></div>
 
-const $ = (id) => document.getElementById(id);
+<script>
+"use strict";
+
+/* ─────────────────────────  helpers  ───────────────────────── */
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const money = v => v == null ? "—" : "$" + Number(v).toLocaleString();
-const dash = v => (v === null || v === undefined || v === "" ? "—" : v);
+const money = (v) => (v == null ? "—" : "$" + Number(v).toLocaleString());
+const dash = (v) => (v === null || v === undefined || v === "" ? "—" : v);
 
 const CATEGORY_LABELS = {
   compensation: "Compensation",
@@ -231,264 +158,414 @@ const CATEGORY_LABELS = {
   insurance_and_benefits: "Insurance & benefits",
   termination_and_flexibility: "Termination & flexibility",
 };
+const VERDICT = {
+  favorable:   { cls: "tag tag-accent-2", lbl: "Above market" },
+  typical:     { cls: "tag tag-neutral",  lbl: "Market" },
+  unfavorable: { cls: "tag tag-accent",   lbl: "Below market" },
+  missing:     { cls: "tag tag-outline",  lbl: "Missing" },
+};
+const ROMAN = ["i.", "ii.", "iii.", "iv.", "v.", "vi.", "vii.", "viii."];
+const ANALYZE_STEPS = [
+  "Reading every clause in the contract",
+  "Benchmarking each term against the market",
+  "Modeling your first-year earnings",
+  "Totaling the cost of leaving",
+  "Writing your negotiation email",
+];
 
-function gradeColor(score) {
-  if (score >= 75) return "#1f6f5c";
-  if (score >= 55) return "#a06a1b";
-  return "#b3372c";
+const app = document.getElementById("app");
+const state = { stage: "landing", analysis: null, filename: "", step: 0, error: "", copied: false };
+let stepTimer = null;
+
+function set(patch) { Object.assign(state, patch); render(); }
+
+/* ─────────────────────────  flow  ───────────────────────── */
+function beginAnalysis(runFetch, filename) {
+  clearInterval(stepTimer);
+  set({ stage: "analyzing", step: 0, filename, error: "" });
+
+  const promise = runFetch();
+  let resolved = null, failed = null;
+  promise.then(d => { resolved = d; }).catch(e => { failed = e; });
+
+  stepTimer = setInterval(() => {
+    if (failed) {
+      clearInterval(stepTimer);
+      set({ stage: "landing", error: failed.message || "Something went wrong." });
+      return;
+    }
+    if (state.step < ANALYZE_STEPS.length - 1) {
+      set({ step: state.step + 1 });
+      return;
+    }
+    // On the last step: wait for the network before showing the report.
+    if (resolved) {
+      clearInterval(stepTimer);
+      set({ stage: "report", analysis: resolved.analysis, filename: resolved.filename || filename });
+    } else if (failed) {
+      clearInterval(stepTimer);
+      set({ stage: "landing", error: failed.message || "Something went wrong." });
+    }
+  }, 900);
 }
 
-$("drop").addEventListener("click", () => $("file-input").click());
-$("drop").addEventListener("dragover", e => { e.preventDefault(); $("drop").classList.add("over"); });
-$("drop").addEventListener("dragleave", () => $("drop").classList.remove("over"));
-$("drop").addEventListener("drop", e => {
-  e.preventDefault(); $("drop").classList.remove("over");
-  uploadAll([...e.dataTransfer.files]);
-});
-$("file-input").addEventListener("change", e => uploadAll([...e.target.files]));
-
-async function uploadAll(files) {
-  for (const f of files) await upload(f);
+async function post(url, opts) {
+  const res = await fetch(url, opts);
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.detail || res.statusText);
+  return data;
 }
 
-async function upload(file) {
-  $("status").className = "status";
-  $("status").innerHTML = `<span class="spinner"></span>Reviewing <b>${esc(file.name)}</b>… a full review takes a minute or two.`;
-  const body = new FormData();
-  body.append("file", file);
-  try {
-    const res = await fetch("/api/analyze", { method: "POST", body });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.detail || res.statusText);
-    offers.push(data);
-    active = offers.length - 1;
-    $("status").textContent = "";
-    render();
-  } catch (err) {
-    $("status").className = "status error";
-    $("status").textContent = "Could not review " + file.name + ": " + err.message;
-  }
+function analyzeFile(file) {
+  beginAnalysis(() => {
+    const body = new FormData();
+    body.append("file", file);
+    return post("/api/analyze", { method: "POST", body });
+  }, file.name);
 }
 
-function render() {
-  const tabs = $("tabs");
-  tabs.innerHTML = "";
-  offers.forEach((o, i) => {
-    const b = document.createElement("button");
-    b.className = "tab" + (active === i ? " active" : "");
-    b.textContent = o.analysis.extraction.employer_name || o.filename;
-    b.onclick = () => { active = i; render(); };
-    tabs.appendChild(b);
-  });
-  if (offers.length >= 2) {
-    const b = document.createElement("button");
-    b.className = "tab" + (active === -2 ? " active" : "");
-    b.textContent = "Compare offers";
-    b.onclick = () => { active = -2; render(); };
-    tabs.appendChild(b);
-  }
-  $("view").innerHTML = active === -2 ? renderCompare() : (active >= 0 ? renderOffer(offers[active]) : "");
-  const copyBtn = document.getElementById("copy-email");
-  if (copyBtn) copyBtn.onclick = () => {
-    navigator.clipboard.writeText(offers[active].analysis.negotiation_email);
-    copyBtn.textContent = "Copied ✓";
-    setTimeout(() => (copyBtn.textContent = "Copy email"), 1600);
-  };
+function analyzeSample() {
+  beginAnalysis(() => post("/api/analyze-sample", { method: "POST" }), "Sample offer");
 }
 
-function renderOffer({ analysis: a }) {
-  return renderScore(a) + renderSummary(a) + renderMoney(a) + renderExit(a)
-    + renderMarket(a) + renderStrengths(a) + renderFlags(a) + renderPlaybook(a)
-    + renderBottomLine(a) + renderTerms(a);
+function copyEmail(text) {
+  navigator.clipboard.writeText(text);
+  state.copied = true; render();
+  setTimeout(() => { state.copied = false; render(); }, 1600);
 }
 
-function renderScore(a) {
-  const s = a.score;
-  const ring = gradeColor(s.overall);
-  const subs = s.categories.map(c => `
-    <div class="subscore">
-      <div class="row"><span>${esc(CATEGORY_LABELS[c.category] || c.category)}</span><span>${c.score}/100</span></div>
-      <div class="bar"><i style="width:${Math.max(3, Math.min(100, c.score))}%; background:${gradeColor(c.score)}"></i></div>
-    </div>`).join("");
+/* ─────────────────────────  chrome  ───────────────────────── */
+function navBar() {
   return `
-    <section class="card">
-      <div class="hero">
-        <div class="grade-ring" style="background:${ring}">
-          <b>${esc(s.grade)}</b><span>${s.overall}/100</span>
+  <nav class="nav">
+    <div class="nav-brand" style="display:flex;align-items:baseline;gap:16px;">
+      <span style="font-family:var(--font-heading);font-size:24px;letter-spacing:0.02em;">Bailey</span>
+      <span style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">For clinicians, by clinicians</span>
+    </div>
+    <div class="nav-links" style="display:flex;align-items:center;gap:26px;">
+      <a href="#how" data-nav>How it works</a>
+      <a href="#inside" data-nav>What's inside</a>
+      <a href="#pricing" data-nav>Pricing</a>
+      <button class="btn btn-primary" data-sample>Review my offer</button>
+    </div>
+  </nav>`;
+}
+
+/* ─────────────────────────  landing  ───────────────────────── */
+function landing() {
+  const err = state.error
+    ? `<div style="max-width:1060px;margin:16px auto 0;padding:0 48px;"><div class="card" style="border-color:var(--color-accent);color:var(--color-accent-800);background:var(--color-accent-100);">${esc(state.error)}</div></div>`
+    : "";
+  return navBar() + err + `
+  <main style="flex:1;width:100%;">
+    <div style="background:var(--color-accent-100);border-bottom:1px solid var(--color-accent-300);">
+      <div class="pad" style="max-width:1060px;margin:0 auto;padding:11px 48px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;">
+        <span style="font-size:13px;color:var(--color-accent-900);letter-spacing:0.02em;"><strong style="font-family:var(--font-heading);font-style:italic;font-size:15px;">$50 for a single review</strong> — students, click here for 25% off.</span>
+        <button class="btn btn-primary" style="padding:7px 18px;font-size:13px;" data-sample>Claim 25% off</button>
+      </div>
+    </div>
+
+    <section class="pad" style="max-width:1060px;margin:0 auto;padding:76px 48px 56px;text-align:center;">
+      <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:20px;">Offer analysis for healthcare professionals</div>
+      <h1 class="hero-title" style="font-size:58px;line-height:1.12;margin-bottom:8px;">Before you sign,<br><em style="color:var(--color-accent-700);">ask Bailey.</em></h1>
+      <div style="width:64px;height:1px;background:var(--color-accent);margin:24px auto;"></div>
+      <p style="font-size:17px;max-width:60ch;margin:0 auto;">Your first contract is a five-figure decision. Bailey reads it like a CPA, a lawyer, and a mentor — and hands you the grade, the math, and the email that fixes it.</p>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:32px;flex-wrap:wrap;">
+        <label class="btn btn-primary" style="cursor:pointer;font-size:15px;padding:12px 28px;">Upload an offer<input type="file" accept=".pdf,.docx,.txt" data-file style="display:none;"></label>
+        <button class="btn btn-secondary" style="font-size:15px;padding:12px 28px;" data-sample>Try the sample offer</button>
+      </div>
+      <p class="text-muted" style="font-size:12px;margin-top:14px;">PDF, DOCX or TXT · $50 · students 25% off</p>
+    </section>
+
+    <section class="pad" style="max-width:1060px;margin:0 auto;padding:0 48px 64px;">
+      <div class="card grid-collapse" style="padding:32px 36px;display:grid;grid-template-columns:220px 1fr;gap:40px;align-items:center;">
+        <div style="text-align:center;border-right:1px solid var(--color-divider);padding-right:36px;">
+          <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:10px;">Sample verdict</div>
+          <div style="width:150px;height:150px;margin:0 auto;border-radius:50%;border:1.5px solid var(--color-accent);background:var(--color-accent-100);display:flex;flex-direction:column;align-items:center;justify-content:center;">
+            <span style="font-family:var(--font-heading);font-size:56px;line-height:1;">C−</span>
+            <span style="font-size:12px;font-feature-settings:'tnum';color:var(--color-accent-700);letter-spacing:0.1em;">46 / 100</span>
+          </div>
         </div>
-        <div class="hero-body">
-          <p class="headline">${esc(s.headline)}</p>
-          ${subs}
+        <div>
+          <p style="font-family:var(--font-heading);font-style:italic;font-size:21px;line-height:1.3;margin:0 0 18px;">"Market-rate headline pay wrapped around fine print that could quietly cost you $20,000 on the way out."</p>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            ${[["Compensation",52],["Restrictive covenants",25],["Insurance & benefits",38],["Termination & flexibility",45]].map(([n,v]) => `
+              <div style="display:grid;grid-template-columns:170px 1fr 34px;gap:12px;align-items:center;font-size:12.5px;"><span>${n}</span><div style="height:2px;background:var(--color-neutral-200);"><div style="height:2px;width:${v}%;background:var(--color-accent);"></div></div><span style="text-align:right;font-feature-settings:'tnum';color:var(--color-accent-700);">${v}</span></div>`).join("")}
+          </div>
+          <div style="display:flex;justify-content:space-between;border-top:1px solid var(--color-divider);margin-top:16px;padding-top:12px;font-size:13px;"><em>Exit bill at month 12</em><strong style="font-feature-settings:'tnum';">$19,000–$23,000</strong></div>
         </div>
       </div>
-      <div class="value-callout">💰 ${esc(a.value_at_stake)}</div>
-    </section>`;
+    </section>
+
+    <section style="border-top:1px solid var(--color-accent-300);border-bottom:1px solid var(--color-accent-300);background:var(--color-accent-100);">
+      <div class="pad grid-collapse" style="max-width:1060px;margin:0 auto;padding:0 48px;display:grid;grid-template-columns:repeat(4,1fr);">
+        ${[["31","Clauses read per contract"],["$20k+","Hidden cost found in the sample"],["6","Asks ranked by dollar value"],["4 min","Upload to verdict"]].map(([n,l],i) => `
+          <div style="padding:26px 24px;${i<3?'border-right:1px solid var(--color-divider);':''}text-align:center;"><div style="font-family:var(--font-heading);font-size:40px;font-feature-settings:'tnum';line-height:1;color:var(--color-accent-700);">${n}</div><div class="text-muted" style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;margin-top:8px;">${l}</div></div>`).join("")}
+      </div>
+    </section>
+
+    <section id="how" class="pad" style="max-width:1060px;margin:0 auto;padding:72px 48px 0;">
+      <div style="text-align:center;margin-bottom:36px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">How it works</div><h2 style="font-size:38px;margin:8px 0 0;">Four minutes from PDF to plan.</h2></div>
+      <div class="grid-collapse" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;">
+        ${[["Upload the offer","PDF or pasted text — any clinical employment contract or offer letter."],["Bailey reads every clause","Every term benchmarked, your earnings modeled, exit costs totaled."],["You get the verdict","A grade, red flags with price tags — and the negotiation email, written."]].map(([t,b],i) => `
+          <div style="padding:0 32px;${i<2?'border-right:1px solid var(--color-divider);':''}${i===0?'padding-left:0;':''}${i===2?'padding-right:0;':''}"><div style="font-family:var(--font-heading);font-size:30px;color:var(--color-accent);font-feature-settings:'tnum';">${ROMAN[i]}</div><strong style="font-size:15px;">${t}</strong><p class="text-muted" style="font-size:13px;margin-top:5px;">${b}</p></div>`).join("")}
+      </div>
+    </section>
+
+    <section id="inside" class="pad" style="max-width:1060px;margin:0 auto;padding:72px 48px 0;">
+      <div style="text-align:center;margin-bottom:32px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">What's inside every review</div><h2 style="font-size:38px;margin:8px 0 0;">More than a pros-and-cons list.<br><em style="color:var(--color-accent-700);">A verdict with receipts.</em></h2></div>
+      <div class="grid-collapse" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--color-divider);">
+        ${[["The offer grade","One letter, four scored categories."],["What you'd actually earn","Three earnings scenarios, arithmetic shown."],["The price of leaving","Clawbacks, tail, non-compete — itemized and totaled."],["Every term vs. the market","Each clause held against real market ranges."],["Red flags with price tags","\"Cost if ignored: $20,000/year.\" Numbers get acted on."],["The email that fixes it","Ranked asks, folded into a ready-to-send email."]].map(([t,b],i) => `
+          <div style="padding:24px 28px;border-bottom:1px solid var(--color-divider);${i%3<2?'border-right:1px solid var(--color-divider);':''}${i%3===0?'padding-left:0;':''}${i%3===2?'padding-right:0;':''}"><div style="font-family:var(--font-heading);font-size:20px;color:var(--color-accent);">${ROMAN[i]}</div><strong style="font-size:14.5px;">${t}</strong><p class="text-muted" style="font-size:12.5px;margin-top:4px;">${b}</p></div>`).join("")}
+      </div>
+    </section>
+
+    <section class="pad" style="max-width:1060px;margin:0 auto;padding:72px 48px 0;">
+      <div style="text-align:center;margin-bottom:8px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">For clinicians, by clinicians</div>
+      <h2 style="font-size:38px;margin:8px 0 12px;">For every white coat, at every stage.</h2></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:36px;">
+        ${["Dentistry · DDS / DMD","Medicine · MD / DO","NP & PA","Pharmacy · PharmD","Residency → attending"].map(t => `<span class="tag tag-outline">${t}</span>`).join("")}
+      </div>
+      <div class="grid-collapse" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+        ${[["Bailey found $19,000 of lab-fee math I'd have signed without reading twice. I sent the email — they moved the fees after the split.","R. Okafor · DDS '25, Chicago"],["My attorney quoted $900 and two weeks. Bailey did the first pass in four minutes, and the lawyer only checked two clauses.","S. Lindqvist · DO, Family Medicine"],["The exit-bill section is the thing nobody tells you about. I asked for a pro-rated clawback and got it.","M. Patel · NP, Austin"]].map(([q,a]) => `
+          <div class="card" style="padding:26px;"><div style="font-family:var(--font-heading);font-size:56px;line-height:0.5;color:var(--color-accent-300);height:22px;">“</div><p style="font-family:var(--font-heading);font-style:italic;font-size:18px;line-height:1.35;margin:0 0 16px;">${q}</p><div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);border-top:1px solid var(--color-divider);padding-top:12px;">${a}</div></div>`).join("")}
+      </div>
+    </section>
+
+    <section id="pricing" class="pad" style="max-width:1060px;margin:0 auto;padding:72px 48px 0;">
+      <div style="text-align:center;margin-bottom:32px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Pricing</div><h2 style="font-size:38px;margin:8px 0 0;">Pay per review. <em style="color:var(--color-accent-700);">No subscription.</em></h2></div>
+      <div class="grid-collapse" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch;">
+        <div class="card" style="padding:28px;display:flex;flex-direction:column;">
+          <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">One review</div>
+          <div style="font-family:var(--font-heading);font-size:46px;font-feature-settings:'tnum';margin:10px 0 4px;">$50</div>
+          <p class="text-muted" style="font-size:13px;flex:1;">One offer, fully graded — the math, the benchmarks, the email.</p>
+          <button class="btn btn-secondary btn-block" style="margin-top:14px;" data-sample>Review my offer</button></div>
+        <div class="card elev-md" style="padding:28px;display:flex;flex-direction:column;border-color:var(--color-accent);">
+          <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Five reviews</span><span class="tag tag-accent">Best value</span></div>
+          <div style="font-family:var(--font-heading);font-size:46px;font-feature-settings:'tnum';color:var(--color-accent-700);margin:10px 0 4px;">$100</div>
+          <p class="text-muted" style="font-size:13px;flex:1;">Compare offers side by side — $20 a review.</p>
+          <button class="btn btn-primary btn-block" style="margin-top:14px;" data-sample>Compare my offers</button></div>
+        <div style="border:1px dashed var(--color-neutral-400);border-radius:14px;padding:28px;display:flex;flex-direction:column;">
+          <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-neutral-600);">Colleges &amp; associations</div>
+          <div style="font-family:var(--font-heading);font-size:30px;font-style:italic;color:var(--color-neutral-700);margin:14px 0 6px;">Let's talk</div>
+          <p class="text-muted" style="font-size:13px;flex:1;">Partner pricing for schools, programs and associations.</p>
+          <button class="btn btn-ghost btn-block" style="margin-top:14px;">Contact us</button></div>
+      </div>
+      <div style="border-top:1px solid var(--color-accent-300);border-bottom:1px solid var(--color-accent-300);background:var(--color-accent-100);margin-top:26px;padding:22px 30px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
+        <div><strong style="font-family:var(--font-heading);font-size:22px;font-weight:600;font-style:italic;color:var(--color-accent-900);">Students take 25% off.</strong>
+          <div style="font-size:13px;color:var(--color-accent-900);margin-top:4px;">Verify your .edu email — every plan drops 25%.</div></div>
+        <button class="btn btn-primary" style="flex:none;" data-sample>Students — claim your discount</button>
+      </div>
+    </section>
+
+    <section style="margin-top:72px;background:var(--color-neutral-900);">
+      <div class="pad" style="max-width:1060px;margin:0 auto;padding:68px 48px;text-align:center;">
+        <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-accent-400);margin-bottom:14px;">Before you sign</div>
+        <h2 style="font-size:36px;color:var(--color-neutral-100);margin:0 0 26px;">Your signature is worth <em style="color:var(--color-accent-300);">more than you think.</em></h2>
+        <button data-sample style="font-family:var(--font-body);font-size:14px;letter-spacing:0.04em;background:transparent;color:var(--color-accent-300);border:1px solid var(--color-accent-400);border-radius:999px;padding:13px 30px;cursor:pointer;">Upload your offer</button>
+      </div>
+    </section>
+
+    <footer class="pad" style="max-width:1060px;margin:0 auto;padding:28px 48px;text-align:center;">
+      <span style="font-family:var(--font-heading);font-size:17px;">Bailey</span>
+      <p class="text-muted" style="font-size:11.5px;max-width:80ch;margin:10px auto 0;">Bailey is an educational tool. It does not provide legal, financial, or tax advice, and is not a substitute for review by a licensed attorney or CPA. Earnings figures are illustrative estimates. © 2026 Bailey.</p>
+    </footer>
+  </main>`;
 }
 
-function renderSummary(a) {
-  return `<section class="card"><h2>The offer in plain English</h2><p>${esc(a.summary)}</p></section>`;
+/* ─────────────────────────  analyzing  ───────────────────────── */
+function analyzing() {
+  const steps = ANALYZE_STEPS.map((t, i) => {
+    const icon = i < state.step ? "✓" : (i === state.step ? "❧" : "·");
+    const op = i <= state.step ? 1 : 0.35;
+    return `<div style="display:flex;gap:14px;align-items:baseline;opacity:${op};font-size:14.5px;"><span style="color:var(--color-accent-700);width:14px;">${icon}</span><span>${esc(t)}</span></div>`;
+  }).join("");
+  return navBar() + `
+  <main style="flex:1;display:grid;place-items:center;padding:60px 48px;">
+    <div class="card" style="width:min(560px,100%);padding:36px;">
+      <span class="card-kicker">Analyzing</span>
+      <h3 style="font-size:26px;margin:6px 0 18px;">${esc(state.filename)}</h3>
+      <div style="display:flex;flex-direction:column;gap:14px;">${steps}</div>
+    </div>
+  </main>`;
 }
 
-function renderMoney(a) {
+/* ─────────────────────────  report  ───────────────────────── */
+function sectionHead(i, title) {
+  return `<div style="display:flex;align-items:baseline;gap:14px;border-bottom:1px solid var(--color-divider);padding-bottom:8px;">
+    <span style="font-family:var(--font-heading);font-size:19px;color:var(--color-accent);font-feature-settings:'tnum';">${ROMAN[i]}</span>
+    <h3 style="font-size:13px;font-weight:600;font-family:var(--font-body);letter-spacing:0.14em;text-transform:uppercase;margin:0;">${esc(title)}</h3>
+  </div>`;
+}
+
+function report() {
+  const a = state.analysis;
+  const x = a.extraction;
+  const s = a.score;
+
+  const categories = s.categories.map(c => `
+    <div style="padding:11px 0;border-top:1px solid var(--color-divider);">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+        <strong style="font-size:14px;">${esc(CATEGORY_LABELS[c.category] || c.category)}</strong>
+        <span style="font-size:13.5px;font-feature-settings:'tnum';color:var(--color-accent-700);">${c.score}/100</span>
+      </div>
+      <div style="height:3px;background:var(--color-neutral-200);"><div style="height:3px;background:var(--color-accent);width:${Math.max(2,Math.min(100,c.score))}%;"></div></div>
+      <div class="text-muted" style="font-size:12.5px;margin-top:5px;">${esc(c.rationale)}</div>
+    </div>`).join("");
+
   const f = a.financial_analysis;
-  const rows = f.scenarios.map(s => `
+  const scenarios = f.scenarios.map(sc => `
     <tr>
-      <th>${esc(s.label)}</th>
-      <td>${s.assumed_daily_production == null ? "—" : money(s.assumed_daily_production) + "/day"}</td>
-      <td class="money-num">${money(s.estimated_annual_gross)}</td>
-      <td class="calc">${esc(s.how_calculated)}</td>
+      <td><strong>${esc(sc.label)}</strong></td>
+      <td style="font-feature-settings:'tnum';">${sc.assumed_daily_production == null ? "—" : money(sc.assumed_daily_production) + "/day"}</td>
+      <td><span style="font-family:var(--font-heading);font-size:21px;font-feature-settings:'tnum';">${money(sc.estimated_annual_gross)}</span></td>
+      <td class="text-muted" style="font-size:12.5px;">${esc(sc.how_calculated)}</td>
     </tr>`).join("");
   const breakeven = f.break_even_daily_production == null ? "" : `
-    <div class="breakeven"><b>Break-even: ${money(f.break_even_daily_production)}/day.</b> ${esc(f.break_even_explanation || "")}</div>`;
-  const split = f.effective_split_note ? `<p style="margin-top:.9rem">${esc(f.effective_split_note)}</p>` : "";
-  return `
-    <section class="card"><h2>What you'd actually earn (year one)</h2>
-      <div class="table-wrap"><table class="terms">
-        <tr class="head"><th>Scenario</th><th>Assumed production</th><th>Est. gross</th><th>How it's calculated</th></tr>
-        ${rows}
-      </table></div>
-      ${breakeven}${split}
-      <details class="assumptions"><summary>Assumptions behind these numbers — adjust for your situation</summary>
-        <ul>${f.assumptions.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
-      </details>
-    </section>`;
-}
+    <div style="border:1px solid var(--color-accent-300);padding:16px 22px;margin-top:20px;font-size:14px;max-width:86ch;">
+      <strong>Break-even: ${money(f.break_even_daily_production)}/day.</strong> ${esc(f.break_even_explanation || "")}
+    </div>`;
+  const split = f.effective_split_note ? `<p style="font-size:15px;text-align:justify;max-width:78ch;margin-top:18px;">${esc(f.effective_split_note)}</p>` : "";
+  const assumptions = `<details style="margin-top:14px;">
+      <summary style="cursor:pointer;font-size:13px;color:var(--color-accent-700);text-decoration:underline;text-underline-offset:3px;">Assumptions behind these numbers</summary>
+      <ul style="margin:10px 0 0;padding-left:20px;font-size:13px;color:var(--color-neutral-800);">${f.assumptions.map(z => `<li style="margin-bottom:4px;">${esc(z)}</li>`).join("")}</ul>
+    </details>`;
 
-function renderExit(a) {
   const e = a.exit_costs;
-  const items = e.items.map(it => `
-    <div class="exit-item">
-      <div class="what"><b>${esc(it.item)}</b><span>${esc(it.basis)}</span></div>
-      <div class="cost">${esc(it.estimated_cost)}</div>
+  const leaving = e.items.map(l => `
+    <div style="display:grid;grid-template-columns:1fr 190px;gap:24px;padding:15px 0;border-bottom:1px solid var(--color-divider);">
+      <div><strong style="font-size:15px;">${esc(l.item)}</strong><div class="text-muted" style="font-size:13px;margin-top:2px;text-align:justify;max-width:74ch;">${esc(l.basis)}</div></div>
+      <div style="font-family:var(--font-heading);font-size:21px;font-feature-settings:'tnum';text-align:right;">${esc(l.estimated_cost)}</div>
     </div>`).join("");
-  return `
-    <section class="card"><h2>The price of leaving</h2>
-      <p style="margin-top:0">${esc(e.scenario)}:</p>
-      ${items}
-      <div class="exit-total"><b>Estimated total</b><b>${esc(e.estimated_total)}</b></div>
-      <p class="compare-note">${esc(e.note)}</p>
-    </section>`;
-}
 
-function renderMarket(a) {
-  const rows = a.market_comparison.map(r => `
-    <tr>
-      <th>${esc(r.term)}</th>
-      <td>${esc(r.this_offer)}</td>
-      <td>${esc(r.typical_range)}</td>
-      <td><span class="chip ${esc(r.verdict)}">${esc(r.verdict)}</span>${r.note ? `<div class="calc">${esc(r.note)}</div>` : ""}</td>
-    </tr>`).join("");
-  return `
-    <section class="card"><h2>How it compares to market</h2>
-      <div class="table-wrap"><table class="terms">
-        <tr class="head"><th>Term</th><th>This offer</th><th>Typical for new grads</th><th>Verdict</th></tr>
-        ${rows}
-      </table></div>
-    </section>`;
-}
+  const benchmarks = a.market_comparison.map(b => {
+    const v = VERDICT[b.verdict] || VERDICT.typical;
+    return `<div style="display:grid;grid-template-columns:150px 1fr 1fr 130px;gap:16px;padding:12px 0;border-bottom:1px solid var(--color-divider);font-size:13.5px;align-items:center;">
+      <strong>${esc(b.term)}</strong>
+      <span>${esc(b.this_offer)}</span>
+      <span class="text-muted">${esc(b.typical_range)}</span>
+      <span style="text-align:right;"><span class="${v.cls}">${v.lbl}</span></span>
+    </div>`;
+  }).join("");
 
-function renderStrengths(a) {
-  return `<section class="card"><h2>What's genuinely good here</h2>
-    <ul class="plain">${a.strengths.map(s => `<li>${esc(s)}</li>`).join("")}</ul></section>`;
-}
-
-function renderFlags(a) {
-  const flags = a.red_flags.map(f => `
-    <div class="flag ${esc(f.severity)}">
-      <div class="head"><b>${esc(f.title)}</b><span class="badge">${esc(f.severity)}</span></div>
-      ${f.clause_reference ? `<div class="clause">${esc(f.clause_reference)}</div>` : ""}
-      <p>${esc(f.explanation)}</p>
-      ${f.cost_if_ignored ? `<p class="cost-tag">Cost if ignored: ${esc(f.cost_if_ignored)}</p>` : ""}
-      <p class="todo">${esc(f.what_to_do)}</p>
+  const flags = a.red_flags.map(fl => `
+    <div style="border-top:2px solid var(--color-accent);padding-top:12px;">
+      <div style="font-family:var(--font-heading);font-size:19px;">${esc(fl.title)}</div>
+      ${fl.cost_if_ignored ? `<div style="font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-700);margin:6px 0;">Cost if ignored: ${esc(fl.cost_if_ignored)}</div>` : `<div style="height:6px;"></div>`}
+      <div class="text-muted" style="font-size:13px;text-align:justify;">${esc(fl.explanation)}</div>
     </div>`).join("");
-  return `<section class="card"><h2>Red flags</h2>${flags || "<p>No significant red flags identified.</p>"}</section>`;
-}
 
-function renderPlaybook(a) {
-  const nego = a.negotiation_playbook.map(n => `
-    <div class="nego">
-      <div class="top"><span class="prio">${n.priority}</span><b>${esc(n.topic)}</b>
-        ${n.estimated_value ? `<span class="worth">worth ${esc(n.estimated_value)}</span>` : ""}</div>
-      <p class="why">${esc(n.rationale)}</p>
-      <div class="ask">“${esc(n.suggested_ask)}”</div>
+  const asks = a.negotiation_playbook.map(k => `
+    <div style="display:grid;grid-template-columns:48px 1fr 190px;gap:16px;padding:15px 0;border-bottom:1px solid var(--color-divider);">
+      <span style="font-family:var(--font-heading);font-size:20px;color:var(--color-accent);font-feature-settings:'tnum';">${k.priority}</span>
+      <div><strong style="font-size:15px;">${esc(k.topic)}</strong><div class="text-muted" style="font-size:13px;margin-top:4px;font-style:italic;">${esc(k.suggested_ask)}</div></div>
+      ${k.estimated_value ? `<span style="font-size:14px;font-feature-settings:'tnum';text-align:right;border-bottom:1px solid var(--color-accent);align-self:start;justify-self:end;">worth ${esc(k.estimated_value)}</span>` : `<span></span>`}
     </div>`).join("");
-  return `
-    <section class="card"><h2>Your negotiation playbook</h2>
-      ${nego}
-      <div class="email-box">
-        <div class="email-head"><span>Ready-to-send negotiation email</span><button id="copy-email">Copy email</button></div>
-        <pre>${esc(a.negotiation_email)}</pre>
+
+  const tags = [
+    x.employer_name ? `<span class="tag tag-accent">${esc(x.employer_name)}</span>` : "",
+    (x.position_title || x.location) ? `<span class="tag tag-neutral">${esc([x.position_title, x.location].filter(Boolean).join(" · "))}</span>` : "",
+  ].join("");
+
+  return navBar() + `
+  <main class="pad" style="flex:1;width:100%;max-width:960px;margin:0 auto;padding:40px 48px 80px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px;flex-wrap:wrap;">
+      ${tags}<span style="flex:1;"></span>
+      <button class="btn btn-ghost" data-restart>← New review</button>
+    </div>
+
+    <section class="grid-collapse" style="display:grid;grid-template-columns:250px 1fr;gap:44px;padding-bottom:32px;border-bottom:1px solid var(--color-divider);">
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+        <div style="width:200px;height:200px;border-radius:50%;border:1.5px solid var(--color-accent);display:flex;flex-direction:column;align-items:center;justify-content:center;">
+          <span style="font-family:var(--font-heading);font-size:76px;line-height:1;color:var(--color-text);">${esc(s.grade)}</span>
+          <span style="font-size:13px;font-feature-settings:'tnum';color:var(--color-accent-700);letter-spacing:0.1em;">${s.overall} / 100</span>
+        </div>
+        <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);margin-top:14px;">Offer grade</div>
       </div>
-    </section>`;
-}
+      <div>
+        <h2 style="font-size:31px;line-height:1.18;margin-bottom:22px;">${esc(s.headline)}</h2>
+        <div style="display:flex;flex-direction:column;">${categories}</div>
+      </div>
+    </section>
 
-function renderBottomLine(a) {
-  return `<section class="card"><h2>Bottom line</h2><p class="overall">${esc(a.overall_read)}</p></section>`;
-}
+    <section style="border-left:2px solid var(--color-accent);padding:6px 0 6px 26px;margin:32px 0;">
+      <p style="font-size:16.5px;font-family:var(--font-heading);font-style:italic;max-width:60ch;margin:0;">${esc(a.value_at_stake)}</p>
+      <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);margin-top:8px;">Why this review pays for itself</div>
+    </section>
 
-function renderTerms(a) {
-  const rows = extractionRows(a.extraction).map(([k, v]) => `<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join("");
-  return `<section class="card"><h2>Every extracted term</h2>
-    <div class="table-wrap"><table class="terms">${rows}</table></div></section>`;
-}
+    <section style="margin-top:40px;">${sectionHead(0, "The offer in plain English")}
+      <p style="font-size:15.5px;text-align:justify;max-width:76ch;margin-top:16px;">${esc(a.summary)}</p>
+    </section>
 
-function extractionRows(x) {
-  const c = x.compensation, r = x.restrictive_covenants, t = x.term_and_termination, b = x.benefits;
-  return [
-    ["Employer", dash(x.employer_name)],
-    ["Position", dash(x.position_title)],
-    ["Location", dash(x.location)],
-    ["Practice type", dash(x.practice_type).replace(/_/g, " ")],
-    ["Employment status", dash(x.employment_status)],
-    ["Base salary", money(c.base_salary_annual)],
-    ["Daily guarantee", money(c.daily_guarantee)],
-    ["Production %", c.production_percentage == null ? "—" : c.production_percentage + "%"],
-    ["Comp basis", dash(c.compensation_basis).replace(/_/g, " ")],
-    ["Guarantee duration", c.guarantee_duration_months == null ? "—" : c.guarantee_duration_months + " months"],
-    ["Sign-on bonus", money(c.sign_on_bonus)],
-    ["Sign-on clawback", dash(c.sign_on_bonus_clawback)],
-    ["Lab fees", dash(c.lab_fee_deduction)],
-    ["Non-compete", r.non_compete_radius_miles == null && r.non_compete_duration_months == null ? "—"
-      : `${r.non_compete_radius_miles ?? "?"} mi · ${r.non_compete_duration_months ?? "?"} months`],
-    ["Non-compete scope", dash(r.non_compete_scope)],
-    ["Patient non-solicit", r.non_solicit_patients_months == null ? "—" : r.non_solicit_patients_months + " months"],
-    ["Covenant penalty", dash(r.liquidated_damages)],
-    ["Term", t.initial_term_months == null ? "—" : t.initial_term_months + " months" + (t.auto_renewal ? " (auto-renews)" : "")],
-    ["Notice to leave", t.termination_notice_days_provider == null ? "—" : t.termination_notice_days_provider + " days"],
-    ["Malpractice", dash(b.malpractice_type).replace(/_/g, " ")],
-    ["Tail paid by", dash(b.tail_coverage_paid_by)],
-    ["CE allowance", dash(b.ce_allowance)],
-    ["PTO", dash(b.pto)],
-    ["Patient records", dash(x.patient_records_ownership)],
-  ];
-}
-
-function renderCompare() {
-  const headers = offers.map(o => esc(o.analysis.extraction.employer_name || o.filename));
-  const rowSets = offers.map(o => extractionRows(o.analysis.extraction));
-  const labels = rowSets[0].map(r => r[0]);
-  const gradeRow = `<tr><th>Bailey grade</th>${offers.map(o =>
-    `<td><b style="color:${gradeColor(o.analysis.score.overall)}">${esc(o.analysis.score.grade)}</b> (${o.analysis.score.overall}/100)</td>`).join("")}</tr>`;
-  const expectedRow = `<tr><th>Expected year-one gross</th>${offers.map(o => {
-    const exp = o.analysis.financial_analysis.scenarios.find(s => s.label.toLowerCase() === "expected") || o.analysis.financial_analysis.scenarios[1];
-    return `<td class="money-num">${exp ? money(exp.estimated_annual_gross) : "—"}</td>`;
-  }).join("")}</tr>`;
-  const exitRow = `<tr><th>Cost of leaving early</th>${offers.map(o =>
-    `<td>${esc(o.analysis.exit_costs.estimated_total)}</td>`).join("")}</tr>`;
-  const flagRow = `<tr><th>High-severity flags</th>${offers.map(o =>
-    `<td>${o.analysis.red_flags.filter(f => f.severity === "high").length}</td>`).join("")}</tr>`;
-  const body = labels.map((label, i) =>
-    `<tr><th>${esc(label)}</th>${rowSets.map(rs => `<td>${esc(rs[i][1])}</td>`).join("")}</tr>`
-  ).join("");
-  return `
-    <section class="card"><h2>Side-by-side comparison</h2>
-      <div class="table-wrap"><table class="terms">
-        <tr class="head"><th></th>${headers.map(h => `<th>${h}</th>`).join("")}</tr>
-        ${gradeRow}${expectedRow}${exitRow}${flagRow}${body}
+    <section style="margin-top:44px;">${sectionHead(1, "What you'd actually earn — year one")}
+      <div class="table-wrap"><table class="table" style="margin-top:10px;">
+        <thead><tr><th>Scenario</th><th>Assumed production</th><th>Est. gross</th><th style="width:46%;">How it's calculated</th></tr></thead>
+        <tbody>${scenarios}</tbody>
       </table></div>
-      <p class="compare-note">Numbers are extracted as written in each document — a higher production % on collections can pay less than a lower % on production. Check each offer's red flags before comparing on price alone.</p>
-    </section>`;
+      ${breakeven}${split}${assumptions}
+    </section>
+
+    <section style="margin-top:44px;">${sectionHead(2, "The price of leaving")}
+      <p class="text-muted" style="font-size:13px;margin-top:12px;">${esc(e.scenario)}:</p>
+      ${leaving}
+      <div style="display:flex;justify-content:space-between;padding:15px 0;border-bottom:2px solid var(--color-text);font-size:15px;"><em>Exit bill total</em><strong style="font-feature-settings:'tnum';">${esc(e.estimated_total)}</strong></div>
+      <p class="text-muted" style="font-size:12.5px;margin-top:12px;text-align:justify;max-width:80ch;">${esc(e.note)}</p>
+    </section>
+
+    <section style="margin-top:44px;">${sectionHead(3, "Every term vs. the market")}
+      <div style="margin-top:12px;"><div style="display:grid;grid-template-columns:150px 1fr 1fr 130px;gap:16px;padding:10px 0;border-bottom:1px solid var(--color-divider);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-neutral-600);"><span>Term</span><span>This offer</span><span>Typical new grad</span><span></span></div>${benchmarks}</div>
+    </section>
+
+    <section style="margin-top:44px;">${sectionHead(4, "Red flags — priced")}
+      <div class="grid-collapse" style="display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:20px;">${flags}</div>
+    </section>
+
+    <section style="margin-top:44px;">${sectionHead(5, "The negotiation playbook")}
+      <p class="text-muted" style="font-size:13px;margin-top:12px;">Asks ranked by dollar impact. Every one is standard in associate agreements.</p>
+      <div>${asks}</div>
+      <div style="border:1px solid var(--color-divider);margin-top:26px;border-radius:14px;overflow:hidden;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--color-divider);">
+          <span style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);">Ready-to-send negotiation email</span>
+          <button class="btn btn-primary" data-copy>${state.copied ? "Copied ✓" : "Copy email"}</button>
+        </div>
+        <div style="padding:26px 30px;font-size:14px;line-height:1.75;white-space:pre-wrap;color:var(--color-neutral-800);">${esc(a.negotiation_email)}</div>
+      </div>
+    </section>
+
+    <section style="margin-top:52px;border-top:2px solid var(--color-text);padding-top:22px;">
+      <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:10px;">Bottom line</div>
+      <p style="font-size:16px;text-align:justify;max-width:78ch;">${esc(a.overall_read)}</p>
+      <p class="text-muted" style="font-size:11.5px;max-width:88ch;margin-top:16px;">Bailey is an educational tool, not legal, financial, or tax advice. Have any contract reviewed by a licensed attorney before you sign.</p>
+    </section>
+  </main>`;
 }
+
+/* ─────────────────────────  render + events  ───────────────────────── */
+function render() {
+  if (state.stage === "analyzing") app.innerHTML = analyzing();
+  else if (state.stage === "report") app.innerHTML = report();
+  else app.innerHTML = landing();
+  wire();
+}
+
+function wire() {
+  const fileInput = app.querySelector("[data-file]");
+  if (fileInput) fileInput.addEventListener("change", e => {
+    const file = e.target.files && e.target.files[0];
+    if (file) analyzeFile(file);
+  });
+  app.querySelectorAll("[data-sample]").forEach(b => b.addEventListener("click", analyzeSample));
+  app.querySelectorAll("[data-restart]").forEach(b => b.addEventListener("click", () => set({ stage: "landing", analysis: null, error: "" })));
+  app.querySelectorAll("[data-nav]").forEach(a => a.addEventListener("click", ev => {
+    ev.preventDefault();
+    const el = document.querySelector(a.getAttribute("href"));
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  }));
+  const copyBtn = app.querySelector("[data-copy]");
+  if (copyBtn && state.analysis) copyBtn.addEventListener("click", () => copyEmail(state.analysis.negotiation_email));
+}
+
+render();
 </script>
 </body>
 </html>

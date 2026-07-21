@@ -15,11 +15,20 @@ ALLOWED_SUFFIXES = {".pdf", ".docx", ".txt"}
 app = FastAPI(title="Bailey")
 
 STATIC_DIR = Path(__file__).parent / "static"
+SAMPLE_OFFER = Path(__file__).parent / "sample_offers" / "sample_dso_offer.txt"
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
 def _demo_mode() -> bool:
     return os.environ.get("BAILEY_DEMO", "").lower() in ("1", "true", "yes")
+
+
+def _require_credentials() -> None:
+    if not _demo_mode() and not os.environ.get("ANTHROPIC_API_KEY"):
+        raise HTTPException(
+            503,
+            "ANTHROPIC_API_KEY is not configured. Set it (or set BAILEY_DEMO=1 for a canned demo) and restart.",
+        )
 
 
 @app.get("/")
@@ -48,11 +57,7 @@ async def analyze(file: UploadFile = File(...)) -> JSONResponse:
     if not data:
         raise HTTPException(400, "The uploaded file is empty.")
 
-    if not _demo_mode() and not os.environ.get("ANTHROPIC_API_KEY"):
-        raise HTTPException(
-            503,
-            "ANTHROPIC_API_KEY is not configured. Set it (or set BAILEY_DEMO=1 for a canned demo) and restart.",
-        )
+    _require_credentials()
 
     try:
         analysis = analyze_offer(file.filename or "offer", data)
@@ -60,3 +65,15 @@ async def analyze(file: UploadFile = File(...)) -> JSONResponse:
         raise HTTPException(422, str(exc))
 
     return JSONResponse({"filename": file.filename, "analysis": analysis.model_dump(mode="json")})
+
+
+@app.post("/api/analyze-sample")
+def analyze_sample() -> JSONResponse:
+    """Analyze the bundled sample offer — powers the landing page's 'Try the sample offer'."""
+    _require_credentials()
+    data = SAMPLE_OFFER.read_bytes()
+    try:
+        analysis = analyze_offer(SAMPLE_OFFER.name, data)
+    except RuntimeError as exc:
+        raise HTTPException(422, str(exc))
+    return JSONResponse({"filename": SAMPLE_OFFER.name, "analysis": analysis.model_dump(mode="json")})
