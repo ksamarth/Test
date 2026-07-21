@@ -149,7 +149,10 @@ details summary::-webkit-details-marker { color: var(--color-accent); }
 /* Phone */
 @media (max-width: 560px) {
   .pad { padding-left: 16px !important; padding-right: 16px !important; }
-  .brand-tag { display: none; }
+  .nav { padding: 14px 16px !important; }
+  /* keep the tagline, but stack it under the wordmark so it reads as intentional */
+  .nav-brand { flex-direction: column !important; align-items: flex-start !important; gap: 1px !important; }
+  .brand-tag { font-size: 9.5px !important; letter-spacing: 0.12em !important; }
   body { font-size: 15px; }
   h1.hero-title { font-size: 33px !important; }
   h2 { font-size: 25px !important; }
@@ -177,19 +180,19 @@ details summary::-webkit-details-marker { color: var(--color-accent); }
 <div id="app" style="min-height:100vh;display:flex;flex-direction:column;"></div>
 
 <script>
-"use strict";
-
-/* Ensure a responsive viewport even when the host wraps this page in its own
-   <head> (e.g. published as an artifact) — without it, phones render at a
-   ~980px layout and zoom out, and the mobile breakpoints never fire. */
+/* Guarantee a responsive viewport as early as possible. The artifact host wraps
+   this page in its own <head>; without width=device-width, phones render at a
+   ~980px layout and zoom out, and the mobile breakpoints never fire. This runs
+   during parse (before the body is laid out) and updates any existing tag. */
 (function () {
-  if (!document.querySelector('meta[name="viewport"]')) {
-    var m = document.createElement("meta");
-    m.name = "viewport";
-    m.content = "width=device-width, initial-scale=1";
-    (document.head || document.documentElement).appendChild(m);
-  }
+  var m = document.querySelector('meta[name="viewport"]');
+  if (!m) { m = document.createElement("meta"); m.name = "viewport"; document.head.appendChild(m); }
+  m.setAttribute("content", "width=device-width, initial-scale=1");
 })();
+</script>
+
+<script>
+"use strict";
 
 /* ─────────────────────────  helpers  ───────────────────────── */
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
