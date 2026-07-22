@@ -177,6 +177,9 @@ details summary::-webkit-details-marker { color: var(--color-accent); }
   /* grade ring a touch smaller so it never crowds the width */
   .grade-ring-lg { width: 168px !important; height: 168px !important; }
   .grade-ring-lg .grade-letter { font-size: 64px !important; }
+  /* red-flag rows: stack the cost column above the note */
+  .flag-body { grid-template-columns: 1fr !important; gap: 8px !important; }
+  .flag-cost { border-right: none !important; padding-right: 0 !important; }
 }
 </style>
 </head>
@@ -387,11 +390,11 @@ function landing() {
       </div>
     </div>
 
-    <section class="pad" style="max-width:1060px;margin:0 auto;padding:76px 48px 56px;text-align:center;">
+    <section class="pad" style="max-width:1060px;margin:0 auto;padding:76px 48px 56px;text-align:left;">
       <div class="hero-eyebrow" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:20px;">Offer analysis for healthcare professionals</div>
       <h1 class="hero-title" style="font-size:58px;line-height:1.12;margin-bottom:8px;">Before you sign,<br><em style="color:var(--color-accent-700);">ask Bailey.</em></h1>
       <div style="width:64px;height:1px;background:var(--color-accent);margin:24px auto;"></div>
-      <p style="font-size:17px;max-width:60ch;margin:0 auto;">Your first contract is a five-figure decision. Bailey reads it like a CPA, a lawyer, and a mentor — and hands you the grade, the math, and the email that fixes it.</p>
+      <p style="font-size:17px;max-width:60ch;margin:0;">Your first contract is a five-figure decision. Bailey reads it like a CPA, a lawyer, and a mentor — and hands you the grade, the math, and the email that fixes it.</p>
       <div style="display:flex;gap:14px;justify-content:center;margin-top:32px;flex-wrap:wrap;">
         <label class="btn btn-primary" style="cursor:pointer;font-size:15px;padding:12px 28px;">Upload an offer<input type="file" accept=".pdf,.docx,.txt" data-file style="display:none;"></label>
         <button class="btn btn-secondary" style="font-size:15px;padding:12px 28px;" data-sample>Try the sample offer</button>
@@ -401,9 +404,9 @@ function landing() {
 
     <section class="pad" style="max-width:1060px;margin:0 auto;padding:0 48px 64px;">
       <div class="card grid-collapse" style="padding:32px 36px;display:grid;grid-template-columns:220px 1fr;gap:40px;align-items:center;">
-        <div style="text-align:center;border-right:1px solid var(--color-divider);padding-right:36px;">
+        <div style="text-align:left;border-right:1px solid var(--color-divider);padding-right:36px;">
           <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:10px;">Sample diagnosis</div>
-          <div style="width:150px;height:150px;margin:0 auto;border-radius:50%;border:1.5px solid var(--color-accent);background:var(--color-accent-100);display:flex;flex-direction:column;align-items:center;justify-content:center;">
+          <div style="width:150px;height:150px;margin:0;border-radius:50%;border:1.5px solid var(--color-accent);background:var(--color-accent-100);display:flex;flex-direction:column;align-items:center;justify-content:center;">
             <span style="font-family:var(--font-heading);font-size:56px;line-height:1;">C−</span>
             <span style="font-size:12px;font-feature-settings:'tnum';color:var(--color-accent-700);letter-spacing:0.1em;">46 / 100</span>
           </div>
@@ -422,12 +425,12 @@ function landing() {
     <section style="border-top:1px solid var(--color-accent-300);border-bottom:1px solid var(--color-accent-300);background:var(--color-accent-100);">
       <div class="pad stats-grid" style="max-width:1060px;margin:0 auto;padding:0 48px;display:grid;grid-template-columns:repeat(4,1fr);">
         ${[["31","Clauses read per contract"],["$20k+","Hidden cost found in the sample"],["6","Asks ranked by dollar value"],["4 min","Upload to diagnosis"]].map(([n,l],i) => `
-          <div style="padding:26px 24px;${i<3?'border-right:1px solid var(--color-divider);':''}text-align:center;"><div style="font-family:var(--font-heading);font-size:40px;font-feature-settings:'tnum';line-height:1;color:var(--color-accent-700);">${n}</div><div class="text-muted" style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;margin-top:8px;">${l}</div></div>`).join("")}
+          <div style="padding:26px 24px;${i<3?'border-right:1px solid var(--color-divider);':''}text-align:left;"><div style="font-family:var(--font-heading);font-size:40px;font-feature-settings:'tnum';line-height:1;color:var(--color-accent-700);">${n}</div><div class="text-muted" style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;margin-top:8px;">${l}</div></div>`).join("")}
       </div>
     </section>
 
     <section id="how" class="pad" style="max-width:1060px;margin:0 auto;padding:72px 48px 0;">
-      <div style="text-align:center;margin-bottom:36px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">How it works</div><h2 style="font-size:38px;margin:8px 0 0;">Four minutes from PDF to plan.</h2></div>
+      <div style="text-align:left;margin-bottom:36px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">How it works</div><h2 style="font-size:38px;margin:8px 0 0;">Four minutes from PDF to plan.</h2></div>
       <div class="grid-collapse feature-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;">
         ${[["Upload the offer","PDF or pasted text — any clinical employment contract or offer letter."],["Bailey reads every clause","Every term benchmarked, your earnings modeled, exit costs totaled."],["You get the diagnosis","A grade, red flags with price tags — and the negotiation email, written."]].map(([t,b],i) => `
           <div style="padding:0 32px;${i<2?'border-right:1px solid var(--color-divider);':''}${i===0?'padding-left:0;':''}${i===2?'padding-right:0;':''}"><div style="font-family:var(--font-heading);font-size:30px;color:var(--color-accent);font-feature-settings:'tnum';">${ROMAN[i]}</div><strong style="font-size:15px;">${t}</strong><p class="text-muted" style="font-size:13px;margin-top:5px;">${b}</p></div>`).join("")}
@@ -435,7 +438,7 @@ function landing() {
     </section>
 
     <section id="inside" class="pad" style="max-width:1060px;margin:0 auto;padding:72px 48px 0;">
-      <div style="text-align:center;margin-bottom:32px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">What's inside every review</div><h2 style="font-size:38px;margin:8px 0 0;">More than a pros-and-cons list.<br><em style="color:var(--color-accent-700);">A diagnosis with receipts.</em></h2></div>
+      <div style="text-align:left;margin-bottom:32px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">What's inside every review</div><h2 style="font-size:38px;margin:8px 0 0;">More than a pros-and-cons list.<br><em style="color:var(--color-accent-700);">A diagnosis with receipts.</em></h2></div>
       <div class="grid-collapse feature-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--color-divider);">
         ${[["The offer grade","One letter, four scored categories."],["What you'd actually earn","Three earnings scenarios, arithmetic shown."],["The price of leaving","Clawbacks, tail, non-compete — itemized and totaled."],["Every term vs. the market","Each clause held against real market ranges."],["Red flags with price tags","\"Cost if ignored: $20,000/year.\" Numbers get acted on."],["The email that fixes it","Ranked asks, folded into a ready-to-send email."]].map(([t,b],i) => `
           <div style="padding:24px 28px;border-bottom:1px solid var(--color-divider);${i%3<2?'border-right:1px solid var(--color-divider);':''}${i%3===0?'padding-left:0;':''}${i%3===2?'padding-right:0;':''}"><div style="font-family:var(--font-heading);font-size:20px;color:var(--color-accent);">${ROMAN[i]}</div><strong style="font-size:14.5px;">${t}</strong><p class="text-muted" style="font-size:12.5px;margin-top:4px;">${b}</p></div>`).join("")}
@@ -443,7 +446,7 @@ function landing() {
     </section>
 
     <section class="pad" style="max-width:1060px;margin:0 auto;padding:72px 48px 0;">
-      <div style="text-align:center;margin-bottom:8px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">For clinicians, by clinicians</div>
+      <div style="text-align:left;margin-bottom:8px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">For clinicians, by clinicians</div>
       <h2 style="font-size:38px;margin:8px 0 12px;">For every white coat, at every stage.</h2></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:36px;">
         ${["Dentistry · DDS / DMD","Medicine · MD / DO","NP & PA","Pharmacy · PharmD","Residency → attending"].map(t => `<span class="tag tag-outline">${t}</span>`).join("")}
@@ -455,7 +458,7 @@ function landing() {
     </section>
 
     <section id="pricing" class="pad" style="max-width:1060px;margin:0 auto;padding:72px 48px 0;">
-      <div style="text-align:center;margin-bottom:32px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Pricing</div><h2 style="font-size:38px;margin:8px 0 0;">Pay per review. <em style="color:var(--color-accent-700);">No subscription.</em></h2></div>
+      <div style="text-align:left;margin-bottom:32px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Pricing</div><h2 style="font-size:38px;margin:8px 0 0;">Pay per review. <em style="color:var(--color-accent-700);">No subscription.</em></h2></div>
       <div class="grid-collapse" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch;">
         <div class="card" style="padding:28px;display:flex;flex-direction:column;">
           <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">One review</div>
@@ -481,14 +484,14 @@ function landing() {
     </section>
 
     <section style="margin-top:72px;background:var(--color-neutral-900);">
-      <div class="pad" style="max-width:1060px;margin:0 auto;padding:68px 48px;text-align:center;">
+      <div class="pad" style="max-width:1060px;margin:0 auto;padding:68px 48px;text-align:left;">
         <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-accent-400);margin-bottom:14px;">Before you sign</div>
         <h2 style="font-size:36px;color:var(--color-neutral-100);margin:0 0 26px;">Your signature is worth <em style="color:var(--color-accent-300);">more than you think.</em></h2>
         <button data-sample style="font-family:var(--font-body);font-size:14px;letter-spacing:0.04em;background:transparent;color:var(--color-accent-300);border:1px solid var(--color-accent-400);border-radius:999px;padding:13px 30px;cursor:pointer;">Upload your offer</button>
       </div>
     </section>
 
-    <footer class="pad" style="max-width:1060px;margin:0 auto;padding:28px 48px;text-align:center;">
+    <footer class="pad" style="max-width:1060px;margin:0 auto;padding:28px 48px;text-align:left;">
       <span style="font-family:var(--font-heading);font-size:17px;">Bailey</span>
       <p class="text-muted" style="font-size:11.5px;max-width:80ch;margin:10px auto 0;">Bailey is an educational tool. It does not provide legal, financial, or tax advice, and is not a substitute for review by a licensed attorney or CPA. Earnings figures are illustrative estimates. © 2026 Bailey.</p>
     </footer>
@@ -548,7 +551,7 @@ function report() {
     <div style="border:1px solid var(--color-accent-300);padding:16px 22px;margin-top:20px;font-size:14px;max-width:86ch;">
       <strong>Break-even: ${money(f.break_even_daily_production)}/day.</strong> ${esc(f.break_even_explanation || "")}
     </div>`;
-  const split = f.effective_split_note ? `<p style="font-size:15px;text-align:justify;max-width:78ch;margin-top:18px;">${esc(f.effective_split_note)}</p>` : "";
+  const split = f.effective_split_note ? `<p style="font-size:15px;max-width:78ch;margin-top:18px;">${esc(f.effective_split_note)}</p>` : "";
   const assumptions = `<details style="margin-top:14px;">
       <summary style="cursor:pointer;font-size:13px;color:var(--color-accent-700);text-decoration:underline;text-underline-offset:3px;">Assumptions behind these numbers</summary>
       <ul style="margin:10px 0 0;padding-left:20px;font-size:13px;color:var(--color-neutral-800);">${f.assumptions.map(z => `<li style="margin-bottom:4px;">${esc(z)}</li>`).join("")}</ul>
@@ -557,7 +560,7 @@ function report() {
   const e = a.exit_costs;
   const leaving = e.items.map(l => `
     <div class="exit-row" style="display:grid;grid-template-columns:1fr 190px;gap:24px;padding:15px 0;border-bottom:1px solid var(--color-divider);">
-      <div><strong style="font-size:15px;">${esc(l.item)}</strong><div class="text-muted" style="font-size:13px;margin-top:2px;text-align:justify;max-width:74ch;">${esc(l.basis)}</div></div>
+      <div><strong style="font-size:15px;">${esc(l.item)}</strong><div class="text-muted" style="font-size:13px;margin-top:2px;max-width:74ch;">${esc(l.basis)}</div></div>
       <div style="font-family:var(--font-heading);font-size:21px;font-feature-settings:'tnum';text-align:right;">${esc(l.estimated_cost)}</div>
     </div>`).join("");
 
@@ -571,12 +574,32 @@ function report() {
     </div>`;
   }).join("");
 
-  const flags = a.red_flags.map(fl => `
-    <div style="border-top:2px solid var(--color-accent);padding-top:12px;">
-      <div style="font-family:var(--font-heading);font-size:19px;">${esc(fl.title)}</div>
-      ${fl.cost_if_ignored ? `<div style="font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-700);margin:6px 0;">Cost if ignored: ${esc(fl.cost_if_ignored)}</div>` : `<div style="height:6px;"></div>`}
-      <div class="text-muted" style="font-size:13px;text-align:justify;">${esc(fl.explanation)}</div>
-    </div>`).join("");
+  const SEV_ORDER = { high: 0, medium: 1, low: 2 };
+  const flags = a.red_flags.slice()
+    .sort((p, q) => (SEV_ORDER[p.severity] ?? 9) - (SEV_ORDER[q.severity] ?? 9))
+    .map((fl, i) => {
+      const rank = String(i + 1).padStart(2, "0");
+      const sevCls = fl.severity === "high" ? "tag tag-accent" : "tag tag-neutral";
+      const sevLabel = fl.severity === "high" ? "High risk" : "Worth fixing";
+      return `
+    <div class="flag-row" style="display:grid;grid-template-columns:34px 1fr;gap:16px;padding:20px 0;border-bottom:1px solid var(--color-divider);">
+      <span style="font-family:var(--font-heading);font-size:20px;color:var(--color-accent);font-feature-settings:'tnum';">${rank}</span>
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+          <span style="font-family:var(--font-heading);font-size:20px;">${esc(fl.title)}</span>
+          <span class="${sevCls}">${sevLabel}</span>
+          ${fl.timing ? `<span class="tag tag-outline">${esc(fl.timing)}</span>` : ""}
+        </div>
+        <div class="flag-body" style="display:grid;grid-template-columns:150px 1fr;gap:22px;align-items:start;">
+          <div class="flag-cost" style="border-right:1px solid var(--color-divider);padding-right:18px;">
+            <div class="text-muted" style="font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;">Cost if ignored</div>
+            <div style="font-family:var(--font-heading);font-size:18px;color:var(--color-accent-700);margin-top:3px;">${fl.cost_if_ignored ? esc(fl.cost_if_ignored) : "—"}</div>
+          </div>
+          <p class="text-muted" style="font-size:13px;line-height:1.6;margin:0;">${esc(fl.explanation)}</p>
+        </div>
+      </div>
+    </div>`;
+    }).join("");
 
   const asks = a.negotiation_playbook.map(k => `
     <div class="ask-row" style="display:grid;grid-template-columns:48px 1fr 190px;gap:16px;padding:15px 0;border-bottom:1px solid var(--color-divider);">
@@ -598,7 +621,7 @@ function report() {
     </div>
 
     <section class="grid-collapse" style="display:grid;grid-template-columns:250px 1fr;gap:44px;padding-bottom:32px;border-bottom:1px solid var(--color-divider);">
-      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:left;">
         <div class="grade-ring-lg" style="width:200px;height:200px;border-radius:50%;border:1.5px solid var(--color-accent);display:flex;flex-direction:column;align-items:center;justify-content:center;">
           <span class="grade-letter" style="font-family:var(--font-heading);font-size:76px;line-height:1;color:var(--color-text);">${esc(s.grade)}</span>
           <span style="font-size:13px;font-feature-settings:'tnum';color:var(--color-accent-700);letter-spacing:0.1em;">${s.overall} / 100</span>
@@ -617,7 +640,7 @@ function report() {
     </section>
 
     <section style="margin-top:40px;">${sectionHead(0, "The offer in plain English")}
-      <p style="font-size:15.5px;text-align:justify;max-width:76ch;margin-top:16px;">${esc(a.summary)}</p>
+      <p style="font-size:15.5px;max-width:76ch;margin-top:16px;">${esc(a.summary)}</p>
     </section>
 
     <section style="margin-top:44px;">${sectionHead(1, "What you'd actually earn — year one")}
@@ -632,15 +655,20 @@ function report() {
       <p class="text-muted" style="font-size:13px;margin-top:12px;">${esc(e.scenario)}:</p>
       ${leaving}
       <div style="display:flex;justify-content:space-between;padding:15px 0;border-bottom:2px solid var(--color-text);font-size:15px;"><em>Exit bill total</em><strong style="font-feature-settings:'tnum';">${esc(e.estimated_total)}</strong></div>
-      <p class="text-muted" style="font-size:12.5px;margin-top:12px;text-align:justify;max-width:80ch;">${esc(e.note)}</p>
+      <p class="text-muted" style="font-size:12.5px;margin-top:12px;max-width:80ch;">${esc(e.note)}</p>
     </section>
 
     <section style="margin-top:44px;">${sectionHead(3, "Every term vs. the market")}
       <div style="margin-top:12px;"><div class="mkt-head" style="display:grid;grid-template-columns:150px 1fr 1fr 130px;gap:16px;padding:10px 0;border-bottom:1px solid var(--color-divider);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-neutral-600);"><span>Term</span><span>This offer</span><span>Typical new grad</span><span></span></div>${benchmarks}</div>
     </section>
 
-    <section style="margin-top:44px;">${sectionHead(4, "Red flags — priced")}
-      <div class="grid-collapse" style="display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:20px;">${flags}</div>
+    <section style="margin-top:44px;">
+      <div style="display:flex;align-items:baseline;gap:14px;border-bottom:1px solid var(--color-divider);padding-bottom:8px;">
+        <span style="font-family:var(--font-heading);font-size:19px;color:var(--color-accent);font-feature-settings:'tnum';">v.</span>
+        <h3 style="font-size:13px;font-weight:600;font-family:var(--font-body);letter-spacing:0.14em;text-transform:uppercase;margin:0;flex:1;">Red flags, by priority</h3>
+        <span class="text-muted" style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;">Highest risk first</span>
+      </div>
+      <div style="display:flex;flex-direction:column;">${flags}</div>
     </section>
 
     <section style="margin-top:44px;">${sectionHead(5, "The negotiation playbook")}
@@ -657,7 +685,7 @@ function report() {
 
     <section style="margin-top:52px;border-top:2px solid var(--color-text);padding-top:22px;">
       <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:10px;">Bottom line</div>
-      <p style="font-size:16px;text-align:justify;max-width:78ch;">${esc(a.overall_read)}</p>
+      <p style="font-size:16px;max-width:78ch;">${esc(a.overall_read)}</p>
       <p class="text-muted" style="font-size:11.5px;max-width:88ch;margin-top:16px;">Bailey is an educational tool, not legal, financial, or tax advice. Have any contract reviewed by a licensed attorney before you sign.</p>
     </section>
   </main>`;

@@ -133,17 +133,83 @@
     "note": "The exit cost here is modest and mostly within your control — leave after the sign-on fully vests, or on a without-cause termination, and it drops to roughly zero."
   },
   "market_comparison": [
-    { "term": "Compensation basis", "this_offer": "32% of production, lab fees excluded", "typical_range": "Production or collections; lab fees vary", "verdict": "favorable", "note": "Production-based with lab fees off your split is the provider-friendly structure." },
-    { "term": "Malpractice", "this_offer": "Occurrence (no tail ever)", "typical_range": "Often claims-made with provider-paid tail", "verdict": "favorable", "note": "Occurrence coverage removes a common four-figure exit cost." },
-    { "term": "Non-compete", "this_offer": "7 mi / 12 mo, single office", "typical_range": "5-10 mi / 12-24 mo", "verdict": "favorable", "note": null },
-    { "term": "Guarantee duration", "this_offer": "12 months", "typical_range": "6-12 months for new grads", "verdict": "favorable", "note": "A full year covers your entire ramp." },
-    { "term": "Sign-on clawback", "this_offer": "Pro-rated, waived if fired", "typical_range": "Often full repayment, any reason", "verdict": "favorable", "note": null },
-    { "term": "PTO", "this_offer": "12 days", "typical_range": "10-15 days", "verdict": "typical", "note": null },
-    { "term": "CE allowance", "this_offer": "$2,500 + 3 paid days", "typical_range": "$1,500-$3,000", "verdict": "typical", "note": null },
-    { "term": "Production split", "this_offer": "32%", "typical_range": "28-35% for associates", "verdict": "typical", "note": null },
-    { "term": "Daily guarantee", "this_offer": "$700/day", "typical_range": "$600-$800/day for new-grad GPs", "verdict": "typical", "note": null },
-    { "term": "Notice periods", "this_offer": "Mutual 60 days", "typical_range": "Mutual 60-90 days", "verdict": "typical", "note": null },
-    { "term": "Auto-renewal", "this_offer": "Auto-renews (window not stated)", "typical_range": "Auto-renew with a 60-90 day opt-out", "verdict": "missing", "note": "Confirm the non-renewal notice window." }
+    {
+      "term": "Compensation basis",
+      "this_offer": "32% of production, lab fees excluded",
+      "typical_range": "Production or collections; lab fees vary",
+      "verdict": "favorable",
+      "note": "Production-based with lab fees off your split is the provider-friendly structure."
+    },
+    {
+      "term": "Malpractice",
+      "this_offer": "Occurrence (no tail ever)",
+      "typical_range": "Often claims-made with provider-paid tail",
+      "verdict": "favorable",
+      "note": "Occurrence coverage removes a common four-figure exit cost."
+    },
+    {
+      "term": "Non-compete",
+      "this_offer": "7 mi / 12 mo, single office",
+      "typical_range": "5-10 mi / 12-24 mo",
+      "verdict": "favorable",
+      "note": null
+    },
+    {
+      "term": "Guarantee duration",
+      "this_offer": "12 months",
+      "typical_range": "6-12 months for new grads",
+      "verdict": "favorable",
+      "note": "A full year covers your entire ramp."
+    },
+    {
+      "term": "Sign-on clawback",
+      "this_offer": "Pro-rated, waived if fired",
+      "typical_range": "Often full repayment, any reason",
+      "verdict": "favorable",
+      "note": null
+    },
+    {
+      "term": "PTO",
+      "this_offer": "12 days",
+      "typical_range": "10-15 days",
+      "verdict": "typical",
+      "note": null
+    },
+    {
+      "term": "CE allowance",
+      "this_offer": "$2,500 + 3 paid days",
+      "typical_range": "$1,500-$3,000",
+      "verdict": "typical",
+      "note": null
+    },
+    {
+      "term": "Production split",
+      "this_offer": "32%",
+      "typical_range": "28-35% for associates",
+      "verdict": "typical",
+      "note": null
+    },
+    {
+      "term": "Daily guarantee",
+      "this_offer": "$700/day",
+      "typical_range": "$600-$800/day for new-grad GPs",
+      "verdict": "typical",
+      "note": null
+    },
+    {
+      "term": "Notice periods",
+      "this_offer": "Mutual 60 days",
+      "typical_range": "Mutual 60-90 days",
+      "verdict": "typical",
+      "note": null
+    },
+    {
+      "term": "Auto-renewal",
+      "this_offer": "Auto-renews (window not stated)",
+      "typical_range": "Auto-renew with a 60-90 day opt-out",
+      "verdict": "missing",
+      "note": "Confirm the non-renewal notice window."
+    }
   ],
   "strengths": [
     "Pay is on production with lab fees excluded — your effective rate matches the headline 32%.",
@@ -158,7 +224,8 @@
       "severity": "medium",
       "clause_reference": "Section 6.1",
       "explanation": "The contract auto-renews for successive terms, but the language doesn't state how many days before renewal you must give notice to exit. Without a defined window, you could be locked into another term by missing an unstated deadline.",
-      "cost_if_ignored": "Potentially a full extra year in the agreement if the opt-out window is missed.",
+      "cost_if_ignored": "Possibly a lost year",
+      "timing": "At renewal",
       "what_to_do": "Ask for an explicit non-renewal window — 60 to 90 days before the term ends is standard — written into Section 6.1."
     },
     {
@@ -167,6 +234,7 @@
       "clause_reference": "Section 3.1",
       "explanation": "The $700/day guarantee runs 12 months, but the contract doesn't say whether any guarantee 'deficit' (days you were paid the floor above what you produced) can be recovered by the practice later. Most fair contracts make the guarantee non-recoverable.",
       "cost_if_ignored": null,
+      "timing": "Year 1",
       "what_to_do": "Confirm in writing that the daily guarantee is a true floor and is not recoverable against future production."
     }
   ],

@@ -230,7 +230,8 @@
       "severity": "high",
       "clause_reference": "Section 3.3 — 'Net Collections'",
       "explanation": "You are paid on what the office collects, not what you produce. If the office bills $30,000 for your work but only collects $24,000 — and then subtracts lab fees and implant supplies — your 30% applies to the smaller number. You bear the risk of the office's billing performance, and lab-heavy procedures can pay you dramatically less than expected.",
-      "cost_if_ignored": "Roughly $20,000 per year at mid-range production versus the same split with lab fees deducted after the split.",
+      "cost_if_ignored": "~$20,000 / year",
+      "timing": "Ongoing",
       "what_to_do": "Ask for the office's historical collection rate in writing, and ask whether the split can be based on production — or at minimum whether lab fees can be deducted after the split. Both are commonly negotiated."
     },
     {
@@ -238,7 +239,8 @@
       "severity": "high",
       "clause_reference": "Section 5",
       "explanation": "The employer provides claims-made insurance, which only covers claims filed while the policy is active. When you leave — even if they fire you — you must buy 'tail' coverage for later-filed claims, at your own expense. Tail typically costs one to two times the annual premium, due right when you're changing jobs.",
-      "cost_if_ignored": "$4,000-$8,000 payable whenever you leave, for any reason.",
+      "cost_if_ignored": "$4,000-$8,000 at exit",
+      "timing": "On exit",
       "what_to_do": "Ask the employer to pay the tail — or split it, or cover it if they terminate you without cause. This is one of the most commonly won asks in healthcare contract negotiation."
     },
     {
@@ -246,7 +248,8 @@
       "severity": "high",
       "clause_reference": "Section 7.1",
       "explanation": "The 15-mile, 24-month restriction applies around any employer or affiliate office where you provided services 'on one or more occasions.' If they float you between offices, the restricted zones stack and can blanket the metro area, severely limiting where you can work next.",
-      "cost_if_ignored": "Unquantifiable but potentially your next job — relocation or a long commute for up to two years.",
+      "cost_if_ignored": "Possibly your next job",
+      "timing": "On exit",
       "what_to_do": "Ask to limit the non-compete to your primary office only, and to have it waived if the employer terminates you without cause. Have any final language reviewed professionally for enforceability under Texas law."
     },
     {
@@ -254,7 +257,8 @@
       "severity": "high",
       "clause_reference": "Section 7.3",
       "explanation": "Beyond the non-compete itself, breaching it triggers an automatic $100,000 payment plus court orders — a large fixed penalty that applies regardless of how much harm, if any, the employer actually suffered.",
-      "cost_if_ignored": "$100,000 exposure hanging over any post-employment move inside the restricted zone.",
+      "cost_if_ignored": "$100,000",
+      "timing": "If breached",
       "what_to_do": "Ask for this clause to be removed or substantially reduced; a fixed six-figure penalty is not a standard feature of associate agreements."
     },
     {
@@ -262,7 +266,8 @@
       "severity": "medium",
       "clause_reference": "Section 3.4",
       "explanation": "The $15,000 must be repaid in full if employment ends 'for any reason' within 24 months — including the employer terminating you without cause on 30 days' notice. There is no pro-rating: leaving in month 23 costs the same as leaving in month 2.",
-      "cost_if_ignored": "Up to $15,000 due within 30 days of any early exit.",
+      "cost_if_ignored": "Up to $15,000",
+      "timing": "Early exit",
       "what_to_do": "Ask for the clawback to pro-rate monthly and to be waived if the employer terminates without cause."
     },
     {
@@ -271,6 +276,7 @@
       "clause_reference": "Section 6.2",
       "explanation": "The employer can fire you immediately for failing 'production standards' that aren't defined anywhere, or for conduct they alone judge harmful to their reputation. Vague triggers like these can convert a without-cause firing (with notice) into a for-cause one — immediate, and reputationally worse.",
       "cost_if_ignored": null,
+      "timing": "If terminated",
       "what_to_do": "Ask for production standards to be defined in writing and for a cure period — written notice and 15-30 days to fix the issue — before for-cause termination."
     },
     {
@@ -279,6 +285,7 @@
       "clause_reference": "Section 6.1",
       "explanation": "The employer can end the agreement on 30 days' notice while you must give 90. Combined with the 90-day non-renewal window and auto-renewal, leaving cleanly requires careful calendar math.",
       "cost_if_ignored": null,
+      "timing": "On exit",
       "what_to_do": "Ask to make notice periods mutual — 60/60 or 90/90."
     },
     {
@@ -286,7 +293,8 @@
       "severity": "low",
       "clause_reference": "Section 4",
       "explanation": "Five PTO days and $500 of CE per year are on the low end; many offers include 10+ days and $1,500-$3,000 in CE with dedicated CE days.",
-      "cost_if_ignored": "$2,000-$4,000 per year in below-market benefits.",
+      "cost_if_ignored": "$2,000-$4,000 / year",
+      "timing": "Ongoing",
       "what_to_do": "Ask for additional PTO and a larger CE allowance — low-cost items employers often concede."
     },
     {
@@ -295,6 +303,7 @@
       "clause_reference": "Section 8",
       "explanation": "Standard for DSO agreements, but combined with the patient non-solicit it means the patients you build relationships with cannot follow you when you leave.",
       "cost_if_ignored": null,
+      "timing": "On exit",
       "what_to_do": "Understand this going in; ask whether departing providers may notify patients of their departure, which some states require regardless of contract."
     }
   ],

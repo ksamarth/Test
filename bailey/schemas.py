@@ -253,7 +253,10 @@ class RedFlag(BaseModel):
         description="Plain-English explanation of why this matters, written for a new grad with no business background. 2-4 sentences."
     )
     cost_if_ignored: Optional[str] = Field(
-        None, description="Where quantifiable, the realistic dollar exposure of leaving this clause as-is, e.g. 'roughly $6,000-$12,000 over the initial term'."
+        None, description="A SHORT figure (a few words max) for the dollar exposure of leaving this clause as-is, e.g. '~$20,000/year', '$4,000-$8,000 at exit', 'Possibly your next job'. Put the reasoning in `explanation`, not here. Null if not quantifiable."
+    )
+    timing: Optional[str] = Field(
+        None, description="A 1-3 word tag for WHEN this clause bites, e.g. 'At signing', 'On exit', 'Ongoing', 'Year 1', 'If terminated'."
     )
     what_to_do: str = Field(
         description="Concrete next step: what to ask the employer, what change to request, or what to verify. Phrase as guidance, not a directive."

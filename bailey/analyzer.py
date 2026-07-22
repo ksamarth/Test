@@ -62,8 +62,10 @@ comparable new-grad positions, with a verdict: favorable, typical, unfavorable, 
 ranges on well-established patterns (e.g. ADA/dental-economics survey ranges, MGMA-style physician \
 norms, common DSO contract structures); where ranges vary regionally, say so in the note.
 
-5. QUANTIFY THE FLAGS. For each red flag, when the exposure is quantifiable, state what ignoring it \
-could realistically cost in dollars. A flag with a price tag gets acted on; a vague warning does not.
+5. QUANTIFY THE FLAGS. For each red flag, put a SHORT dollar figure in `cost_if_ignored` (a few words — \
+'~$20,000/year', '$4,000-$8,000 at exit', 'Possibly your next job'; the reasoning goes in `explanation`, \
+not here), and tag WHEN it bites with a 1-3 word `timing` label ('At signing', 'On exit', 'Ongoing', \
+'Year 1', 'If terminated'). A flag with a price tag and a when gets acted on; a vague warning does not.
 
 6. ARM THE NEGOTIATION. Order the playbook by expected dollar impact, attach a realistic value to \
 each ask, and write one complete, warm, ready-to-send negotiation email raising the top items — \
