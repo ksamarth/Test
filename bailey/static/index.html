@@ -49,9 +49,10 @@
   --radius-md: 14px;
   --radius-lg: 7px;
 
-  --shadow-sm: 0 1px 2px color-mix(in srgb, #2d2b2b 14%, transparent);
-  --shadow-md: 0 3px 10px color-mix(in srgb, #2d2b2b 16%, transparent);
-  --shadow-lg: 0 12px 32px color-mix(in srgb, #2d2b2b 22%, transparent);
+  /* Warm, brown-tinted, layered shadows — reads like ink on paper, not a grey box */
+  --shadow-sm: 0 1px 2px color-mix(in srgb, #3a270d 10%, transparent);
+  --shadow-md: 0 1px 2px color-mix(in srgb, #3a270d 9%, transparent), 0 8px 22px color-mix(in srgb, #3a270d 12%, transparent);
+  --shadow-lg: 0 2px 4px color-mix(in srgb, #3a270d 8%, transparent), 0 20px 46px color-mix(in srgb, #3a270d 17%, transparent);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -62,6 +63,7 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading); font-weight: var(--font-heading-weight);
   line-height: 1.12; letter-spacing: -0.015em; margin: 0 0 9px;
+  text-wrap: balance;
 }
 h1 { font-weight: 400; }
 p { margin: 0 0 14px; }
@@ -83,14 +85,19 @@ img { display: block; max-width: 100%; }
   background: transparent; border: 1px solid transparent;
   padding: 9px 17px; border-radius: 999px;
 }
+.btn { transition: background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease; }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 .btn-primary { color: var(--color-accent); border-color: var(--color-accent); }
 .btn-primary:hover { background: color-mix(in srgb, var(--color-accent) 12%, transparent); }
 .btn-primary:active { background: color-mix(in srgb, var(--color-accent) 22%, transparent); }
+/* Solid, embossed-gold anchor button for the page's primary actions */
+.btn-solid { background: var(--color-accent-700); color: var(--color-accent-100); border-color: var(--color-accent-700); }
+.btn-solid:hover { background: var(--color-accent-800); border-color: var(--color-accent-800); color: var(--color-accent-100); }
+.btn-solid:active { background: var(--color-accent-900); }
 .btn-secondary { border-color: var(--color-divider); }
 .btn-secondary:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
-.btn-ghost { color: var(--color-accent); padding-inline: 4px; }
-.btn-ghost:hover { background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
+.btn-ghost { color: var(--color-accent-700); padding-inline: 4px; }
+.btn-ghost:hover { color: var(--color-accent-800); background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
 .btn-block { width: 100%; }
 
 /* — cards — */
@@ -101,6 +108,10 @@ img { display: block; max-width: 100%; }
 }
 .card-kicker { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent); }
 .elev-md { box-shadow: var(--shadow-md); }
+.card { transition: box-shadow .22s ease, transform .22s ease, border-color .22s ease; }
+@media (prefers-reduced-motion: no-preference) {
+  .lift:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-divider)); }
+}
 
 /* — tags (pill) — */
 .tag {
@@ -115,10 +126,18 @@ img { display: block; max-width: 100%; }
 /* — nav — */
 .nav {
   display: flex; align-items: center; justify-content: space-between; gap: 18px;
+  border-top: 3px solid var(--color-accent);
   border-bottom: 1px solid var(--color-divider); padding: 18px 48px;
 }
 .nav a { color: var(--color-text); text-decoration: none; font-size: 15px; }
 .nav a:hover { color: var(--color-accent-700); }
+.nav-anchor { position: relative; padding-bottom: 2px; }
+.nav-anchor::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 1.5px;
+  background: var(--color-accent); transform: scaleX(0); transform-origin: left center;
+  transition: transform .22s ease;
+}
+.nav-anchor:hover::after { transform: scaleX(1); }
 .brand-home { transition: opacity .12s; }
 .brand-home:hover { opacity: .68; }
 
@@ -133,6 +152,13 @@ img { display: block; max-width: 100%; }
 
 details summary::-webkit-details-marker { color: var(--color-accent); }
 .table-wrap { overflow-x: auto; }
+
+/* Soft warm glow grounding the hero — reads as paper catching light, not a flat panel */
+.hero-section {
+  background:
+    radial-gradient(1100px 520px at 82% 8%, color-mix(in srgb, var(--color-accent-100) 85%, transparent) 0%, transparent 62%),
+    radial-gradient(900px 600px at 0% 100%, color-mix(in srgb, var(--color-accent-100) 45%, transparent) 0%, transparent 55%);
+}
 
 /* Collapse the two-column hero before the columns get cramped */
 @media (max-width: 1024px) {
@@ -354,7 +380,7 @@ function navBar() {
       <a class="nav-anchor" href="#how" data-nav>How it works</a>
       <a class="nav-anchor" href="#inside" data-nav>What's inside</a>
       <a class="nav-anchor" href="#pricing" data-nav>Pricing</a>
-      <button class="btn btn-primary" data-sample>Review my offer</button>
+      <button class="btn btn-solid" data-sample>Review my offer</button>
     </div>
   </nav>`;
 }
@@ -408,7 +434,7 @@ function landing() {
       </div>
     </div>
 
-    <section class="pad" style="max-width:1900px;margin:0 auto;padding:64px 48px 60px;">
+    <section class="pad hero-section" style="max-width:1900px;margin:0 auto;padding:72px 48px 64px;">
       <div class="grid-collapse hero-grid" style="display:grid;grid-template-columns:1.05fr 0.95fr;gap:64px;align-items:center;">
         <div style="text-align:left;">
           <div class="hero-eyebrow" style="font-size:13px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:22px;">Offer analysis for healthcare professionals</div>
@@ -416,12 +442,12 @@ function landing() {
           <div style="width:64px;height:1px;background:var(--color-accent);margin:26px 0;"></div>
           <p style="font-size:20px;line-height:1.5;max-width:32ch;margin:0;">Your first contract is a five-figure decision. Bailey reads it like a CPA, a lawyer, and a mentor — and hands you the grade, the math, and the email that fixes it.</p>
           <div style="display:flex;gap:14px;justify-content:flex-start;margin-top:36px;flex-wrap:wrap;">
-            <label class="btn btn-primary" style="cursor:pointer;font-size:16px;padding:15px 34px;">Upload an offer<input type="file" accept=".pdf,.docx,.txt" data-file style="display:none;"></label>
+            <label class="btn btn-solid" style="cursor:pointer;font-size:16px;padding:15px 34px;">Upload an offer<input type="file" accept=".pdf,.docx,.txt" data-file style="display:none;"></label>
             <button class="btn btn-secondary" style="font-size:16px;padding:15px 34px;" data-sample>Try the sample offer</button>
           </div>
           <p class="text-muted" style="font-size:13px;margin-top:16px;">PDF, DOCX or TXT · $129 a review · students $79</p>
         </div>
-        <div class="card elev-md" style="padding:36px 40px;">
+        <div class="card elev-md lift" style="padding:36px 40px;">
           <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:22px;">Sample diagnosis</div>
           <div class="hero-card-body" style="display:grid;grid-template-columns:180px 1fr;gap:36px;align-items:center;">
             <div class="hero-ring" style="width:180px;height:180px;border-radius:50%;border:1.5px solid var(--color-accent);background:var(--color-accent-100);display:flex;flex-direction:column;align-items:center;justify-content:center;">
@@ -472,41 +498,42 @@ function landing() {
       </div>
       <div class="grid-collapse" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
         ${[["Bailey found $19,000 of lab-fee math I'd have signed without reading twice. I sent the email — they moved the fees after the split.","R. Okafor · DDS '25, Chicago"],["My attorney quoted $900 and two weeks. Bailey did the first pass in four minutes, and the lawyer only checked two clauses.","S. Lindqvist · DO, Family Medicine"],["The exit-bill section is the thing nobody tells you about. I asked for a pro-rated clawback and got it.","M. Patel · NP, Austin"]].map(([q,a]) => `
-          <div class="card" style="padding:26px;"><div style="font-family:var(--font-heading);font-size:56px;line-height:0.5;color:var(--color-accent-300);height:22px;">“</div><p style="font-family:var(--font-heading);font-style:italic;font-size:18px;line-height:1.35;margin:0 0 16px;">${q}</p><div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);border-top:1px solid var(--color-divider);padding-top:12px;">${a}</div></div>`).join("")}
+          <div class="card lift" style="padding:26px;"><div style="font-family:var(--font-heading);font-size:56px;line-height:0.5;color:var(--color-accent-300);height:22px;">“</div><p style="font-family:var(--font-heading);font-style:italic;font-size:18px;line-height:1.35;margin:0 0 16px;">${q}</p><div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);border-top:1px solid var(--color-divider);padding-top:12px;">${a}</div></div>`).join("")}
       </div>
     </section>
 
     <section id="pricing" class="pad" style="max-width:1900px;margin:0 auto;padding:72px 48px 0;">
       <div style="text-align:left;margin-bottom:32px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Pricing</div><h2 style="font-size:44px;margin:8px 0 0;">Pay per review. <em style="color:var(--color-accent-700);">No subscription.</em></h2></div>
-      <div class="grid-collapse" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch;">
-        <div class="card" style="padding:28px;display:flex;flex-direction:column;">
+      <div class="grid-collapse" style="display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:stretch;">
+
+        <div class="card lift" style="padding:30px 28px;display:flex;flex-direction:column;">
           <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Single review</div>
-          <div style="font-family:var(--font-heading);font-size:46px;font-feature-settings:'tnum';margin:10px 0 4px;">$129</div>
-          <p class="text-muted" style="font-size:13px;flex:1;">One offer, fully graded — the grade, the math, the benchmarks, the priced red flags, and the negotiation email.</p>
-          <button class="btn btn-secondary btn-block" style="margin-top:14px;" data-sample>Review my offer</button></div>
-        <div class="card elev-md" style="padding:28px;display:flex;flex-direction:column;border-color:var(--color-accent);">
+          <div style="font-family:var(--font-heading);font-size:48px;font-feature-settings:'tnum';line-height:1;margin:12px 0 0;">$129</div>
+          <p class="text-muted" style="font-size:13px;flex:1;margin:14px 0 0;">One offer, fully graded — the grade, the math, the benchmarks, the priced red flags, and the ready-to-send negotiation email.</p>
+          <button class="btn btn-secondary btn-block" style="margin-top:20px;" data-sample>Review my offer</button>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--color-divider);text-align:center;">
+            <button class="btn btn-ghost" data-sample style="font-size:12.5px;">Student? $79 with a .edu email →</button></div>
+        </div>
+
+        <div class="card elev-md lift" style="padding:30px 28px;display:flex;flex-direction:column;border:1.5px solid var(--color-accent);border-top-width:3px;background:linear-gradient(180deg, color-mix(in srgb, var(--color-accent-100) 60%, transparent), transparent 42%);">
           <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Compare offers</span><span class="tag tag-accent">Best value</span></div>
-          <div style="font-family:var(--font-heading);font-size:46px;font-feature-settings:'tnum';color:var(--color-accent-700);margin:10px 0 4px;">$199</div>
-          <p class="text-muted" style="font-size:13px;flex:1;">Up to five offers, side by side — Bailey grades each one and highlights the strongest. The real question is never "is this good," it's "which one."</p>
-          <button class="btn btn-primary btn-block" style="margin-top:14px;" data-sample>Compare my offers</button></div>
-        <div class="card" style="padding:28px;display:flex;flex-direction:column;background:var(--color-accent-100);border-color:var(--color-accent-300);">
-          <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Students</span><span class="tag tag-outline">.edu verified</span></div>
-          <div style="font-family:var(--font-heading);font-size:46px;font-feature-settings:'tnum';color:var(--color-accent-900);margin:10px 0 4px;">$79</div>
-          <p class="text-muted" style="font-size:13px;flex:1;">The full single review — same grade, same math, same email. Verify your .edu address at checkout.</p>
-          <button class="btn btn-secondary btn-block" style="margin-top:14px;" data-sample>Claim student price</button></div>
-      </div>
-      <p class="text-muted" style="font-size:12px;margin-top:14px;">Students get 25% off every plan — verify a .edu email at checkout. One-time payment, no subscription, no auto-renewal.</p>
-      <div style="border:1px solid var(--color-accent-300);border-radius:18px;background:var(--color-accent-100);margin-top:26px;padding:30px 34px;display:grid;grid-template-columns:1.4fr 1fr;gap:30px;align-items:center;" class="grid-collapse">
-        <div>
-          <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:10px;">For schools &amp; programs</div>
-          <h3 style="font-size:26px;margin:0 0 10px;">Give every graduating student a Bailey review.</h3>
-          <p style="font-size:14px;line-height:1.6;margin:0;">Volume licensing for dental and medical schools, residency programs, and professional associations — with SSO, a co-branded student portal, and a usage dashboard. Better first-contract outcomes, and a story your career-services office can tell.</p>
+          <div style="font-family:var(--font-heading);font-size:48px;font-feature-settings:'tnum';color:var(--color-accent-700);line-height:1;margin:12px 0 0;">$199</div>
+          <p class="text-muted" style="font-size:13px;flex:1;margin:14px 0 0;">Up to five offers, side by side — Bailey grades each one and highlights the strongest. The real question is never "is this good," it's "which one."</p>
+          <button class="btn btn-solid btn-block" style="margin-top:20px;" data-sample>Compare my offers</button>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--color-divider);text-align:center;">
+            <button class="btn btn-ghost" data-sample style="font-size:12.5px;">Student? $149 with a .edu email →</button></div>
         </div>
-        <div class="b2b-cta" style="border-left:1px solid var(--color-accent-300);padding-left:34px;">
-          <p style="font-family:var(--font-heading);font-style:italic;font-size:22px;line-height:1.3;margin:0 0 16px;color:var(--color-accent-900);">Custom pricing, built around your program.</p>
-          <button class="btn btn-primary" style="flex:none;">Contact us</button>
+
+        <div class="card lift" style="padding:30px 28px;display:flex;flex-direction:column;background:var(--color-surface);">
+          <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Corporate</div>
+          <div style="font-family:var(--font-heading);font-style:italic;font-size:40px;color:var(--color-accent-900);line-height:1.04;margin:12px 0 0;">Let's talk</div>
+          <p class="text-muted" style="font-size:13px;flex:1;margin:14px 0 0;">Volume licensing for dental and medical schools, residency programs, and associations — SSO, a co-branded student portal, a usage dashboard, and pricing built around your program.</p>
+          <button class="btn btn-secondary btn-block" style="margin-top:20px;">Contact us</button>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--color-divider);text-align:center;">
+            <span class="text-muted" style="font-size:12px;">Every graduating student, covered</span></div>
         </div>
       </div>
+      <p class="text-muted" style="font-size:12px;margin-top:16px;">One-time payment — no subscription, no auto-renewal. Student pricing verified with a .edu email at checkout.</p>
     </section>
 
     <section style="margin-top:72px;background:var(--color-neutral-900);">
