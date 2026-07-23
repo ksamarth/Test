@@ -350,7 +350,7 @@ function reviewsBar() {
     ? `<button class="btn btn-primary" data-compare style="font-size:13px;padding:6px 14px;">Compare ${state.offers.length} offers</button>` : "";
   return `
   <div style="background:var(--color-surface);border-bottom:1px solid var(--color-divider);">
-    <div class="pad" style="max-width:1060px;margin:0 auto;padding:14px 48px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+    <div class="pad" style="max-width:1600px;margin:0 auto;padding:14px 48px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
       <span style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);margin-right:2px;">Your reviews</span>
       ${chips}${compareBtn}
     </div>
@@ -379,30 +379,30 @@ function switcher(current) {
 /* ─────────────────────────  landing  ───────────────────────── */
 function landing() {
   const err = state.error
-    ? `<div style="max-width:1060px;margin:16px auto 0;padding:0 48px;"><div class="card" style="border-color:var(--color-accent);color:var(--color-accent-800);background:var(--color-accent-100);">${esc(state.error)}</div></div>`
+    ? `<div style="max-width:1600px;margin:16px auto 0;padding:0 48px;"><div class="card" style="border-color:var(--color-accent);color:var(--color-accent-800);background:var(--color-accent-100);">${esc(state.error)}</div></div>`
     : "";
   return navBar() + reviewsBar() + err + `
   <main style="flex:1;width:100%;">
     <div style="background:var(--color-accent-100);border-bottom:1px solid var(--color-accent-300);">
-      <div class="pad" style="max-width:1060px;margin:0 auto;padding:11px 48px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div class="pad" style="max-width:1600px;margin:0 auto;padding:11px 48px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;">
         <span style="font-size:13px;color:var(--color-accent-900);letter-spacing:0.02em;"><strong style="font-family:var(--font-heading);font-style:italic;font-size:15px;">$50 for a single review</strong> — students, click here for 25% off.</span>
         <button class="btn btn-primary" style="padding:7px 18px;font-size:13px;" data-sample>Claim 25% off</button>
       </div>
     </div>
 
-    <section class="pad" style="max-width:1060px;margin:0 auto;padding:76px 48px 56px;text-align:left;">
+    <section class="pad" style="max-width:1600px;margin:0 auto;padding:76px 48px 56px;text-align:left;">
       <div class="hero-eyebrow" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:20px;">Offer analysis for healthcare professionals</div>
       <h1 class="hero-title" style="font-size:58px;line-height:1.12;margin-bottom:8px;">Before you sign,<br><em style="color:var(--color-accent-700);">ask Bailey.</em></h1>
-      <div style="width:64px;height:1px;background:var(--color-accent);margin:24px auto;"></div>
+      <div style="width:64px;height:1px;background:var(--color-accent);margin:24px 0;"></div>
       <p style="font-size:17px;max-width:60ch;margin:0;">Your first contract is a five-figure decision. Bailey reads it like a CPA, a lawyer, and a mentor — and hands you the grade, the math, and the email that fixes it.</p>
-      <div style="display:flex;gap:14px;justify-content:center;margin-top:32px;flex-wrap:wrap;">
+      <div style="display:flex;gap:14px;justify-content:flex-start;margin-top:32px;flex-wrap:wrap;">
         <label class="btn btn-primary" style="cursor:pointer;font-size:15px;padding:12px 28px;">Upload an offer<input type="file" accept=".pdf,.docx,.txt" data-file style="display:none;"></label>
         <button class="btn btn-secondary" style="font-size:15px;padding:12px 28px;" data-sample>Try the sample offer</button>
       </div>
       <p class="text-muted" style="font-size:12px;margin-top:14px;">PDF, DOCX or TXT · $50 · students 25% off</p>
     </section>
 
-    <section class="pad" style="max-width:1060px;margin:0 auto;padding:0 48px 64px;">
+    <section class="pad" style="max-width:1600px;margin:0 auto;padding:0 48px 64px;">
       <div class="card grid-collapse" style="padding:32px 36px;display:grid;grid-template-columns:220px 1fr;gap:40px;align-items:center;">
         <div style="text-align:left;border-right:1px solid var(--color-divider);padding-right:36px;">
           <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:10px;">Sample diagnosis</div>
@@ -423,13 +423,13 @@ function landing() {
     </section>
 
     <section style="border-top:1px solid var(--color-accent-300);border-bottom:1px solid var(--color-accent-300);background:var(--color-accent-100);">
-      <div class="pad stats-grid" style="max-width:1060px;margin:0 auto;padding:0 48px;display:grid;grid-template-columns:repeat(4,1fr);">
+      <div class="pad stats-grid" style="max-width:1600px;margin:0 auto;padding:0 48px;display:grid;grid-template-columns:repeat(4,1fr);">
         ${[["31","Clauses read per contract"],["$20k+","Hidden cost found in the sample"],["6","Asks ranked by dollar value"],["4 min","Upload to diagnosis"]].map(([n,l],i) => `
           <div style="padding:26px 24px;${i<3?'border-right:1px solid var(--color-divider);':''}text-align:left;"><div style="font-family:var(--font-heading);font-size:40px;font-feature-settings:'tnum';line-height:1;color:var(--color-accent-700);">${n}</div><div class="text-muted" style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;margin-top:8px;">${l}</div></div>`).join("")}
       </div>
     </section>
 
-    <section id="how" class="pad" style="max-width:1060px;margin:0 auto;padding:72px 48px 0;">
+    <section id="how" class="pad" style="max-width:1600px;margin:0 auto;padding:72px 48px 0;">
       <div style="text-align:left;margin-bottom:36px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">How it works</div><h2 style="font-size:38px;margin:8px 0 0;">Four minutes from PDF to plan.</h2></div>
       <div class="grid-collapse feature-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;">
         ${[["Upload the offer","PDF or pasted text — any clinical employment contract or offer letter."],["Bailey reads every clause","Every term benchmarked, your earnings modeled, exit costs totaled."],["You get the diagnosis","A grade, red flags with price tags — and the negotiation email, written."]].map(([t,b],i) => `
@@ -437,7 +437,7 @@ function landing() {
       </div>
     </section>
 
-    <section id="inside" class="pad" style="max-width:1060px;margin:0 auto;padding:72px 48px 0;">
+    <section id="inside" class="pad" style="max-width:1600px;margin:0 auto;padding:72px 48px 0;">
       <div style="text-align:left;margin-bottom:32px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">What's inside every review</div><h2 style="font-size:38px;margin:8px 0 0;">More than a pros-and-cons list.<br><em style="color:var(--color-accent-700);">A diagnosis with receipts.</em></h2></div>
       <div class="grid-collapse feature-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--color-divider);">
         ${[["The offer grade","One letter, four scored categories."],["What you'd actually earn","Three earnings scenarios, arithmetic shown."],["The price of leaving","Clawbacks, tail, non-compete — itemized and totaled."],["Every term vs. the market","Each clause held against real market ranges."],["Red flags with price tags","\"Cost if ignored: $20,000/year.\" Numbers get acted on."],["The email that fixes it","Ranked asks, folded into a ready-to-send email."]].map(([t,b],i) => `
@@ -445,10 +445,10 @@ function landing() {
       </div>
     </section>
 
-    <section class="pad" style="max-width:1060px;margin:0 auto;padding:72px 48px 0;">
+    <section class="pad" style="max-width:1600px;margin:0 auto;padding:72px 48px 0;">
       <div style="text-align:left;margin-bottom:8px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">For clinicians, by clinicians</div>
       <h2 style="font-size:38px;margin:8px 0 12px;">For every white coat, at every stage.</h2></div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:36px;">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-start;margin-bottom:36px;">
         ${["Dentistry · DDS / DMD","Medicine · MD / DO","NP & PA","Pharmacy · PharmD","Residency → attending"].map(t => `<span class="tag tag-outline">${t}</span>`).join("")}
       </div>
       <div class="grid-collapse" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
@@ -457,7 +457,7 @@ function landing() {
       </div>
     </section>
 
-    <section id="pricing" class="pad" style="max-width:1060px;margin:0 auto;padding:72px 48px 0;">
+    <section id="pricing" class="pad" style="max-width:1600px;margin:0 auto;padding:72px 48px 0;">
       <div style="text-align:left;margin-bottom:32px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Pricing</div><h2 style="font-size:38px;margin:8px 0 0;">Pay per review. <em style="color:var(--color-accent-700);">No subscription.</em></h2></div>
       <div class="grid-collapse" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch;">
         <div class="card" style="padding:28px;display:flex;flex-direction:column;">
@@ -484,14 +484,14 @@ function landing() {
     </section>
 
     <section style="margin-top:72px;background:var(--color-neutral-900);">
-      <div class="pad" style="max-width:1060px;margin:0 auto;padding:68px 48px;text-align:left;">
+      <div class="pad" style="max-width:1600px;margin:0 auto;padding:68px 48px;text-align:left;">
         <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-accent-400);margin-bottom:14px;">Before you sign</div>
         <h2 style="font-size:36px;color:var(--color-neutral-100);margin:0 0 26px;">Your signature is worth <em style="color:var(--color-accent-300);">more than you think.</em></h2>
         <button data-sample style="font-family:var(--font-body);font-size:14px;letter-spacing:0.04em;background:transparent;color:var(--color-accent-300);border:1px solid var(--color-accent-400);border-radius:999px;padding:13px 30px;cursor:pointer;">Upload your offer</button>
       </div>
     </section>
 
-    <footer class="pad" style="max-width:1060px;margin:0 auto;padding:28px 48px;text-align:left;">
+    <footer class="pad" style="max-width:1600px;margin:0 auto;padding:28px 48px;text-align:left;">
       <span style="font-family:var(--font-heading);font-size:17px;">Bailey</span>
       <p class="text-muted" style="font-size:11.5px;max-width:80ch;margin:10px auto 0;">Bailey is an educational tool. It does not provide legal, financial, or tax advice, and is not a substitute for review by a licensed attorney or CPA. Earnings figures are illustrative estimates. © 2026 Bailey.</p>
     </footer>
@@ -614,7 +614,7 @@ function report() {
   ].join("");
 
   return navBar() + `
-  <main class="pad" style="flex:1;width:100%;max-width:960px;margin:0 auto;padding:40px 48px 80px;">
+  <main class="pad" style="flex:1;width:100%;max-width:1200px;margin:0 auto;padding:40px 48px 80px;">
     ${switcher(offer.id)}
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px;flex-wrap:wrap;">
       ${tags}
@@ -755,7 +755,7 @@ function compare() {
   const best = offers.slice().sort((p, q) => q.analysis.score.overall - p.analysis.score.overall)[0];
 
   return navBar() + `
-  <main class="pad" style="flex:1;width:100%;max-width:1060px;margin:0 auto;padding:40px 48px 80px;">
+  <main class="pad" style="flex:1;width:100%;max-width:1600px;margin:0 auto;padding:40px 48px 80px;">
     ${switcher("compare")}
     <div style="text-align:center;margin-bottom:8px;">
       <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Side by side</div>
