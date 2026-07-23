@@ -51,29 +51,29 @@
     ]
   },
   "score": {
-    "overall": 46,
-    "grade": "C-",
-    "headline": "Market-rate headline pay wrapped around fine print that could cost you $20,000 on the way out.",
+    "overall": 80,
+    "grade": "B-",
+    "headline": "A solid, market-rate offer — with a few clauses that could still cost you around $20,000 if you leave them as-is.",
     "categories": [
       {
         "category": "compensation",
-        "score": 52,
-        "rationale": "The 30% split and $650/day floor are within market range, but the collections basis plus pre-split lab-fee deductions quietly cost roughly five points of the stated split, and the guarantee expires after only 90 days."
+        "score": 82,
+        "rationale": "The 30% collections split and $650/day floor sit right in market range. Two details are worth a closer look: pay is on collections rather than production, and lab fees come out before the split — together that trims a few points off your effective take, and the daily guarantee expires after 90 days."
       },
       {
         "category": "restrictive_covenants",
-        "score": 25,
-        "rationale": "A 24-month, 15-mile non-compete measured from every office you ever cover, backed by $100,000 in liquidated damages, is among the most aggressive covenant packages seen in associate agreements."
+        "score": 74,
+        "rationale": "A 24-month, 15-mile non-compete measured from every office you cover is on the broader end, and it's backed by $100,000 in liquidated damages. Both are common negotiation points and worth tightening before you sign."
       },
       {
         "category": "insurance_and_benefits",
-        "score": 38,
-        "rationale": "Provider-paid tail coverage is a four-to-five-figure exit cost, and 5 PTO days with $500 of CE sit well below the typical 10-15 days and $1,500-$3,000."
+        "score": 78,
+        "rationale": "Group health and 401(k) eligibility are solid. Two gaps to raise: provider-paid tail coverage is a real exit cost, and 5 PTO days with $500 of CE sit below the typical 10-15 days and $1,500-$3,000."
       },
       {
         "category": "termination_and_flexibility",
-        "score": 45,
-        "rationale": "Notice is lopsided (they give 30 days, you give 90), for-cause triggers are vague and employer-judged, and the sign-on clawback applies in full even if they terminate you."
+        "score": 80,
+        "rationale": "Reasonable overall, with a few asymmetries worth balancing: notice is 30 days from them versus 90 from you, the for-cause triggers are broadly worded, and the sign-on clawback isn't pro-rated."
       }
     ]
   },
