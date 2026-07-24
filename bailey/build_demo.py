@@ -30,7 +30,8 @@ old_flow_end = body.index("function copyEmail(")
 demo_flow = (
     demo_js + "\n"
     "function analyzeFile(file){beginAnalysis(function(){return Promise.resolve({filename:file.name,analysis:nextGood()});},file.name);}\n"
-    "function analyzeSample(id){beginAnalysis(function(){return Promise.resolve({filename:\"Sample offer\",analysis:demoById(id)});},\"Sample offer\");}\n"
+    "function analyzeSample(id){beginAnalysis(function(){return Promise.resolve({filename:\"Sample offer\",analysis:demoById(id)});},\"Sample offer\",{sampleId:id||\"dso\"});}\n"
+    "function sampleAnalysisFor(id){return Promise.resolve(demoById(id));}\n"
 )
 body = body[:old_flow_start] + demo_flow + body[old_flow_end:]
 

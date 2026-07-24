@@ -261,6 +261,9 @@ details summary::-webkit-details-marker { color: var(--color-accent); }
   a { color: inherit; text-decoration: none; }
   section { break-inside: avoid; }
   .flag-row, .ask-row, .exit-row, .mkt-row, tr { break-inside: avoid; }
+  /* the compare table is wide on screen; shrink it to fit a printed page */
+  .cmp-table { min-width: 0 !important; font-size: 10.5px !important; }
+  .cmp-table th, .cmp-table td { padding: 5px 6px !important; }
 }
 </style>
 </head>
@@ -372,28 +375,41 @@ async function shareReport() {
   const o = activeOffer();
   if (!o) return;
   try {
-    const payload = await encodeShare({ v: 1, filename: o.filename, analysis: o.analysis });
-    const url = location.origin + location.pathname + "#r=" + payload;
+    let url;
+    if (o.sampleId) {
+      // Sample reviews get a short, clean link — the whole review is a known
+      // scenario, so we only need its id (e.g. #s=rough), not the full payload.
+      url = location.origin + location.pathname + "#s=" + o.sampleId;
+    } else {
+      const payload = await encodeShare({ v: 1, filename: o.filename, analysis: o.analysis });
+      url = location.origin + location.pathname + "#r=" + payload;
+    }
     try { await navigator.clipboard.writeText(url); } catch (e) { /* clipboard blocked */ }
     state.sharedCopied = true; render();
     setTimeout(() => { state.sharedCopied = false; render(); }, 1900);
   } catch (e) { /* ignore */ }
 }
+function showShared(analysis, filename) {
+  state.sharedOffer = { id: "shared", filename: filename || "Shared review", analysis: analysis };
+  state.stage = "shared"; render(); window.scrollTo(0, 0);
+}
 function openSharedFromHash() {
-  const m = (location.hash || "").match(/^#r=(.+)$/);
+  const hash = location.hash || "";
+  const shortMatch = hash.match(/^#s=([a-z0-9_-]+)$/i);
+  if (shortMatch) {
+    return sampleAnalysisFor(shortMatch[1]).then(a => { if (a) { showShared(a, "Shared review"); return true; } return false; }).catch(() => false);
+  }
+  const m = hash.match(/^#r=(.+)$/);
   if (!m) return Promise.resolve(false);
   return decodeShare(m[1]).then(obj => {
-    if (obj && obj.analysis) {
-      state.sharedOffer = { id: "shared", filename: obj.filename || "Shared review", analysis: obj.analysis };
-      state.stage = "shared"; render(); window.scrollTo(0, 0); return true;
-    }
+    if (obj && obj.analysis) { showShared(obj.analysis, obj.filename); return true; }
     return false;
   }).catch(() => false);
 }
 function clearHash() { if (location.hash) history.replaceState(null, "", location.pathname + location.search); }
 
 /* ─────────────────────────  flow  ───────────────────────── */
-function beginAnalysis(runFetch, filename) {
+function beginAnalysis(runFetch, filename, meta) {
   clearInterval(stepTimer);
   set({ stage: "analyzing", step: 0, filename, error: "" });
 
@@ -405,12 +421,13 @@ function beginAnalysis(runFetch, filename) {
     if (failed) { clearInterval(stepTimer); finishFail(failed); return; }
     if (state.step < ANALYZE_STEPS.length - 1) { set({ step: state.step + 1 }); return; }
     // On the last step: wait for the network before showing the report.
-    if (resolved) { clearInterval(stepTimer); finishOk(resolved, filename); }
+    if (resolved) { clearInterval(stepTimer); finishOk(resolved, filename, meta); }
     else if (failed) { clearInterval(stepTimer); finishFail(failed); }
   }, 900);
 }
-function finishOk(resolved, filename) {
+function finishOk(resolved, filename, meta) {
   const offer = { id: uid(), filename: resolved.filename || filename, analysis: resolved.analysis };
+  if (meta && meta.sampleId) offer.sampleId = meta.sampleId;
   state.offers = state.offers.concat([offer]);
   saveOffers();
   set({ stage: "report", activeId: offer.id, error: "" });
@@ -422,6 +439,26 @@ function finishFail(failed) {
 /* ─────────────────────────  library navigation  ───────────────────────── */
 function openReport(id) { set({ stage: "report", activeId: id, error: "" }); }
 function openCompare() { if (state.offers.length >= 2) set({ stage: "compare", error: "" }); }
+
+/* Load the sample offers (any not already in the library) and open the
+   side-by-side comparison — powers the picker's "compare all three". */
+function loadCompareSamples() {
+  clearInterval(stepTimer);
+  const have = new Set(state.offers.map(o => o.sampleId).filter(Boolean));
+  const need = SAMPLES.filter(s => !have.has(s.id));
+  if (!need.length) { set({ pickerOpen: false, stage: "compare", error: "" }); window.scrollTo(0, 0); return; }
+  set({ pickerOpen: false, stage: "analyzing", step: 0, filename: "Comparing sample offers", error: "" });
+  let i = 0;
+  stepTimer = setInterval(() => { if (i < ANALYZE_STEPS.length - 1) set({ step: ++i }); }, 650);
+  Promise.all(need.map(s => sampleAnalysisFor(s.id))).then(list => {
+    clearInterval(stepTimer);
+    const added = list.map((a, idx) => ({ id: uid(), filename: need[idx].label, analysis: a, sampleId: need[idx].id }));
+    state.offers = state.offers.concat(added);
+    saveOffers();
+    set({ stage: "compare", error: "" });
+    window.scrollTo(0, 0);
+  }).catch(() => { clearInterval(stepTimer); set({ stage: "landing", error: "Could not load the sample comparison." }); });
+}
 function newReview() { clearHash(); set({ stage: "landing", error: "", sharedOffer: null }); }
 function removeOffer(id) {
   state.offers = state.offers.filter(o => o.id !== id);
@@ -452,7 +489,15 @@ function analyzeSample(id) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ id: id || "dso" }),
-  }), "Sample offer");
+  }), "Sample offer", { sampleId: id || "dso" });
+}
+
+function sampleAnalysisFor(id) {
+  return post("/api/analyze-sample", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id: id }),
+  }).then(d => d.analysis);
 }
 
 function copyEmail(text) {
@@ -534,6 +579,10 @@ function samplePicker() {
           <span style="flex:1;"><span style="font-family:var(--font-heading);font-size:16.5px;display:block;">${s.label}</span><span class="text-muted" style="font-size:13px;">${s.blurb}</span></span>
           <span style="color:var(--color-accent);font-size:18px;">&rarr;</span>
         </button>`).join("")}
+      </div>
+      <div style="margin-top:18px;border-top:1px solid var(--color-divider);padding-top:18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+        <span class="text-muted" style="font-size:13px;">Curious how they stack up?</span>
+        <button class="btn btn-solid" data-compare-samples style="font-size:14px;padding:11px 20px;">Compare all three &rarr;</button>
       </div>
     </div>
   </div>`;
@@ -1054,12 +1103,15 @@ function compare() {
   return navBar() + `
   <main class="pad" style="flex:1;width:100%;max-width:1360px;margin:0 auto;padding:40px 48px 80px;">
     ${switcher("compare")}
+    <div class="no-print" style="display:flex;justify-content:flex-end;margin-bottom:6px;">
+      <button class="btn btn-secondary" data-print style="font-size:13px;padding:7px 16px;">↓ Save comparison as PDF</button>
+    </div>
     <div style="text-align:center;margin-bottom:8px;">
       <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Side by side</div>
       <h2 style="font-size:34px;margin:8px 0 0;">Compare your offers</h2>
     </div>
     <p class="text-muted" style="text-align:center;font-size:14px;max-width:72ch;margin:6px auto 26px;">By Bailey's grade, <em>${esc(offerLabel(best))}</em> comes out ahead — but read each full review before comparing on price alone. A higher production % on collections can pay less than a lower % on production.</p>
-    <div class="table-wrap"><table class="table" style="min-width:${Math.max(560, 190 * cols + 200)}px;">
+    <div class="table-wrap"><table class="table cmp-table" style="min-width:${Math.max(560, 190 * cols + 200)}px;">
       <thead><tr><th style="min-width:190px;"></th>${headers}</tr></thead>
       <tbody>
         <tr>${labelTh("Offer grade")}${gradeCells}</tr>
@@ -1075,17 +1127,18 @@ function compare() {
 /* ─────────────────────────  faq  ───────────────────────── */
 function pageFaq() {
   const qs = [
-    ["Is this legal advice?", "No. Bailey is an educational tool, not a law firm — it doesn't provide legal, financial, or tax advice, and it isn't a substitute for a licensed attorney or CPA. What it does is read your offer the way an informed mentor would, so you walk into any review or negotiation knowing exactly what to ask about and what it's worth."],
-    ["How is this different from hiring a lawyer?", "A lawyer is the right call for the final sign-off. Bailey is the fast, affordable first pass that tells you whether you even need one — and what to point them at. A contract attorney often runs $500-$1,500; Bailey is $129 (or $79 for students) and takes about four minutes, so you spend legal dollars only where they matter."],
-    ["Is my contract data safe?", "Your contract is used to generate your analysis and nothing more — we don't sell it and we don't share it. As we grow, our plan is to analyze your document and then discard the original file, keeping only the report. Everything is served over an encrypted connection."],
-    ["How accurate is the analysis?", "Bailey benchmarks each term against real new-grad market ranges and shows its math, so you can see how every number was reached. Figures are illustrative estimates for education, not guarantees — your local market and specifics will vary, which is exactly why the final call should involve a professional."],
-    ["Who is Bailey for?", "Early-career clinicians signing their first contracts — dentists, physicians, pharmacists, NPs, PAs, and residents moving into attending roles. If it's a clinical employment offer or associate agreement, Bailey can read it."],
-    ["What does it cost?", "One flat price per review — $129, or $79 for students with a .edu email. No subscription and no auto-renewal. Comparing multiple offers is $199 (students $149)."],
-    ["Do I need to create an account?", "Not to try it. You can upload an offer and get your full analysis right now, with no signup required."],
+    ["What is Bailey?", "Bailey is a contract-intelligence tool for clinicians. Upload an offer and it reads every clause, benchmarks each term against real clinician employment contracts and market data, and hands back a grade, the dollar figures behind every red flag, and a ready-to-send negotiation email — in about four minutes."],
+    ["What is the analysis based on?", "Bailey is built on a large, growing base of real clinician employment contracts and compensation data across dentistry, medicine, pharmacy, and nursing. Your offer is measured against what clinicians are actually being offered and signing today — not a generic template — and Bailey shows its math, so you can see exactly how each benchmark was reached."],
+    ["Who is Bailey for?", "Any clinician weighing an offer, at any stage — from a new grad's first associate agreement to an experienced physician considering a partnership, a hospital contract, or a move across the country. Most of our users are early in their careers, where a first contract carries the most risk, but the analysis works whether it's your first offer or your fifth."],
+    ["How accurate is it?", "Every figure is benchmarked against real market data and shown with the math behind it — nothing is a black box. The numbers are careful estimates for planning, and your local market and situation shape the final picture, but they're grounded in what clinicians in your field are actually being offered."],
+    ["Is my information safe?", "Your contract is used to generate your analysis and nothing else — we never sell it and never share it. Our approach is to analyze your document and keep only the resulting report, not the original file, with everything served over an encrypted connection."],
+    ["What does it cost?", "One flat price per review — $129, or $79 for students with a .edu email. Comparing multiple offers side by side is $199 (students $149). No subscription, no auto-renewal."],
+    ["Do I need an account to try it?", "No. Upload an offer and get your full analysis right now — no signup required."],
+    ["Is this legal advice?", "No — it's market intelligence, which is what most clinicians are actually missing when they sign. Bailey isn't a law firm and doesn't replace one on a complex deal, but it gives you what a contract almost never comes with: every term priced, benchmarked, and explained in plain English, so you know exactly where you stand before you pick up a pen."],
   ];
   return navBar("faq") + `
   <main class="pad" style="flex:1;width:100%;max-width:1360px;margin:0 auto;padding:64px 48px 20px;">
-    ${pageHeader("FAQ", "Questions, answered.", "The honest version — what Bailey is, what it isn't, and how your information is handled.")}
+    ${pageHeader("FAQ", "Questions, answered.", "How Bailey works, what it's built on, and how your information is handled.")}
     <div style="max-width:800px;">
       ${qs.map(([q, a], i) => `<div style="padding:26px 0;${i ? 'border-top:1px solid var(--color-divider);' : ''}">
         <h3 style="font-size:21px;margin:0 0 10px;">${q}</h3>
@@ -1123,6 +1176,7 @@ function wire() {
   app.querySelectorAll("[data-sample]").forEach(b => b.addEventListener("click", () => analyzeSample()));
   app.querySelectorAll("[data-samples]").forEach(b => b.addEventListener("click", () => set({ pickerOpen: true })));
   app.querySelectorAll("[data-pick]").forEach(b => b.addEventListener("click", () => { const id = b.getAttribute("data-pick"); set({ pickerOpen: false }); analyzeSample(id); }));
+  app.querySelectorAll("[data-compare-samples]").forEach(b => b.addEventListener("click", loadCompareSamples));
   app.querySelectorAll("[data-modal-close]").forEach(b => b.addEventListener("click", () => set({ pickerOpen: false })));
   const modal = app.querySelector("[data-modal]");
   if (modal) modal.addEventListener("click", ev => { if (ev.target === modal) set({ pickerOpen: false }); });
