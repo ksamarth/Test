@@ -418,6 +418,13 @@ function pageHeader(kicker, titleHtml, subHtml) {
   </div>`;
 }
 
+function testimonialCards() {
+  return `<div class="grid-collapse" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+        ${[["Bailey found $19,000 of lab-fee math I'd have signed without reading twice. I sent the email — they moved the fees after the split.","R. Okafor · DDS '25, Chicago"],["My attorney quoted $900 and two weeks. Bailey did the first pass in four minutes, and the lawyer only checked two clauses.","S. Lindqvist · DO, Family Medicine"],["The exit-bill section is the thing nobody tells you about. I asked for a pro-rated clawback and got it.","M. Patel · NP, Austin"]].map(([q,a]) => `
+          <div class="card lift" style="padding:26px;"><div style="font-family:var(--font-heading);font-size:56px;line-height:0.5;color:var(--color-accent-300);height:22px;">&ldquo;</div><p style="font-family:var(--font-heading);font-style:italic;font-size:18px;line-height:1.35;margin:0 0 16px;">${q}</p><div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);border-top:1px solid var(--color-divider);padding-top:12px;">${a}</div></div>`).join("")}
+      </div>`;
+}
+
 function ctaBlock(note) {
   return `<div style="margin-top:56px;border-top:1px solid var(--color-divider);padding-top:36px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
     <label class="btn btn-solid" style="cursor:pointer;font-size:16px;padding:15px 34px;">Upload an offer<input type="file" accept=".pdf,.docx,.txt" data-file style="display:none;"></label>
@@ -498,7 +505,7 @@ function landing() {
           <div class="hero-eyebrow" style="font-size:13px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:24px;">Offer analysis for healthcare professionals</div>
           <h1 class="hero-title" style="font-size:76px;line-height:1.03;margin-bottom:8px;">Before you sign,<br><em style="color:var(--color-accent-700);">ask Bailey.</em></h1>
           <div style="width:64px;height:1px;background:var(--color-accent);margin:28px 0;"></div>
-          <p style="font-size:20px;line-height:1.55;max-width:40ch;margin:0;">Upload your job offer. Bailey grades it, prices the clauses that could cost you, and writes the email to fix them — in about four minutes.</p>
+          <p style="font-size:20px;line-height:1.55;max-width:40ch;margin:0;">Upload your clinical job offer — dental, medical, pharmacy, nursing, any specialty. Bailey grades it, prices the clauses that could cost you, and writes the email to fix them — in about four minutes.</p>
           <div style="display:flex;gap:14px;justify-content:flex-start;margin-top:38px;flex-wrap:wrap;">
             <label class="btn btn-solid" style="cursor:pointer;font-size:16px;padding:15px 34px;">Upload an offer<input type="file" accept=".pdf,.docx,.txt" data-file style="display:none;"></label>
             <button class="btn btn-secondary" style="font-size:16px;padding:15px 34px;" data-sample>Try the sample offer</button>
@@ -540,6 +547,14 @@ function landing() {
       <div style="margin-top:38px;">
         <button class="btn btn-primary" style="font-size:15px;padding:12px 26px;" data-page="how">See how it works &rarr;</button>
       </div>
+    </section>
+
+    <section class="pad" style="max-width:1900px;margin:0 auto;padding:0 48px;">
+      <div style="border-top:1px solid var(--color-divider);padding-top:52px;margin-bottom:32px;">
+        <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Reviews</div>
+        <h2 style="font-size:40px;margin:8px 0 0;">Signed with <em style="color:var(--color-accent-700);">confidence.</em></h2>
+      </div>
+      ${testimonialCards()}
     </section>
 
     <section class="pad" style="max-width:1900px;margin:0 auto;padding:0 48px 96px;">
@@ -601,10 +616,7 @@ function pageInside() {
       <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-start;margin-bottom:36px;">
         ${["Dentistry · DDS / DMD","Medicine · MD / DO","NP & PA","Pharmacy · PharmD","Residency → attending"].map(t => `<span class="tag tag-outline">${t}</span>`).join("")}
       </div>
-      <div class="grid-collapse" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
-        ${[["Bailey found $19,000 of lab-fee math I'd have signed without reading twice. I sent the email — they moved the fees after the split.","R. Okafor · DDS '25, Chicago"],["My attorney quoted $900 and two weeks. Bailey did the first pass in four minutes, and the lawyer only checked two clauses.","S. Lindqvist · DO, Family Medicine"],["The exit-bill section is the thing nobody tells you about. I asked for a pro-rated clawback and got it.","M. Patel · NP, Austin"]].map(([q,a]) => `
-          <div class="card lift" style="padding:26px;"><div style="font-family:var(--font-heading);font-size:56px;line-height:0.5;color:var(--color-accent-300);height:22px;">“</div><p style="font-family:var(--font-heading);font-style:italic;font-size:18px;line-height:1.35;margin:0 0 16px;">${q}</p><div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);border-top:1px solid var(--color-divider);padding-top:12px;">${a}</div></div>`).join("")}
-      </div>
+      ${testimonialCards()}
     </section>
 
     ${ctaBlock()}
