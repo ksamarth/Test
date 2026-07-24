@@ -224,6 +224,8 @@ img { display: block; max-width: 100%; }
 .student-bar:hover { background: var(--color-accent-200) !important; }
 .sample-pick { transition: border-color .15s ease, background .15s ease; }
 .sample-pick:hover { border-color: var(--color-accent) !important; background: color-mix(in srgb, var(--color-accent) 6%, transparent) !important; }
+.quiz-opt { transition: border-color .15s ease, background .15s ease; }
+.quiz-opt:hover { border-color: var(--color-accent) !important; }
 
 /* \u2014 tables \u2014 */
 .table { width: 100%; border-collapse: collapse; font-size: 14px; }
@@ -393,6 +395,20 @@ function saveOffers() {
   try { localStorage.setItem(STORE_KEY, JSON.stringify(state.offers)); } catch (e) { /* quota / private mode */ }
 }
 
+const PROFILE_KEY = "bailey.profile.v1";
+function loadProfile() { try { return JSON.parse(localStorage.getItem(PROFILE_KEY)) || null; } catch (e) { return null; } }
+function saveProfile() { try { localStorage.setItem(PROFILE_KEY, JSON.stringify(state.profile)); } catch (e) { /* ignore */ } }
+
+/* Optional "tell Bailey about your situation" questionnaire \u2014 re-weights the
+   review to the reader's life. Kept short; answers live only in the browser. */
+const QUIZ = [
+  { key: "stage",    q: "Where are you in your career?", opts: [["student", "Student"], ["newgrad", "New grad"], ["early", "1-5 years in"], ["established", "Established"]] },
+  { key: "ties",     q: "How tied are you to this area?", opts: [["rooted", "Rooted here"], ["some", "Somewhat"], ["open", "Open to relocating"]] },
+  { key: "debt",     q: "Student debt?", opts: [["none", "None"], ["low", "Under $100k"], ["mid", "$100k-$250k"], ["high", "Over $250k"]] },
+  { key: "plans",    q: "Anything big on the horizon?", opts: [["relocate", "Relocating soon"], ["family", "Starting a family"], ["home", "Buying a home"], ["none", "Not right now"]] },
+  { key: "priority", q: "What matters most in this job?", opts: [["income", "Maximizing income"], ["stability", "Stability & predictability"], ["flexibility", "Flexibility & lifestyle"]] },
+];
+
 /* A session library of analyzed offers, persisted client-side. */
 const state = {
   stage: "landing",     // landing | analyzing | report | compare | shared | how | features | pricing | faq
@@ -403,6 +419,9 @@ const state = {
   sharedOffer: null,    // a read-only review decoded from a #r= share link
   sharedCopied: false,  // "Link copied" state on the Share button
   pickerOpen: false,    // sample-offer picker modal
+  profile: loadProfile(), // optional questionnaire answers
+  quizOpen: false,      // questionnaire modal
+  quizDraft: {},        // in-progress questionnaire selections
 };
 let stepTimer = null;
 
@@ -771,11 +790,22 @@ function pageHow() {
         <div style="padding:0 32px;${i<2?'border-right:1px solid var(--color-divider);':''}${i===0?'padding-left:0;':''}${i===2?'padding-right:0;':''}"><div style="font-family:var(--font-heading);font-size:34px;color:var(--color-accent);font-feature-settings:'tnum';">${ROMAN[i]}</div><strong style="font-size:16px;">${t}</strong><p class="text-muted" style="font-size:13.5px;margin-top:6px;line-height:1.6;">${b}</p></div>`).join("")}
     </div>
 
-    <section style="margin-top:66px;border-top:1px solid var(--color-divider);padding-top:40px;">
+    <section style="margin-top:66px;border-top:1px solid var(--color-divider);padding-top:44px;">
       <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Under the hood</div>
-      <h3 style="font-size:30px;margin:8px 0 24px;">What Bailey does in those four minutes</h3>
-      <div class="grid-collapse" style="display:grid;grid-template-columns:1fr 1fr;gap:12px 40px;max-width:920px;">
-        ${ANALYZE_STEPS.map((t,i) => `<div style="display:flex;gap:14px;align-items:baseline;font-size:15px;padding:8px 0;border-bottom:1px solid var(--color-divider);"><span style="font-family:var(--font-heading);color:var(--color-accent);font-feature-settings:'tnum';">${ROMAN[i]}</span><span>${esc(t)}</span></div>`).join("")}
+      <h3 style="font-size:30px;margin:8px 0 6px;">What Bailey does in those four minutes</h3>
+      <p class="text-muted" style="font-size:15px;line-height:1.6;max-width:58ch;margin:0;">Six passes over your contract \u2014 each one turns a clause into a number you can actually act on.</p>
+      <div style="max-width:900px;margin-top:14px;">
+        ${[
+          ["Reads every clause","Bailey parses the whole agreement \u2014 compensation, guarantees, production splits, non-compete, tail coverage, termination, records ownership \u2014 and pulls out every term that carries money or risk, including the ones buried in the definitions."],
+          ["Benchmarks against real offers","Each term is measured against real clinician employment contracts and compensation data in your field, so you can see where your offer lands: above, at, or below what clinicians are actually signing right now."],
+          ["Models what you'd really earn","Conservative, expected, and strong scenarios with the arithmetic shown \u2014 collection rates, lab fees, guarantees and all \u2014 so you see your likely take-home, not just the headline percentage."],
+          ["Totals the cost of leaving","Clawbacks, malpractice tail, the true reach of the non-compete \u2014 Bailey itemizes and prices what walking away would cost, the number almost no offer spells out for you."],
+          ["Prices every red flag","No vague warnings. Each issue gets a dollar figure and a timing \u2014 \u201cabout $20,000 a year, ongoing\u201d \u2014 so you know exactly what's worth negotiating and what to let go."],
+          ["Writes your negotiation email","Bailey ranks your asks by dollar impact and folds them into a ready-to-send email in a warm, professional tone \u2014 the part most people find hardest, done for you."],
+        ].map(([t,b],i)=>`<div style="display:grid;grid-template-columns:46px 1fr;gap:18px;padding:22px 0;${i?'border-top:1px solid var(--color-divider);':''}">
+          <span style="font-family:var(--font-heading);font-size:26px;color:var(--color-accent);font-feature-settings:'tnum';line-height:1.2;">${ROMAN[i]}</span>
+          <div><strong style="font-size:16.5px;">${t}</strong><p class="text-muted" style="font-size:14px;line-height:1.65;margin:5px 0 0;max-width:74ch;">${b}</p></div>
+        </div>`).join("")}
       </div>
     </section>
 
@@ -897,6 +927,90 @@ function sectionHead(i, title) {
   </div>`;
 }
 
+/* \u2500\u2500 questionnaire: personalize a review to the reader's life \u2500\u2500 */
+function quizModal() {
+  const d = state.quizDraft || {};
+  return `<div class="sample-modal" data-modal-quiz style="position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:20px;background:color-mix(in srgb, #201f1d 55%, transparent);">
+    <div class="card" style="background:var(--color-bg);max-width:600px;width:100%;max-height:90vh;overflow:auto;padding:30px 30px 26px;box-shadow:var(--shadow-lg);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+        <div>
+          <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Tailor your review</div>
+          <h3 style="font-size:24px;margin:6px 0 0;">Tell Bailey about your situation</h3>
+          <p class="text-muted" style="font-size:13.5px;line-height:1.55;margin:8px 0 0;max-width:52ch;">Optional, about 30 seconds. It changes which clauses Bailey flags as urgent for you \u2014 nothing is stored beyond your own browser.</p>
+        </div>
+        <button data-quiz-close aria-label="Close" style="background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--color-neutral-500);">\xd7</button>
+      </div>
+      <div style="margin-top:22px;display:flex;flex-direction:column;gap:20px;">
+        ${QUIZ.map(qq => `<div>
+          <div style="font-family:var(--font-heading);font-size:16px;margin-bottom:10px;">${qq.q}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            ${qq.opts.map(([v, l]) => { const on = d[qq.key] === v; return `<button class="quiz-opt" data-quiz-opt="${qq.key}:${v}" style="cursor:pointer;font:inherit;font-size:13.5px;padding:8px 14px;border-radius:999px;border:1px solid ${on ? 'var(--color-accent)' : 'var(--color-divider)'};background:${on ? 'var(--color-accent-100)' : 'transparent'};color:${on ? 'var(--color-accent-800)' : 'var(--color-text)'};">${l}</button>`; }).join("")}
+          </div>
+        </div>`).join("")}
+      </div>
+      <div style="margin-top:26px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+        <button class="btn btn-solid" data-quiz-save style="font-size:15px;padding:12px 26px;">Apply to my review</button>
+        <button class="btn btn-ghost" data-quiz-close style="font-size:13px;">Skip for now</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* Map the reader's answers against this offer's actual terms \u2192 up to 3
+   specific, personalized callouts. Heuristic in the demo; in the real app
+   the answers feed the analysis prompt directly. */
+function personalInsights(a, p) {
+  const x = a.extraction || {}, rc = x.restrictive_covenants || {}, comp = x.compensation || {}, ben = x.benefits || {};
+  const out = [];
+  const loc = x.location || "your area";
+  const ncStr = [rc.non_compete_radius_miles ? rc.non_compete_radius_miles + " mi" : null, rc.non_compete_duration_months ? rc.non_compete_duration_months + " mo" : null].filter(Boolean).join(" / ");
+  const hasNC = !!ncStr;
+  const shakyIncome = comp.compensation_basis === "collections" || comp.daily_guarantee == null || (comp.guarantee_duration_months != null && comp.guarantee_duration_months <= 3);
+  const payPhrase = comp.daily_guarantee == null ? "no income guarantee at all" : (comp.compensation_basis === "collections" ? "collections-based pay" : "short pay guarantee");
+
+  if (hasNC && p.ties === "rooted") out.push("You're planning to stay in " + loc + ". That makes this offer's non-compete (" + ncStr + ") one of its most important terms \u2014 breaking it could force you out of the area you want to stay in. Treat it as a top-priority ask.");
+  else if (hasNC && (p.ties === "open" || p.plans === "relocate")) out.push("Since you're open to moving, the non-compete (" + ncStr + ") is far less of a constraint for you than it looks on paper \u2014 spend your negotiating leverage on the money instead.");
+
+  if ((p.debt === "mid" || p.debt === "high") && shakyIncome) out.push("With significant student loans, steady income matters more than the letter grade suggests. This offer's " + payPhrase + " could make your early months volatile \u2014 push hardest on the guarantee and how you're paid.");
+
+  if (p.plans === "family" && ben.pto && /(^|\b)(none|0|[1-7])\b/i.test(String(ben.pto))) out.push("If you're planning for family time, the thin PTO in this offer is a bigger deal than it looks \u2014 and it's a low-cost ask that employers often grant.");
+
+  if (p.plans === "home" && shakyIncome && out.length < 3) out.push("A home purchase leans on predictable income \u2014 worth firming up the " + (comp.daily_guarantee == null ? "pay guarantee" : "compensation basis") + " here before you commit to a mortgage.");
+
+  if (out.length < 3) {
+    if (p.priority === "income" && !out.some(s => /pay|paid|money|compensation|income/i.test(s))) out.push("You're optimizing for income, so the compensation structure is your highest-leverage point on this offer \u2014 that's where the negotiation email should lead.");
+    else if (p.priority === "stability" && shakyIncome && !out.some(s => /guarantee|income/i.test(s))) out.push("You value stability, and the " + payPhrase + " is the term most at odds with that here \u2014 make it your first ask.");
+    else if (p.priority === "flexibility") out.push("Since flexibility matters most to you, weigh the schedule, PTO, and termination terms as heavily as the pay when you decide.");
+  }
+  return out.slice(0, 3);
+}
+
+function tailoredPanel(a) {
+  const p = state.profile;
+  if (!p) {
+    return `<section class="no-print" style="margin-top:32px;border:1px dashed var(--color-accent-400);border-radius:16px;padding:22px 26px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;background:color-mix(in srgb, var(--color-accent-100) 45%, transparent);">
+      <div><strong style="font-family:var(--font-heading);font-size:18px;">Make this personal.</strong><div class="text-muted" style="font-size:14px;line-height:1.5;margin-top:3px;max-width:64ch;">Answer four quick questions and Bailey re-weights this review for your life \u2014 your debt, your roots, your plans.</div></div>
+      <button class="btn btn-solid" data-quiz style="font-size:14px;padding:11px 22px;">Tailor to me &rarr;</button>
+    </section>`;
+  }
+  const ins = personalInsights(a, p);
+  if (!ins.length) {
+    return `<section style="margin-top:32px;border-left:2px solid var(--color-accent);padding:6px 0 6px 22px;">
+      <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);">Tailored for you</div>
+      <p style="font-size:15px;line-height:1.6;margin:8px 0 0;max-width:72ch;">Based on what you told us, this offer's grade already lines up with your priorities \u2014 no single clause stands out as more urgent for your situation. <button class="btn btn-ghost no-print" data-quiz style="font-size:13px;padding:2px 6px;">Update answers</button></p>
+    </section>`;
+  }
+  return `<section style="margin-top:34px;border:1px solid var(--color-accent);border-radius:16px;overflow:hidden;">
+    <div style="background:var(--color-accent-100);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--color-accent-300);">
+      <span style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-800);">Tailored for you</span>
+      <button class="btn btn-ghost no-print" data-quiz style="font-size:12.5px;padding:3px 8px;">Update answers</button>
+    </div>
+    <div style="padding:20px 24px;display:flex;flex-direction:column;gap:16px;">
+      ${ins.map((t, i) => `<div style="display:grid;grid-template-columns:26px 1fr;gap:12px;align-items:baseline;"><span style="font-family:var(--font-heading);color:var(--color-accent);font-size:18px;font-feature-settings:'tnum';">${i + 1}</span><p style="font-size:15px;line-height:1.6;margin:0;">${esc(t)}</p></div>`).join("")}
+    </div>
+  </section>`;
+}
+
 function report() {
   const offer = activeOffer();
   const a = offer.analysis;
@@ -1016,6 +1130,7 @@ function report() {
         <div style="display:flex;flex-direction:column;">${categories}</div>
       </div>
     </section>
+    ${shared ? "" : tailoredPanel(a)}
 
     <section style="border-left:2px solid var(--color-accent);padding:6px 0 6px 26px;margin:32px 0;">
       <p style="font-size:16.5px;font-family:var(--font-heading);font-style:italic;max-width:60ch;margin:0;">${esc(a.value_at_stake)}</p>
@@ -1202,6 +1317,7 @@ function render() {
   else if (MARKETING_PAGES[state.stage]) app.innerHTML = MARKETING_PAGES[state.stage]();
   else app.innerHTML = landing();
   if (state.pickerOpen) app.insertAdjacentHTML("beforeend", samplePicker());
+  if (state.quizOpen) app.insertAdjacentHTML("beforeend", quizModal());
   wire();
 }
 
@@ -1219,6 +1335,17 @@ function wire() {
   if (modal) modal.addEventListener("click", ev => { if (ev.target === modal) set({ pickerOpen: false }); });
   const shareBtn = app.querySelector("[data-share]");
   if (shareBtn) shareBtn.addEventListener("click", shareReport);
+  app.querySelectorAll("[data-quiz]").forEach(b => b.addEventListener("click", () => set({ quizOpen: true, quizDraft: Object.assign({}, state.profile || {}) })));
+  app.querySelectorAll("[data-quiz-opt]").forEach(b => b.addEventListener("click", () => {
+    const parts = b.getAttribute("data-quiz-opt").split(":"), k = parts[0], v = parts[1];
+    const d = Object.assign({}, state.quizDraft);
+    d[k] = d[k] === v ? undefined : v;
+    set({ quizDraft: d });
+  }));
+  app.querySelectorAll("[data-quiz-save]").forEach(b => b.addEventListener("click", () => { state.profile = Object.assign({}, state.quizDraft); saveProfile(); set({ quizOpen: false }); }));
+  app.querySelectorAll("[data-quiz-close]").forEach(b => b.addEventListener("click", () => set({ quizOpen: false })));
+  const quizM = app.querySelector("[data-modal-quiz]");
+  if (quizM) quizM.addEventListener("click", ev => { if (ev.target === quizM) set({ quizOpen: false }); });
   app.querySelectorAll("[data-open]").forEach(b => b.addEventListener("click", () => openReport(b.getAttribute("data-open"))));
   app.querySelectorAll("[data-remove]").forEach(b => b.addEventListener("click", ev => { ev.stopPropagation(); removeOffer(b.getAttribute("data-remove")); }));
   app.querySelectorAll("[data-compare]").forEach(b => b.addEventListener("click", openCompare));
