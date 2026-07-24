@@ -310,6 +310,17 @@ details summary::-webkit-details-marker { color: var(--color-accent); }
   .hero-ring span:first-child { font-size: 54px !important; }
 }
 
+/* Print / Save-as-PDF: strip the chrome and print the report cleanly */
+@media print {
+  .nav, .student-bar, .mobile-menu, footer, .no-print { display: none !important; }
+  body { background: #fff; }
+  main { max-width: none !important; padding: 0 24px !important; }
+  .card { box-shadow: none !important; }
+  a { color: inherit; text-decoration: none; }
+  section { break-inside: avoid; }
+  .flag-row, .ask-row, .exit-row, .mkt-row, tr { break-inside: avoid; }
+}
+
 </style>
 <div id="app" style="min-height:100vh;display:flex;flex-direction:column;"></div>
 
@@ -537,7 +548,7 @@ function switcher(current) {
   const compareBtn = state.offers.length >= 2
     ? `<button class="btn ${current === 'compare' ? 'btn-primary' : 'btn-secondary'}" data-compare style="font-size:13px;padding:6px 14px;">Compare</button>` : "";
   return `
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:28px;flex-wrap:wrap;">
+  <div class="no-print" style="display:flex;align-items:center;gap:10px;margin-bottom:28px;flex-wrap:wrap;">
     ${chips}
     <button class="btn btn-secondary" data-new style="font-size:13px;padding:6px 14px;">+ New review</button>
     ${compareBtn}
@@ -856,8 +867,9 @@ function report() {
   return navBar() + `
   <main class="pad" style="flex:1;width:100%;max-width:1600px;margin:0 auto;padding:40px 48px 80px;">
     ${switcher(offer.id)}
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px;flex-wrap:wrap;">
-      ${tags}
+    <div class="no-print" style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:32px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">${tags}</div>
+      <button class="btn btn-secondary" data-print style="font-size:13px;padding:7px 16px;">\u2193 Save as PDF</button>
     </div>
 
     <section class="grid-collapse" style="display:grid;grid-template-columns:250px 1fr;gap:44px;padding-bottom:32px;border-bottom:1px solid var(--color-divider);">
@@ -917,7 +929,7 @@ function report() {
       <div style="border:1px solid var(--color-divider);margin-top:26px;border-radius:14px;overflow:hidden;">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:14px 24px;border-bottom:1px solid var(--color-divider);">
           <span style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);">Ready-to-send negotiation email</span>
-          <button class="btn btn-primary" data-copy>${state.copied ? "Copied \u2713" : "Copy email"}</button>
+          <button class="btn btn-primary no-print" data-copy>${state.copied ? "Copied \u2713" : "Copy email"}</button>
         </div>
         <div style="padding:26px 30px;font-size:14px;line-height:1.75;white-space:pre-wrap;color:var(--color-neutral-800);">${esc(a.negotiation_email)}</div>
       </div>
@@ -1047,6 +1059,8 @@ function wire() {
     if (p === "landing") newReview(); else goPage(p);
     window.scrollTo(0, 0);
   }));
+  const printBtn = app.querySelector("[data-print]");
+  if (printBtn) printBtn.addEventListener("click", () => window.print());
   const burger = app.querySelector("[data-burger]");
   const menu = app.querySelector(".mobile-menu");
   if (burger && menu) burger.addEventListener("click", () => {
