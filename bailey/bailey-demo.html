@@ -197,6 +197,8 @@ img { display: block; max-width: 100%; }
 .nav-anchor:hover::after { transform: scaleX(1); }
 .brand-home { transition: opacity .12s; }
 .brand-home:hover { opacity: .68; }
+.foot-link { transition: color .15s ease; }
+.foot-link:hover { color: var(--color-accent-700) !important; }
 
 /* \u2014 tables \u2014 */
 .table { width: 100%; border-collapse: collapse; font-size: 14px; }
@@ -408,21 +410,63 @@ function copyEmail(text) {
 }
 
 /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  chrome  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
-function navBar() {
+const PAGES = [["how", "How it works"], ["features", "What's inside"], ["pricing", "Pricing"]];
+
+function navBar(current) {
+  const links = PAGES.map(([p, l]) => {
+    const on = current === p;
+    return `<button class="nav-anchor" data-page="${p}"${on ? ' aria-current="page"' : ''} style="background:none;border:none;cursor:pointer;font:inherit;font-size:15px;color:${on ? 'var(--color-accent-800)' : 'var(--color-text)'};padding:0 0 2px;">${l}</button>`;
+  }).join("");
   return `
   <nav class="nav">
-    <button class="nav-brand brand-home" data-home aria-label="Bailey \u2014 home" style="display:flex;align-items:center;gap:14px;background:none;border:none;padding:0;cursor:pointer;font:inherit;color:inherit;text-align:left;">
+    <button class="nav-brand brand-home" data-page="landing" aria-label="Bailey \u2014 home" style="display:flex;align-items:center;gap:14px;background:none;border:none;padding:0;cursor:pointer;font:inherit;color:inherit;text-align:left;">
       <span style="font-family:var(--font-heading);font-size:26px;letter-spacing:0.02em;line-height:1;">Bailey</span>
       <span class="brand-divider" aria-hidden="true" style="width:1px;height:20px;background:var(--color-accent-300);"></span>
       <span class="brand-tag" style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);line-height:1.25;">For clinicians, by clinicians</span>
     </button>
     <div class="nav-actions" style="display:flex;align-items:center;gap:26px;">
-      <a class="nav-anchor" href="#how" data-nav>How it works</a>
-      <a class="nav-anchor" href="#inside" data-nav>What's inside</a>
-      <a class="nav-anchor" href="#pricing" data-nav>Pricing</a>
+      ${links}
       <button class="btn btn-solid" data-sample>Review my offer</button>
     </div>
   </nav>`;
+}
+
+/* Shared page header + call-to-action + footer, used across the marketing pages. */
+function pageHeader(kicker, titleHtml, subHtml) {
+  return `<div style="text-align:left;margin-bottom:38px;">
+    <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">${kicker}</div>
+    <h2 style="font-size:44px;margin:8px 0 0;">${titleHtml}</h2>
+    ${subHtml ? `<p class="text-muted" style="font-size:17px;line-height:1.5;max-width:56ch;margin:16px 0 0;">${subHtml}</p>` : ""}
+  </div>`;
+}
+
+function ctaBlock(note) {
+  return `<div style="margin-top:56px;border-top:1px solid var(--color-divider);padding-top:36px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+    <label class="btn btn-solid" style="cursor:pointer;font-size:16px;padding:15px 34px;">Upload an offer<input type="file" accept=".pdf,.docx,.txt" data-file style="display:none;"></label>
+    <button class="btn btn-secondary" style="font-size:16px;padding:15px 34px;" data-sample>Try the sample offer</button>
+    <span class="text-muted" style="font-size:13px;">${note || "$129 a review \xb7 students $79 with a .edu email"}</span>
+  </div>`;
+}
+
+function siteFooter() {
+  const links = PAGES.map(([p, l]) => `<button class="foot-link" data-page="${p}" style="background:none;border:none;cursor:pointer;font:inherit;font-size:13.5px;color:var(--color-neutral-700);padding:0;text-align:left;">${l}</button>`).join("");
+  return `
+  <footer style="border-top:1px solid var(--color-divider);margin-top:auto;background:var(--color-surface);">
+    <div class="pad grid-collapse" style="max-width:1900px;margin:0 auto;padding:44px 48px;display:grid;grid-template-columns:1.6fr 1fr;gap:32px;align-items:start;">
+      <div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <span style="font-family:var(--font-heading);font-size:20px;">Bailey</span>
+          <span style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);">Before you sign, ask Bailey.</span>
+        </div>
+        <p class="text-muted" style="font-size:11.5px;max-width:72ch;margin:12px 0 0;">Bailey is an educational tool. It does not provide legal, financial, or tax advice, and is not a substitute for review by a licensed attorney or CPA. Earnings figures are illustrative estimates. \xa9 2026 Bailey.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:11px;align-items:flex-start;">
+        <span style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);">Explore</span>
+        <button class="foot-link" data-page="landing" style="background:none;border:none;cursor:pointer;font:inherit;font-size:13.5px;color:var(--color-neutral-700);padding:0;text-align:left;">Home</button>
+        ${links}
+      </div>
+    </div>
+  </footer>`;
 }
 
 /* Your-reviews strip, shown on the landing page once you have offers. */
@@ -460,32 +504,25 @@ function switcher(current) {
   </div>`;
 }
 
-/* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  landing  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+/* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  landing (lean)  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
 function landing() {
   const err = state.error
     ? `<div style="max-width:1900px;margin:16px auto 0;padding:0 48px;"><div class="card" style="border-color:var(--color-accent);color:var(--color-accent-800);background:var(--color-accent-100);">${esc(state.error)}</div></div>`
     : "";
-  return navBar() + reviewsBar() + err + `
+  return navBar("landing") + reviewsBar() + err + `
   <main style="flex:1;width:100%;">
-    <div style="background:var(--color-accent-100);border-bottom:1px solid var(--color-accent-300);">
-      <div class="pad" style="max-width:1900px;margin:0 auto;padding:11px 48px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;">
-        <span style="font-size:13px;color:var(--color-accent-900);letter-spacing:0.02em;"><strong style="font-family:var(--font-heading);font-style:italic;font-size:15px;">$129 a review</strong> \u2014 students pay $79 with a .edu email.</span>
-        <button class="btn btn-primary" style="padding:7px 18px;font-size:13px;" data-sample>Claim student price</button>
-      </div>
-    </div>
-
-    <section class="pad hero-section" style="max-width:1900px;margin:0 auto;padding:72px 48px 64px;">
+    <section class="pad hero-section" style="max-width:1900px;margin:0 auto;padding:88px 48px 76px;">
       <div class="grid-collapse hero-grid" style="display:grid;grid-template-columns:1.05fr 0.95fr;gap:64px;align-items:center;">
         <div style="text-align:left;">
           <div class="hero-eyebrow" style="font-size:13px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:22px;">Offer analysis for healthcare professionals</div>
           <h1 class="hero-title" style="font-size:72px;line-height:1.04;margin-bottom:8px;">Before you sign,<br><em style="color:var(--color-accent-700);">ask Bailey.</em></h1>
           <div style="width:64px;height:1px;background:var(--color-accent);margin:26px 0;"></div>
-          <p style="font-size:20px;line-height:1.5;max-width:32ch;margin:0;">Your first contract is a five-figure decision. Bailey reads it like a CPA, a lawyer, and a mentor \u2014 and hands you the grade, the math, and the email that fixes it.</p>
+          <p style="font-size:20px;line-height:1.5;max-width:34ch;margin:0;">Your first contract is a five-figure decision. Upload it \u2014 get a grade, the real math, and the email that fixes what's wrong. In four minutes.</p>
           <div style="display:flex;gap:14px;justify-content:flex-start;margin-top:36px;flex-wrap:wrap;">
             <label class="btn btn-solid" style="cursor:pointer;font-size:16px;padding:15px 34px;">Upload an offer<input type="file" accept=".pdf,.docx,.txt" data-file style="display:none;"></label>
             <button class="btn btn-secondary" style="font-size:16px;padding:15px 34px;" data-sample>Try the sample offer</button>
           </div>
-          <p class="text-muted" style="font-size:13px;margin-top:16px;">PDF, DOCX or TXT \xb7 $129 a review \xb7 students $79</p>
+          <p class="text-muted" style="font-size:13px;margin-top:16px;">PDF, DOCX or TXT \xb7 $129 a review \xb7 students $79 with a .edu email</p>
         </div>
         <div class="card elev-md lift" style="padding:36px 40px;">
           <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:24px;">Sample diagnosis</div>
@@ -507,32 +544,65 @@ function landing() {
       </div>
     </section>
 
-    <section style="border-top:1px solid var(--color-accent-300);border-bottom:1px solid var(--color-accent-300);background:var(--color-accent-100);">
-      <div class="pad stats-grid" style="max-width:1900px;margin:0 auto;padding:0 48px;display:grid;grid-template-columns:repeat(4,1fr);">
-        ${[["31","Clauses read per contract"],["$20k+","Hidden cost found in the sample"],["6","Asks ranked by dollar value"],["4 min","Upload to diagnosis"]].map(([n,l],i) => `
-          <div style="padding:26px 24px;${i<3?'border-right:1px solid var(--color-divider);':''}text-align:left;"><div style="font-family:var(--font-heading);font-size:40px;font-feature-settings:'tnum';line-height:1;color:var(--color-accent-700);">${n}</div><div class="text-muted" style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;margin-top:8px;">${l}</div></div>`).join("")}
-      </div>
-    </section>
-
-    <section id="how" class="pad" style="max-width:1900px;margin:0 auto;padding:72px 48px 0;">
-      <div style="text-align:left;margin-bottom:36px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">How it works</div><h2 style="font-size:44px;margin:8px 0 0;">Four minutes from PDF to plan.</h2></div>
-      <div class="grid-collapse feature-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;">
-        ${[["Upload the offer","PDF or pasted text \u2014 any clinical employment contract or offer letter."],["Bailey reads every clause","Every term benchmarked, your earnings modeled, exit costs totaled."],["You get the diagnosis","A grade, red flags with price tags \u2014 and the negotiation email, written."]].map(([t,b],i) => `
+    <section class="pad" style="max-width:1900px;margin:0 auto;padding:0 48px 84px;">
+      <div class="grid-collapse feature-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--color-divider);padding-top:34px;">
+        ${[["Upload the offer","Any clinical employment contract or offer letter \u2014 PDF, DOCX, or pasted text."],["Bailey reads every clause","Each term benchmarked against the market, your earnings modeled, exit costs totaled."],["You get the diagnosis","A grade, red flags with price tags, and a ready-to-send negotiation email."]].map(([t,b],i) => `
           <div style="padding:0 32px;${i<2?'border-right:1px solid var(--color-divider);':''}${i===0?'padding-left:0;':''}${i===2?'padding-right:0;':''}"><div style="font-family:var(--font-heading);font-size:30px;color:var(--color-accent);font-feature-settings:'tnum';">${ROMAN[i]}</div><strong style="font-size:15px;">${t}</strong><p class="text-muted" style="font-size:13px;margin-top:5px;">${b}</p></div>`).join("")}
       </div>
+      <div style="margin-top:30px;display:flex;gap:22px;align-items:center;flex-wrap:wrap;">
+        <button class="btn btn-primary" data-page="how">See how it works \u2192</button>
+        <button class="btn btn-ghost" data-page="features">What's inside a review \u2192</button>
+      </div>
     </section>
+  </main>` + siteFooter();
+}
 
-    <section id="inside" class="pad" style="max-width:1900px;margin:0 auto;padding:72px 48px 0;">
-      <div style="text-align:left;margin-bottom:32px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">What's inside every review</div><h2 style="font-size:44px;margin:8px 0 0;">More than a pros-and-cons list.<br><em style="color:var(--color-accent-700);">A diagnosis with receipts.</em></h2></div>
-      <div class="grid-collapse feature-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--color-divider);">
-        ${[["The offer grade","One letter, four scored categories."],["What you'd actually earn","Three earnings scenarios, arithmetic shown."],["The price of leaving","Clawbacks, tail, non-compete \u2014 itemized and totaled."],["Every term vs. the market","Each clause held against real market ranges."],["Red flags with price tags","\"Cost if ignored: $20,000/year.\" Numbers get acted on."],["The email that fixes it","Ranked asks, folded into a ready-to-send email."]].map(([t,b],i) => `
-          <div style="padding:24px 28px;border-bottom:1px solid var(--color-divider);${i%3<2?'border-right:1px solid var(--color-divider);':''}${i%3===0?'padding-left:0;':''}${i%3===2?'padding-right:0;':''}"><div style="font-family:var(--font-heading);font-size:20px;color:var(--color-accent);">${ROMAN[i]}</div><strong style="font-size:14.5px;">${t}</strong><p class="text-muted" style="font-size:12.5px;margin-top:4px;">${b}</p></div>`).join("")}
+/* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  how it works  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+function pageHow() {
+  const steps = [
+    ["Upload the offer", "Any clinical employment contract or offer letter works \u2014 an associate agreement, an offer letter, a PDF export, or pasted text. Nothing to install, no account to create."],
+    ["Bailey reads every clause", "Bailey pulls out every material term \u2014 compensation basis, guarantees, production splits, non-compete, tail coverage, termination \u2014 and holds each one against real new-grad market ranges."],
+    ["You get the diagnosis", "A letter grade, four scored categories, your modeled year-one earnings, the itemized cost of leaving, red flags priced by what they'd cost you, and a negotiation email you can send today."],
+  ];
+  return navBar("how") + `
+  <main class="pad" style="flex:1;width:100%;max-width:1900px;margin:0 auto;padding:64px 48px 20px;">
+    ${pageHeader("How it works", "Four minutes from PDF to plan.", "No account, no setup. Upload an offer and Bailey does the reading, the math, and the drafting \u2014 the way a sharp mentor with a CPA and an attorney on speed-dial would.")}
+    <div class="grid-collapse feature-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--color-divider);padding-top:34px;">
+      ${steps.map(([t,b],i) => `
+        <div style="padding:0 32px;${i<2?'border-right:1px solid var(--color-divider);':''}${i===0?'padding-left:0;':''}${i===2?'padding-right:0;':''}"><div style="font-family:var(--font-heading);font-size:34px;color:var(--color-accent);font-feature-settings:'tnum';">${ROMAN[i]}</div><strong style="font-size:16px;">${t}</strong><p class="text-muted" style="font-size:13.5px;margin-top:6px;line-height:1.6;">${b}</p></div>`).join("")}
+    </div>
+
+    <section style="margin-top:66px;border-top:1px solid var(--color-divider);padding-top:40px;">
+      <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Under the hood</div>
+      <h3 style="font-size:30px;margin:8px 0 24px;">What Bailey does in those four minutes</h3>
+      <div class="grid-collapse" style="display:grid;grid-template-columns:1fr 1fr;gap:12px 40px;max-width:920px;">
+        ${ANALYZE_STEPS.map((t,i) => `<div style="display:flex;gap:14px;align-items:baseline;font-size:15px;padding:8px 0;border-bottom:1px solid var(--color-divider);"><span style="font-family:var(--font-heading);color:var(--color-accent);font-feature-settings:'tnum';">${ROMAN[i]}</span><span>${esc(t)}</span></div>`).join("")}
       </div>
     </section>
 
-    <section class="pad" style="max-width:1900px;margin:0 auto;padding:72px 48px 0;">
-      <div style="text-align:left;margin-bottom:8px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">For clinicians, by clinicians</div>
-      <h2 style="font-size:44px;margin:8px 0 12px;">For every white coat, at every stage.</h2></div>
+    ${ctaBlock()}
+  </main>` + siteFooter();
+}
+
+/* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  what's inside  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+function pageInside() {
+  return navBar("features") + `
+  <main class="pad" style="flex:1;width:100%;max-width:1900px;margin:0 auto;padding:64px 48px 20px;">
+    ${pageHeader("What's inside every review", "More than a pros-and-cons list.<br><em style=\"color:var(--color-accent-700);\">A diagnosis with receipts.</em>", "Every review is the same six-part workup \u2014 each finding tied to a number, so you know exactly what a clause is worth before you sign it.")}
+
+    <div class="stats-grid" style="display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--color-divider);border-radius:14px;overflow:hidden;margin-bottom:56px;">
+      ${[["31","Clauses read per contract"],["$20k+","Hidden cost found in the sample"],["6","Asks ranked by dollar value"],["4 min","Upload to diagnosis"]].map(([n,l],i) => `
+        <div style="padding:26px 24px;${i<3?'border-right:1px solid var(--color-divider);':''}background:var(--color-accent-100);text-align:left;"><div style="font-family:var(--font-heading);font-size:40px;font-feature-settings:'tnum';line-height:1;color:var(--color-accent-700);">${n}</div><div class="text-muted" style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;margin-top:8px;">${l}</div></div>`).join("")}
+    </div>
+
+    <div class="grid-collapse feature-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--color-divider);">
+      ${[["The offer grade","One letter, four scored categories \u2014 see where it's strong and where it isn't at a glance."],["What you'd actually earn","Three earnings scenarios with the arithmetic shown, not a single hopeful number."],["The price of leaving","Clawbacks, tail coverage, non-compete \u2014 itemized and totaled into one exit bill."],["Every term vs. the market","Each clause held against real new-grad ranges, flagged above, at, or below market."],["Red flags with price tags","\"Cost if ignored: $20,000/year.\" A number and a when \u2014 so it actually gets acted on."],["The email that fixes it","Your ranked asks, folded into a ready-to-send negotiation email in your voice."]].map(([t,b],i) => `
+        <div style="padding:26px 28px;border-bottom:1px solid var(--color-divider);${i%3<2?'border-right:1px solid var(--color-divider);':''}${i%3===0?'padding-left:0;':''}${i%3===2?'padding-right:0;':''}"><div style="font-family:var(--font-heading);font-size:22px;color:var(--color-accent);">${ROMAN[i]}</div><strong style="font-size:15px;">${t}</strong><p class="text-muted" style="font-size:13px;margin-top:5px;line-height:1.6;">${b}</p></div>`).join("")}
+    </div>
+
+    <section style="margin-top:66px;border-top:1px solid var(--color-divider);padding-top:40px;">
+      <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">For clinicians, by clinicians</div>
+      <h3 style="font-size:30px;margin:8px 0 20px;">For every white coat, at every stage.</h3>
       <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-start;margin-bottom:36px;">
         ${["Dentistry \xb7 DDS / DMD","Medicine \xb7 MD / DO","NP & PA","Pharmacy \xb7 PharmD","Residency \u2192 attending"].map(t => `<span class="tag tag-outline">${t}</span>`).join("")}
       </div>
@@ -542,53 +612,54 @@ function landing() {
       </div>
     </section>
 
-    <section id="pricing" class="pad" style="max-width:1900px;margin:0 auto;padding:72px 48px 0;">
-      <div style="text-align:left;margin-bottom:32px;"><div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Pricing</div><h2 style="font-size:44px;margin:8px 0 0;">Pay per review. <em style="color:var(--color-accent-700);">No subscription.</em></h2></div>
-      <div class="grid-collapse" style="display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:stretch;">
+    ${ctaBlock()}
+  </main>` + siteFooter();
+}
 
-        <div class="card lift" style="padding:30px 28px;display:flex;flex-direction:column;">
-          <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Single review</div>
-          <div style="font-family:var(--font-heading);font-size:48px;font-feature-settings:'tnum';line-height:1;margin:12px 0 0;">$129</div>
-          <p class="text-muted" style="font-size:13px;flex:1;margin:14px 0 0;">One offer, fully graded \u2014 the grade, the math, the benchmarks, the priced red flags, and the ready-to-send negotiation email.</p>
-          <button class="btn btn-secondary btn-block" style="margin-top:20px;" data-sample>Review my offer</button>
-          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--color-divider);text-align:center;">
-            <button class="btn btn-ghost" data-sample style="font-size:12.5px;">Student? $79 with a .edu email \u2192</button></div>
-        </div>
+/* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  pricing  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+function pagePricing() {
+  return navBar("pricing") + `
+  <main class="pad" style="flex:1;width:100%;max-width:1900px;margin:0 auto;padding:64px 48px 20px;">
+    ${pageHeader("Pricing", "Pay per review. <em style=\"color:var(--color-accent-700);\">No subscription.</em>", "One flat price per offer \u2014 no account, no auto-renewal. Students pay less with a .edu email.")}
+    <div class="grid-collapse" style="display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:stretch;">
 
-        <div class="card elev-md lift" style="padding:30px 28px;display:flex;flex-direction:column;border:1.5px solid var(--color-accent);border-top-width:3px;background:linear-gradient(180deg, color-mix(in srgb, var(--color-accent-100) 60%, transparent), transparent 42%);">
-          <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Compare offers</span><span class="tag tag-accent">Best value</span></div>
-          <div style="font-family:var(--font-heading);font-size:48px;font-feature-settings:'tnum';color:var(--color-accent-700);line-height:1;margin:12px 0 0;">$199</div>
-          <p class="text-muted" style="font-size:13px;flex:1;margin:14px 0 0;">Up to five offers, side by side \u2014 Bailey grades each one and highlights the strongest. The real question is never "is this good," it's "which one."</p>
-          <button class="btn btn-solid btn-block" style="margin-top:20px;" data-sample>Compare my offers</button>
-          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--color-divider);text-align:center;">
-            <button class="btn btn-ghost" data-sample style="font-size:12.5px;">Student? $149 with a .edu email \u2192</button></div>
-        </div>
-
-        <div class="card lift" style="padding:30px 28px;display:flex;flex-direction:column;background:var(--color-surface);">
-          <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Corporate</div>
-          <div style="font-family:var(--font-heading);font-style:italic;font-size:40px;color:var(--color-accent-900);line-height:1.04;margin:12px 0 0;">Let's talk</div>
-          <p class="text-muted" style="font-size:13px;flex:1;margin:14px 0 0;">Volume licensing for dental and medical schools, residency programs, and associations \u2014 SSO, a co-branded student portal, a usage dashboard, and pricing built around your program.</p>
-          <button class="btn btn-secondary btn-block" style="margin-top:20px;">Contact us</button>
-          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--color-divider);text-align:center;">
-            <span class="text-muted" style="font-size:12px;">Every graduating student, covered</span></div>
-        </div>
+      <div class="card lift" style="padding:30px 28px;display:flex;flex-direction:column;">
+        <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Single review</div>
+        <div style="font-family:var(--font-heading);font-size:48px;font-feature-settings:'tnum';line-height:1;margin:12px 0 0;">$129</div>
+        <p class="text-muted" style="font-size:13px;flex:1;margin:14px 0 0;">One offer, fully graded \u2014 the grade, the math, the benchmarks, the priced red flags, and the ready-to-send negotiation email.</p>
+        <button class="btn btn-secondary btn-block" style="margin-top:20px;" data-sample>Review my offer</button>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--color-divider);text-align:center;">
+          <button class="btn btn-ghost" data-sample style="font-size:12.5px;">Student? $79 with a .edu email \u2192</button></div>
       </div>
-      <p class="text-muted" style="font-size:12px;margin-top:16px;">One-time payment \u2014 no subscription, no auto-renewal. Student pricing verified with a .edu email at checkout.</p>
-    </section>
 
-    <section style="margin-top:72px;background:var(--color-neutral-900);">
-      <div class="pad" style="max-width:1900px;margin:0 auto;padding:68px 48px;text-align:left;">
+      <div class="card elev-md lift" style="padding:30px 28px;display:flex;flex-direction:column;border:1.5px solid var(--color-accent);border-top-width:3px;background:linear-gradient(180deg, color-mix(in srgb, var(--color-accent-100) 60%, transparent), transparent 42%);">
+        <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Compare offers</span><span class="tag tag-accent">Best value</span></div>
+        <div style="font-family:var(--font-heading);font-size:48px;font-feature-settings:'tnum';color:var(--color-accent-700);line-height:1;margin:12px 0 0;">$199</div>
+        <p class="text-muted" style="font-size:13px;flex:1;margin:14px 0 0;">Up to five offers, side by side \u2014 Bailey grades each one and highlights the strongest. The real question is never "is this good," it's "which one."</p>
+        <button class="btn btn-solid btn-block" style="margin-top:20px;" data-sample>Compare my offers</button>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--color-divider);text-align:center;">
+          <button class="btn btn-ghost" data-sample style="font-size:12.5px;">Student? $149 with a .edu email \u2192</button></div>
+      </div>
+
+      <div class="card lift" style="padding:30px 28px;display:flex;flex-direction:column;background:var(--color-surface);">
+        <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Corporate</div>
+        <div style="font-family:var(--font-heading);font-style:italic;font-size:40px;color:var(--color-accent-900);line-height:1.04;margin:12px 0 0;">Let's talk</div>
+        <p class="text-muted" style="font-size:13px;flex:1;margin:14px 0 0;">Volume licensing for dental and medical schools, residency programs, and associations \u2014 SSO, a co-branded student portal, a usage dashboard, and pricing built around your program.</p>
+        <button class="btn btn-secondary btn-block" style="margin-top:20px;">Contact us</button>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--color-divider);text-align:center;">
+          <span class="text-muted" style="font-size:12px;">Every graduating student, covered</span></div>
+      </div>
+    </div>
+    <p class="text-muted" style="font-size:12px;margin-top:16px;">One-time payment \u2014 no subscription, no auto-renewal. Student pricing verified with a .edu email at checkout.</p>
+
+    <section style="margin-top:60px;border-radius:18px;overflow:hidden;background:var(--color-neutral-900);">
+      <div style="padding:56px 44px;text-align:left;">
         <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-accent-400);margin-bottom:14px;">Before you sign</div>
-        <h2 style="font-size:36px;color:var(--color-neutral-100);margin:0 0 26px;">Your signature is worth <em style="color:var(--color-accent-300);">more than you think.</em></h2>
+        <h2 style="font-size:34px;color:var(--color-neutral-100);margin:0 0 26px;">Your signature is worth <em style="color:var(--color-accent-300);">more than you think.</em></h2>
         <button data-sample style="font-family:var(--font-body);font-size:14px;letter-spacing:0.04em;background:transparent;color:var(--color-accent-300);border:1px solid var(--color-accent-400);border-radius:999px;padding:13px 30px;cursor:pointer;">Upload your offer</button>
       </div>
     </section>
-
-    <footer class="pad" style="max-width:1900px;margin:0 auto;padding:28px 48px;text-align:left;">
-      <span style="font-family:var(--font-heading);font-size:17px;">Bailey</span>
-      <p class="text-muted" style="font-size:11.5px;max-width:80ch;margin:10px auto 0;">Bailey is an educational tool. It does not provide legal, financial, or tax advice, and is not a substitute for review by a licensed attorney or CPA. Earnings figures are illustrative estimates. \xa9 2026 Bailey.</p>
-    </footer>
-  </main>`;
+  </main>` + siteFooter();
 }
 
 /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  analyzing  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
@@ -868,30 +939,37 @@ function compare() {
 }
 
 /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  render + events  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+const MARKETING_PAGES = { how: pageHow, features: pageInside, pricing: pagePricing };
+function goPage(p) {
+  clearInterval(stepTimer);
+  set({ stage: p, error: "" });
+  window.scrollTo(0, 0);
+}
+
 function render() {
   if (state.stage === "analyzing") app.innerHTML = analyzing();
   else if (state.stage === "compare" && state.offers.length >= 2) app.innerHTML = compare();
   else if (state.stage === "report" && activeOffer()) app.innerHTML = report();
+  else if (MARKETING_PAGES[state.stage]) app.innerHTML = MARKETING_PAGES[state.stage]();
   else app.innerHTML = landing();
   wire();
 }
 
 function wire() {
-  const fileInput = app.querySelector("[data-file]");
-  if (fileInput) fileInput.addEventListener("change", e => {
+  app.querySelectorAll("[data-file]").forEach(fi => fi.addEventListener("change", e => {
     const file = e.target.files && e.target.files[0];
     if (file) analyzeFile(file);
-  });
-  app.querySelectorAll("[data-home]").forEach(b => b.addEventListener("click", newReview));
+  }));
   app.querySelectorAll("[data-sample]").forEach(b => b.addEventListener("click", analyzeSample));
   app.querySelectorAll("[data-open]").forEach(b => b.addEventListener("click", () => openReport(b.getAttribute("data-open"))));
   app.querySelectorAll("[data-remove]").forEach(b => b.addEventListener("click", ev => { ev.stopPropagation(); removeOffer(b.getAttribute("data-remove")); }));
   app.querySelectorAll("[data-compare]").forEach(b => b.addEventListener("click", openCompare));
   app.querySelectorAll("[data-new]").forEach(b => b.addEventListener("click", newReview));
-  app.querySelectorAll("[data-nav]").forEach(el => el.addEventListener("click", ev => {
+  app.querySelectorAll("[data-page]").forEach(b => b.addEventListener("click", ev => {
     ev.preventDefault();
-    const target = document.querySelector(el.getAttribute("href"));
-    if (target) target.scrollIntoView({ behavior: "smooth" });
+    const p = b.getAttribute("data-page");
+    if (p === "landing") newReview(); else goPage(p);
+    window.scrollTo(0, 0);
   }));
   const copyBtn = app.querySelector("[data-copy]");
   if (copyBtn) copyBtn.addEventListener("click", () => {
