@@ -1,0 +1,358 @@
+{
+  "extraction": {
+    "employer_name": "Apex Dental Management, LLC",
+    "position_title": "Associate Dentist (Independent Contractor)",
+    "profession": "general dentistry",
+    "location": "Phoenix, Arizona",
+    "practice_type": "high-volume corporate group",
+    "employment_status": "1099 independent contractor (likely misclassified given fixed schedule and employer control)",
+    "full_time": true,
+    "days_per_week": 5,
+    "compensation": {
+      "base_salary_annual": null,
+      "daily_guarantee": null,
+      "production_percentage": 22,
+      "compensation_basis": "collections",
+      "guarantee_duration_months": 0,
+      "sign_on_bonus": 10000,
+      "sign_on_bonus_clawback": "Full repayment plus 8% interest if the agreement ends for any reason within 36 months (Section 4.2).",
+      "relocation_assistance": null,
+      "student_loan_repayment": null,
+      "lab_fee_deduction": "Lab fees, an 8% 'practice management fee', and any insurance chargebacks or refunds are all deducted from collections before the 22% split (Section 4.1)."
+    },
+    "restrictive_covenants": {
+      "non_compete_radius_miles": 25,
+      "non_compete_duration_months": 36,
+      "non_compete_scope": "Practicing dentistry within 25 miles of ANY Apex-affiliated location statewide, for 36 months after termination (Section 9.1).",
+      "non_solicit_patients_months": 36,
+      "non_solicit_staff_months": 36,
+      "liquidated_damages": "$150,000 in liquidated damages per breach, plus injunctive relief and the employer's attorney fees (Section 9.4)."
+    },
+    "term_and_termination": {
+      "initial_term_months": 36,
+      "auto_renewal": true,
+      "termination_notice_days_employer": 0,
+      "termination_notice_days_provider": 120,
+      "for_cause_provisions": "The employer may terminate immediately and without notice for failure to meet a $3,000/day production quota in any two months, or for conduct it deems, in its 'sole and absolute discretion,' inconsistent with the brand (Section 8.2)."
+    },
+    "benefits": {
+      "malpractice_type": "claims_made_no_tail",
+      "tail_coverage_paid_by": "Provider, at provider's sole expense, on any exit (Section 7).",
+      "health_insurance": "None — provided as a 1099 contractor.",
+      "retirement": "None.",
+      "ce_allowance": "$0 — provider pays own CE, license renewal, and DEA registration.",
+      "pto": "None; unworked days are simply unpaid.",
+      "licensure_dues_covered": null
+    },
+    "patient_records_ownership": "All patient records, charts, and goodwill belong solely to Apex; the provider may not retain or copy any records (Section 10).",
+    "other_notable_clauses": [
+      "All disputes go to binding arbitration in Apex's home county, with a class-action waiver and each side bearing its own costs (Section 12).",
+      "Mandatory Saturday rotation and on-call coverage with no additional compensation (Section 2.3).",
+      "Apex may reassign the provider to any location within 40 miles at its discretion (Section 2.1).",
+      "Chargebacks for any refund or insurance takeback are deducted from future pay indefinitely, even after the related work was already paid (Section 4.3)."
+    ]
+  },
+  "score": {
+    "overall": 46,
+    "grade": "D+",
+    "headline": "A one-sided contract built entirely around the practice — stacked fees, no safety net, and covenants that could cost you well over $30,000 and lock you out of the whole metro for three years.",
+    "categories": [
+      {
+        "category": "compensation",
+        "score": 42,
+        "rationale": "The 22% rate is already low, and it's applied after an 8% management fee, lab costs, and chargebacks come out of collections first — so your effective take is closer to 15%. There is no daily guarantee at all, so you carry the entire risk of a slow ramp."
+      },
+      {
+        "category": "restrictive_covenants",
+        "score": 35,
+        "rationale": "A 36-month, 25-mile non-compete measured from every affiliated location statewide, backed by $150,000 in liquidated damages plus the employer's legal fees, is among the most aggressive structures you'll see and could bar you from most of the metro for three years."
+      },
+      {
+        "category": "insurance_and_benefits",
+        "score": 44,
+        "rationale": "As a 1099 contractor you get no health insurance, no retirement, no PTO, and no CE — and you buy your own malpractice tail on the way out. Much of this stems from a worker classification that a fixed schedule and employer control may not support."
+      },
+      {
+        "category": "termination_and_flexibility",
+        "score": 52,
+        "rationale": "The employer can fire you instantly with no notice while you owe 120 days, a production quota converts a bad month into a for-cause exit, and binding arbitration with a class-action waiver strips your options if a dispute arises."
+      }
+    ]
+  },
+  "summary": "This is a three-year independent-contractor offer from Apex Dental Management, a high-volume corporate group in Phoenix. You are paid 22% of collections — but only after an 8% management fee, lab costs, and insurance chargebacks are subtracted first — with no daily guarantee of any kind. It includes a $10,000 signing bonus repayable with interest for three years, a 36-month/25-mile non-compete measured from every affiliated office in the state with a $150,000 penalty, mandatory arbitration, no benefits, and provider-paid malpractice tail. As written, it places nearly all of the financial and legal risk on you.",
+  "financial_analysis": {
+    "scenarios": [
+      {
+        "label": "Conservative",
+        "assumed_daily_production": 2400,
+        "estimated_annual_gross": 84000,
+        "how_calculated": "$2,400 production × 90% collections = $2,160; minus ~12% lab ($288) and an 8% management fee ($173) = $1,699 net; 22% = $374/day × 225 working days ≈ $84,000 — with no guarantee to cushion slow days."
+      },
+      {
+        "label": "Expected",
+        "assumed_daily_production": 3200,
+        "estimated_annual_gross": 112000,
+        "how_calculated": "$3,200 production × 90% = $2,880; minus lab ($384) and 8% fee ($230) = $2,266 net; 22% = $498/day × 225 days ≈ $112,000."
+      },
+      {
+        "label": "Strong",
+        "assumed_daily_production": 4200,
+        "estimated_annual_gross": 147000,
+        "how_calculated": "$4,200 production × 90% = $3,780; minus lab ($504) and 8% fee ($302) = $2,974 net; 22% = $654/day × 225 days ≈ $147,000."
+      }
+    ],
+    "break_even_daily_production": null,
+    "break_even_explanation": null,
+    "effective_split_note": "On a $3,200 production day you take home about $498 — roughly 15.6% of your production, not the 22% headline. The 8% management fee, pre-split lab costs, and collections basis together erase nearly a third of the stated rate, and with no daily guarantee your early months could pay far less while your schedule fills.",
+    "assumptions": [
+      "225 working days per year (5 days/week less holidays; there is no paid time off).",
+      "90% collection rate; you bear the full downside if the office collects less.",
+      "Lab and specialty supply costs averaging ~12% of production for a general-dentistry mix.",
+      "An 8% management fee deducted from collections before your split, per Section 4.1.",
+      "Typical new-grad GP production of $2,400-$4,200/day; your market and patient flow may differ.",
+      "All figures are pre-tax gross estimates for education — and as a 1099 contractor you would also owe self-employment tax and cover your own benefits out of these amounts."
+    ]
+  },
+  "exit_costs": {
+    "scenario": "If you leave — or are let go — 12 months in",
+    "items": [
+      {
+        "item": "Sign-on bonus repayment (plus interest)",
+        "estimated_cost": "$10,800",
+        "basis": "Section 4.2 requires full repayment plus 8% interest if the agreement ends for any reason within 36 months — no pro-rating, and it applies even if Apex terminates you."
+      },
+      {
+        "item": "Malpractice tail coverage",
+        "estimated_cost": "$4,000-$8,000",
+        "basis": "Section 7 makes tail your sole expense on any exit. Tail typically costs 1-2x the annual claims-made premium."
+      },
+      {
+        "item": "Non-compete relocation drag",
+        "estimated_cost": "Hard to price — potentially your next 3 years locally",
+        "basis": "Section 9.1 blocks practice within 25 miles of every Apex location statewide for 36 months; in a metro like Phoenix that can mean leaving the area to keep working."
+      }
+    ],
+    "estimated_total": "$15,000-$19,000 in direct costs",
+    "note": "That is only the cash price of leaving in year one — before the $150,000 liquidated-damages exposure plus the employer's attorney fees if the non-compete is contested, and the lost income while you find work outside a 25-mile statewide restricted zone."
+  },
+  "market_comparison": [
+    {
+      "term": "Effective compensation",
+      "this_offer": "22% of collections, after an 8% fee, lab, and chargebacks",
+      "typical_range": "28-35% of collections or production, lab deducted after the split",
+      "verdict": "unfavorable",
+      "note": "The management fee and pre-split deductions push your real take to ~15% — the single biggest problem in this contract."
+    },
+    {
+      "term": "Daily guarantee",
+      "this_offer": "None",
+      "typical_range": "$550-$800/day for the first 6-12 months",
+      "verdict": "unfavorable",
+      "note": "No floor at all means you absorb every slow ramp-up day."
+    },
+    {
+      "term": "Worker classification",
+      "this_offer": "1099 contractor with a fixed schedule and employer control",
+      "typical_range": "W-2 employee for a set-schedule associate role",
+      "verdict": "unfavorable",
+      "note": "Likely misclassification; shifts payroll taxes and all benefits onto you."
+    },
+    {
+      "term": "Non-compete",
+      "this_offer": "25 mi / 36 mo, every affiliate statewide",
+      "typical_range": "5-10 mi / 12-24 mo, primary office only",
+      "verdict": "unfavorable",
+      "note": null
+    },
+    {
+      "term": "Covenant penalty",
+      "this_offer": "$150,000 + employer's attorney fees",
+      "typical_range": "Usually absent; injunctive relief only",
+      "verdict": "unfavorable",
+      "note": null
+    },
+    {
+      "term": "Benefits",
+      "this_offer": "None (no health, retirement, PTO, or CE)",
+      "typical_range": "Health, 401(k), 10-15 PTO days, $1,500-$3,000 CE",
+      "verdict": "unfavorable",
+      "note": null
+    },
+    {
+      "term": "Tail coverage",
+      "this_offer": "Provider pays, on any exit",
+      "typical_range": "Employer-paid or split",
+      "verdict": "unfavorable",
+      "note": null
+    },
+    {
+      "term": "Sign-on clawback",
+      "this_offer": "Full repayment + 8% interest, 36 months, any reason",
+      "typical_range": "Pro-rated, waived if terminated without cause",
+      "verdict": "unfavorable",
+      "note": null
+    },
+    {
+      "term": "Notice periods",
+      "this_offer": "Employer 0 days / you 120 days",
+      "typical_range": "Mutual 60-90 days",
+      "verdict": "unfavorable",
+      "note": null
+    },
+    {
+      "term": "Dispute resolution",
+      "this_offer": "Binding arbitration, class-action waiver",
+      "typical_range": "Courts, or arbitration with balanced terms",
+      "verdict": "unfavorable",
+      "note": null
+    },
+    {
+      "term": "Production quota",
+      "this_offer": "$3,000/day or for-cause termination",
+      "typical_range": "No hard quota tied to termination",
+      "verdict": "unfavorable",
+      "note": null
+    },
+    {
+      "term": "Signing bonus",
+      "this_offer": "$10,000",
+      "typical_range": "$5,000-$25,000",
+      "verdict": "typical",
+      "note": "Reasonable on its face — but the repayment terms make it a liability, not a benefit."
+    }
+  ],
+  "strengths": [
+    "The $10,000 signing bonus is real cash up front, if you stay the full three years.",
+    "A high-volume group can offer steady patient flow and fast clinical repetition early in your career."
+  ],
+  "red_flags": [
+    {
+      "title": "An 8% management fee comes out before your split",
+      "severity": "high",
+      "clause_reference": "Section 4.1",
+      "explanation": "On top of being paid on collections rather than production, an 8% 'practice management fee' and all lab costs are subtracted before your 22% is calculated. Stacked together, these deductions cut your effective share to roughly 15% of what you produce.",
+      "cost_if_ignored": "~$25,000 / year",
+      "timing": "Ongoing",
+      "what_to_do": "Ask for the management fee to be removed from your compensation math and for the split to be based on production, or at minimum for lab fees to come out after your percentage."
+    },
+    {
+      "title": "No daily guarantee of any kind",
+      "severity": "high",
+      "clause_reference": "Section 4",
+      "explanation": "There is no floor on your pay. During the months your schedule is still filling — often the first half-year — you are paid only your small percentage of whatever comes in, with nothing to cushion slow days.",
+      "cost_if_ignored": "Thousands during ramp-up",
+      "timing": "Year 1",
+      "what_to_do": "Ask for a daily or monthly guarantee for at least the first 6 months while you build a patient base."
+    },
+    {
+      "title": "36-month, 25-mile non-compete across every affiliate statewide",
+      "severity": "high",
+      "clause_reference": "Section 9.1",
+      "explanation": "The restriction applies for three years around any Apex-affiliated location in the state — not just where you worked. In a large metro that can blanket the entire area, effectively forcing you to leave the region to keep practicing.",
+      "cost_if_ignored": "Possibly your next 3 years locally",
+      "timing": "On exit",
+      "what_to_do": "Insist on limiting the non-compete to your primary office, a shorter term (12-24 months), and a smaller radius — and have it reviewed for enforceability under Arizona law."
+    },
+    {
+      "title": "$150,000 penalty plus the employer's legal fees for a breach",
+      "severity": "high",
+      "clause_reference": "Section 9.4",
+      "explanation": "Breaching the covenant triggers an automatic $150,000 payment and makes you pay Apex's attorney fees — a six-figure fixed penalty unrelated to any actual harm, designed to make leaving too risky to attempt.",
+      "cost_if_ignored": "$150,000+",
+      "timing": "If breached",
+      "what_to_do": "Ask to strike the liquidated-damages and fee-shifting clauses entirely; they are not standard in associate agreements."
+    },
+    {
+      "title": "You are classified as a 1099 contractor with none of the control",
+      "severity": "high",
+      "clause_reference": "Section 1; Section 2",
+      "explanation": "You get no benefits and owe self-employment tax, yet Apex sets your schedule, location, and protocols and requires on-call coverage — the hallmarks of an employee. Misclassification shifts thousands in taxes and benefits onto you and can create legal exposure for both sides.",
+      "cost_if_ignored": "$8,000-$15,000 / year in taxes and benefits",
+      "timing": "Ongoing",
+      "what_to_do": "Ask to be classified as a W-2 employee, or to have the pay raised substantially to offset the taxes and benefits you must now cover yourself."
+    },
+    {
+      "title": "Indefinite chargebacks for refunds and insurance takebacks",
+      "severity": "medium",
+      "clause_reference": "Section 4.3",
+      "explanation": "If a patient is refunded or an insurer claws money back — even years later, and even on work you were already paid for — the amount is deducted from your future pay with no time limit.",
+      "cost_if_ignored": "Variable, open-ended",
+      "timing": "Ongoing",
+      "what_to_do": "Ask for a cap and a time limit on chargebacks, and to exclude takebacks caused by the office's own billing errors."
+    },
+    {
+      "title": "Production quota converts a slow month into a firing",
+      "severity": "medium",
+      "clause_reference": "Section 8.2",
+      "explanation": "Missing a $3,000/day production target in any two months is grounds for immediate for-cause termination — turning a normal slow stretch into a job loss, and a for-cause one that's harder to explain to the next employer.",
+      "cost_if_ignored": null,
+      "timing": "If terminated",
+      "what_to_do": "Ask to remove the hard quota, or replace it with a good-faith review and a cure period before any termination."
+    },
+    {
+      "title": "Binding arbitration with a class-action waiver",
+      "severity": "medium",
+      "clause_reference": "Section 12",
+      "explanation": "Any dispute must go to private arbitration in Apex's home county, and you waive the right to join with other associates in a class action. This quietly removes most of your practical leverage if something goes wrong.",
+      "cost_if_ignored": null,
+      "timing": "If disputed",
+      "what_to_do": "Ask to keep access to the courts, or at minimum for a neutral venue and shared arbitration costs."
+    },
+    {
+      "title": "Zero notice from them, 120 days from you",
+      "severity": "medium",
+      "clause_reference": "Section 8.1",
+      "explanation": "Apex can end the agreement immediately, but you must give four months' notice or be in breach — a lopsided arrangement that keeps you locked in while leaving you exposed.",
+      "cost_if_ignored": null,
+      "timing": "On exit",
+      "what_to_do": "Ask for mutual notice periods of 60-90 days."
+    }
+  ],
+  "negotiation_playbook": [
+    {
+      "priority": 1,
+      "topic": "Compensation structure and the management fee",
+      "rationale": "The 8% fee, pre-split lab costs, and collections basis are the biggest drivers of a take-home near 15% — this is where the real money is.",
+      "estimated_value": "$25,000+ per year",
+      "suggested_ask": "Would you base my split on production and remove the 8% management fee from my compensation calculation? I'd also like to see the office's collection history."
+    },
+    {
+      "priority": 2,
+      "topic": "Worker classification",
+      "rationale": "A fixed-schedule 1099 role likely fails the classification tests and shifts thousands in tax and benefits onto the associate.",
+      "estimated_value": "$8,000-$15,000 per year",
+      "suggested_ask": "Given the set schedule and on-call requirements, could this be a W-2 employee role — or the rate raised to offset the taxes and benefits I'd cover as a contractor?"
+    },
+    {
+      "priority": 3,
+      "topic": "Non-compete and liquidated damages",
+      "rationale": "As written, the covenant can force you out of the metro for three years and carries a six-figure penalty.",
+      "estimated_value": "Protects your ability to keep working locally",
+      "suggested_ask": "Can we limit the non-compete to my primary location, shorten it to 12-24 months, and remove the $150,000 penalty and fee-shifting?"
+    },
+    {
+      "priority": 4,
+      "topic": "A ramp-up guarantee",
+      "rationale": "With no floor, the associate absorbs all the risk of a slow start.",
+      "estimated_value": "$5,000-$15,000 in the first months",
+      "suggested_ask": "Would you add a daily guarantee for the first six months while I build a schedule?"
+    },
+    {
+      "priority": 5,
+      "topic": "Sign-on repayment terms",
+      "rationale": "Full repayment with interest for three years, even if they fire you, makes the bonus a liability.",
+      "estimated_value": "Up to $10,800",
+      "suggested_ask": "Could the signing-bonus repayment pro-rate monthly, drop the interest, and be waived if Apex ends the agreement without cause?"
+    },
+    {
+      "priority": 6,
+      "topic": "Chargebacks and termination",
+      "rationale": "Open-ended chargebacks and a zero-notice/quota termination structure leave you exposed on both ends.",
+      "estimated_value": "Variable — reduces open-ended risk",
+      "suggested_ask": "Can we cap and time-limit chargebacks, make notice mutual, and replace the production quota with a good-faith review and cure period?"
+    }
+  ],
+  "negotiation_email": "Subject: Apex associate agreement — a few things to work through before I sign\n\nHi [Name],\n\nThank you for the offer to join the Phoenix team — I'm excited about the patient volume and the chance to build my clinical speed early. I've read the agreement closely, and there are a few structural items I'd want to resolve before signing:\n\n1. Compensation. As drafted, my 22% is calculated after an 8% management fee and lab costs come out of collections, which puts my effective share around 15%. Could we base the split on production and remove the management fee from that math? Seeing the office's collection history would help me plan realistically.\n\n2. Classification. Given the set schedule and on-call requirements, could this be a W-2 role — or the rate adjusted to reflect the taxes and benefits I'd be covering as a 1099 contractor?\n\n3. Non-compete. The current 36-month, 25-mile restriction across every affiliate statewide, with a $150,000 penalty, is broader than I can accept. Could we limit it to my primary location, shorten the term, and remove the liquidated-damages clause?\n\n4. Ramp-up. Since a new associate's schedule takes time to fill, would you add a daily guarantee for the first six months?\n\nI'm genuinely interested in making this work, and I'd rather get the structure right up front than run into surprises later. Happy to talk any of this through by phone.\n\nBest,\n[Name]",
+  "value_at_stake": "Fixing even the compensation structure and the non-compete on this offer is worth well over $30,000 a year plus your freedom to keep working locally — the difference between a viable job and one to walk away from.",
+  "overall_read": "This is a materially one-sided agreement. A low collections-based rate is stacked with an 8% management fee and lab deductions, there is no guarantee, benefits are nonexistent under a questionable 1099 classification, and the covenants — a three-year statewide non-compete with a $150,000 penalty — are built to make leaving prohibitively expensive. Some of these terms are negotiable and some may not be enforceable, but as written this contract asks you to carry nearly all of the risk. If the practice won't move on the compensation structure and the non-compete, this is an offer worth walking away from."
+}

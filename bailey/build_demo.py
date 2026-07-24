@@ -11,11 +11,17 @@ style_inner = idx.split("<style>", 1)[1].split("</style>", 1)[0]
 body = idx.split('<div id="app"', 1)[1]
 body = '<div id="app"' + body.rsplit("</script>", 1)[0] + "</script>"
 
-# 3) demo data
-demo_a = json.load(open("/home/user/Test/bailey/sample_offers/demo_analysis.json"))
-demo_b = json.load(open("/home/user/Test/bailey/sample_offers/demo_analysis_b.json"))
-demo_js = "const DEMO=[%s,%s];let demoIdx=0;function nextDemo(){return JSON.parse(JSON.stringify(DEMO[demoIdx++%%DEMO.length]));}" % (
-    json.dumps(demo_a), json.dumps(demo_b))
+# 3) demo data — three scenarios keyed by the picker's sample ids.
+demo_dso = json.load(open("/home/user/Test/bailey/sample_offers/demo_analysis.json"))
+demo_private = json.load(open("/home/user/Test/bailey/sample_offers/demo_analysis_b.json"))
+demo_rough = json.load(open("/home/user/Test/bailey/sample_offers/demo_analysis_c.json"))
+demo_js = (
+    "const DEMO_BY_ID={dso:%s,private:%s,rough:%s};"
+    "const _GOOD=[DEMO_BY_ID.dso,DEMO_BY_ID.private];let demoIdx=0;"
+    "function _clone(o){return JSON.parse(JSON.stringify(o));}"
+    "function demoById(id){return _clone(DEMO_BY_ID[id]||DEMO_BY_ID.dso);}"
+    "function nextGood(){return _clone(_GOOD[demoIdx++%%_GOOD.length]);}"
+) % (json.dumps(demo_dso), json.dumps(demo_private), json.dumps(demo_rough))
 
 # 4) swap the networked flow for inlined demo data
 # Replace the post()/analyzeFile/analyzeSample trio with demo versions.
@@ -23,15 +29,15 @@ old_flow_start = body.index("async function post(")
 old_flow_end = body.index("function copyEmail(")
 demo_flow = (
     demo_js + "\n"
-    "function analyzeFile(file){beginAnalysis(function(){return Promise.resolve({filename:file.name,analysis:nextDemo()});},file.name);}\n"
-    "function analyzeSample(){beginAnalysis(function(){return Promise.resolve({filename:\"Sample offer\",analysis:nextDemo()});},\"Sample offer\");}\n"
+    "function analyzeFile(file){beginAnalysis(function(){return Promise.resolve({filename:file.name,analysis:nextGood()});},file.name);}\n"
+    "function analyzeSample(id){beginAnalysis(function(){return Promise.resolve({filename:\"Sample offer\",analysis:demoById(id)});},\"Sample offer\");}\n"
 )
 body = body[:old_flow_start] + demo_flow + body[old_flow_end:]
 
 art = "<style>\n%s\n%s\n</style>\n%s\n" % (fonts_css, style_inner, body)
 open("bailey-demo.html", "w").write(art)
 print("artifact bytes:", len(art))
-print("has DEMO:", "const DEMO=[" in art, "| post() removed:", "async function post(" not in art)
+print("has DEMO:", "const DEMO_BY_ID=" in art, "| post() removed:", "async function post(" not in art)
 
 # Make the whole file pure ASCII so it renders identically under any charset:
 # non-ASCII chars live inside JS string/template literals and CSS comments, so

@@ -1,6 +1,7 @@
 """Bailey — upload a healthcare job offer, get the review your mentor would give you."""
 
 import base64
+import json
 import os
 import secrets
 from pathlib import Path
@@ -22,7 +23,14 @@ ACCESS_PASSWORD = os.environ.get("BAILEY_PASSWORD", "")
 app = FastAPI(title="Bailey")
 
 STATIC_DIR = Path(__file__).parent / "static"
-SAMPLE_OFFER = Path(__file__).parent / "sample_offers" / "sample_dso_offer.txt"
+SAMPLE_DIR = Path(__file__).parent / "sample_offers"
+SAMPLE_OFFER = SAMPLE_DIR / "sample_dso_offer.txt"
+# Pre-generated analyses for the landing-page sample picker, keyed by its ids.
+SAMPLE_ANALYSES = {
+    "dso": SAMPLE_DIR / "demo_analysis.json",
+    "private": SAMPLE_DIR / "demo_analysis_b.json",
+    "rough": SAMPLE_DIR / "demo_analysis_c.json",
+}
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
@@ -94,8 +102,23 @@ async def analyze(file: UploadFile = File(...)) -> JSONResponse:
 
 
 @app.post("/api/analyze-sample")
-def analyze_sample() -> JSONResponse:
-    """Analyze the bundled sample offer — powers the landing page's 'Try the sample offer'."""
+async def analyze_sample(request: Request) -> JSONResponse:
+    """Serve a sample analysis — powers the landing page's sample picker.
+
+    The request may include ``{"id": "dso" | "private" | "rough"}``. In demo
+    mode we return the matching pre-generated analysis directly; otherwise we
+    run the bundled DSO sample offer through the model.
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    sample_id = (body or {}).get("id", "dso")
+
+    if _demo_mode():
+        path = SAMPLE_ANALYSES.get(sample_id, SAMPLE_ANALYSES["dso"])
+        return JSONResponse({"filename": "Sample offer", "analysis": json.loads(path.read_text())})
+
     _require_credentials()
     data = SAMPLE_OFFER.read_bytes()
     try:

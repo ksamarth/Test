@@ -157,6 +157,8 @@ img { display: block; max-width: 100%; }
 .foot-link:hover { color: var(--color-accent-700) !important; }
 .student-bar { transition: background .15s ease; }
 .student-bar:hover { background: var(--color-accent-200) !important; }
+.sample-pick { transition: border-color .15s ease, background .15s ease; }
+.sample-pick:hover { border-color: var(--color-accent) !important; background: color-mix(in srgb, var(--color-accent) 6%, transparent) !important; }
 
 /* — tables — */
 .table { width: 100%; border-collapse: collapse; font-size: 14px; }
@@ -326,17 +328,69 @@ function saveOffers() {
 
 /* A session library of analyzed offers, persisted client-side. */
 const state = {
-  stage: "landing",     // landing | analyzing | report | compare
+  stage: "landing",     // landing | analyzing | report | compare | shared | how | features | pricing | faq
   offers: loadOffers(), // [{ id, filename, analysis }]
   activeId: null,       // offer shown in the report view
   filename: "",         // file being analyzed (for the analyzing stage)
   step: 0, error: "", copied: false,
+  sharedOffer: null,    // a read-only review decoded from a #r= share link
+  sharedCopied: false,  // "Link copied" state on the Share button
+  pickerOpen: false,    // sample-offer picker modal
 };
 let stepTimer = null;
 
 function set(patch) { Object.assign(state, patch); render(); }
-function activeOffer() { return state.offers.find(o => o.id === state.activeId) || null; }
+function activeOffer() {
+  if (state.stage === "shared" && state.sharedOffer) return state.sharedOffer;
+  return state.offers.find(o => o.id === state.activeId) || null;
+}
 function offerLabel(o) { return (o.analysis && o.analysis.extraction && o.analysis.extraction.employer_name) || o.filename || "Offer"; }
+
+/* ── shareable report links ──
+   A review is encoded into the URL hash (#r=…) so it can be opened by anyone
+   with the link — no account, no server. Gzip-compressed when the browser
+   supports CompressionStream, otherwise plain base64url of the JSON. */
+function b64urlFromBytes(bytes) { let s = ""; for (const b of bytes) s += String.fromCharCode(b); return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
+function bytesFromB64url(str) { str = str.replace(/-/g, "+").replace(/_/g, "/"); while (str.length % 4) str += "="; const bin = atob(str); const out = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i); return out; }
+async function encodeShare(obj) {
+  const json = JSON.stringify(obj);
+  if (window.CompressionStream) {
+    const buf = await new Response(new Blob([json]).stream().pipeThrough(new CompressionStream("gzip"))).arrayBuffer();
+    return "g" + b64urlFromBytes(new Uint8Array(buf));
+  }
+  return "r" + b64urlFromBytes(new TextEncoder().encode(json));
+}
+async function decodeShare(payload) {
+  const kind = payload[0], data = payload.slice(1);
+  if (kind === "g") {
+    const txt = await new Response(new Blob([bytesFromB64url(data)]).stream().pipeThrough(new DecompressionStream("gzip"))).text();
+    return JSON.parse(txt);
+  }
+  return JSON.parse(new TextDecoder().decode(bytesFromB64url(data)));
+}
+async function shareReport() {
+  const o = activeOffer();
+  if (!o) return;
+  try {
+    const payload = await encodeShare({ v: 1, filename: o.filename, analysis: o.analysis });
+    const url = location.origin + location.pathname + "#r=" + payload;
+    try { await navigator.clipboard.writeText(url); } catch (e) { /* clipboard blocked */ }
+    state.sharedCopied = true; render();
+    setTimeout(() => { state.sharedCopied = false; render(); }, 1900);
+  } catch (e) { /* ignore */ }
+}
+function openSharedFromHash() {
+  const m = (location.hash || "").match(/^#r=(.+)$/);
+  if (!m) return Promise.resolve(false);
+  return decodeShare(m[1]).then(obj => {
+    if (obj && obj.analysis) {
+      state.sharedOffer = { id: "shared", filename: obj.filename || "Shared review", analysis: obj.analysis };
+      state.stage = "shared"; render(); window.scrollTo(0, 0); return true;
+    }
+    return false;
+  }).catch(() => false);
+}
+function clearHash() { if (location.hash) history.replaceState(null, "", location.pathname + location.search); }
 
 /* ─────────────────────────  flow  ───────────────────────── */
 function beginAnalysis(runFetch, filename) {
@@ -368,7 +422,7 @@ function finishFail(failed) {
 /* ─────────────────────────  library navigation  ───────────────────────── */
 function openReport(id) { set({ stage: "report", activeId: id, error: "" }); }
 function openCompare() { if (state.offers.length >= 2) set({ stage: "compare", error: "" }); }
-function newReview() { set({ stage: "landing", error: "" }); }
+function newReview() { clearHash(); set({ stage: "landing", error: "", sharedOffer: null }); }
 function removeOffer(id) {
   state.offers = state.offers.filter(o => o.id !== id);
   saveOffers();
@@ -393,8 +447,12 @@ function analyzeFile(file) {
   }, file.name);
 }
 
-function analyzeSample() {
-  beginAnalysis(() => post("/api/analyze-sample", { method: "POST" }), "Sample offer");
+function analyzeSample(id) {
+  beginAnalysis(() => post("/api/analyze-sample", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id: id || "dso" }),
+  }), "Sample offer");
 }
 
 function copyEmail(text) {
@@ -404,7 +462,7 @@ function copyEmail(text) {
 }
 
 /* ─────────────────────────  chrome  ───────────────────────── */
-const PAGES = [["how", "How it works"], ["features", "What's inside"], ["pricing", "Pricing"]];
+const PAGES = [["how", "How it works"], ["features", "What's inside"], ["pricing", "Pricing"], ["faq", "FAQ"]];
 
 function navBar(current) {
   const links = PAGES.map(([p, l]) => {
@@ -451,8 +509,33 @@ function testimonialCards() {
 function ctaBlock(note) {
   return `<div style="margin-top:56px;border-top:1px solid var(--color-divider);padding-top:36px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
     <label class="btn btn-solid" style="cursor:pointer;font-size:16px;padding:15px 34px;">Upload an offer<input type="file" accept=".pdf,.docx,.txt" data-file style="display:none;"></label>
-    <button class="btn btn-secondary" style="font-size:16px;padding:15px 34px;" data-sample>Try the sample offer</button>
+    <button class="btn btn-secondary" style="font-size:16px;padding:15px 34px;" data-samples>See a sample analysis</button>
     <span class="text-muted" style="font-size:13px;">${note || "$129 a review · students $79 with a .edu email"}</span>
+  </div>`;
+}
+
+/* Sample analyses a visitor can preview — the picker lets them choose a
+   scenario instead of getting a single canned example. */
+const SAMPLES = [
+  { id: "dso", grade: "B-", label: "Associate dentist · DSO", blurb: "A market-rate corporate offer with a few costly clauses to fix." },
+  { id: "private", grade: "B", label: "Private-practice associate", blurb: "A stronger small-practice offer — still worth tuning before signing." },
+  { id: "rough", grade: "D+", label: "A rough first offer", blurb: "See what Bailey catches on a one-sided, predatory contract." },
+];
+function samplePicker() {
+  return `<div class="sample-modal" data-modal style="position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:20px;background:color-mix(in srgb, #201f1d 55%, transparent);">
+    <div class="card" style="background:var(--color-bg);max-width:560px;width:100%;padding:30px 30px 32px;box-shadow:var(--shadow-lg);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+        <div><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Sample analyses</div><h3 style="font-size:24px;margin:6px 0 0;">Pick an offer to preview</h3></div>
+        <button data-modal-close aria-label="Close" style="background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--color-neutral-500);">×</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:22px;">
+        ${SAMPLES.map(s => `<button class="sample-pick" data-pick="${s.id}" style="text-align:left;background:none;border:1px solid var(--color-divider);border-radius:14px;padding:16px 18px;cursor:pointer;display:flex;align-items:center;gap:18px;">
+          <span style="font-family:var(--font-heading);font-size:30px;color:var(--color-accent-700);min-width:46px;text-align:center;">${s.grade}</span>
+          <span style="flex:1;"><span style="font-family:var(--font-heading);font-size:16.5px;display:block;">${s.label}</span><span class="text-muted" style="font-size:13px;">${s.blurb}</span></span>
+          <span style="color:var(--color-accent);font-size:18px;">&rarr;</span>
+        </button>`).join("")}
+      </div>
+    </div>
   </div>`;
 }
 
@@ -531,7 +614,7 @@ function landing() {
           <p style="font-size:20px;line-height:1.6;max-width:42ch;margin:0;">Upload your clinical job offer — dental, medical, pharmacy, nursing, any specialty. Bailey grades it, prices the clauses that could cost you, and writes the email to fix them — in about four minutes.</p>
           <div style="display:flex;gap:14px;justify-content:flex-start;margin-top:48px;flex-wrap:wrap;">
             <label class="btn btn-solid" style="cursor:pointer;font-size:16px;padding:15px 34px;">Upload an offer<input type="file" accept=".pdf,.docx,.txt" data-file style="display:none;"></label>
-            <button class="btn btn-secondary" style="font-size:16px;padding:15px 34px;" data-sample>Try the sample offer</button>
+            <button class="btn btn-secondary" style="font-size:16px;padding:15px 34px;" data-samples>Try a sample offer</button>
           </div>
           <p class="text-muted" style="font-size:13px;margin-top:16px;">$129 a review · <strong style="color:var(--color-accent-800);font-weight:600;">students $79</strong> with a .edu email</p>
         </div>
@@ -818,13 +901,21 @@ function report() {
     (x.position_title || x.location) ? `<span class="tag tag-neutral">${esc([x.position_title, x.location].filter(Boolean).join(" · "))}</span>` : "",
   ].join("");
 
-  return navBar() + `
+  const shared = state.stage === "shared";
+  const sharedBanner = `<div class="no-print" style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:26px;border:1px solid var(--color-accent-300);background:var(--color-accent-100);border-radius:14px;padding:14px 20px;">
+      <span style="font-size:14px;color:var(--color-accent-900);">You're viewing a <strong>shared review</strong>. Want the same for your own offer?</span>
+      <button class="btn btn-solid" data-page="landing" style="font-size:14px;padding:10px 20px;">Analyze my offer &rarr;</button>
+    </div>`;
+  return navBar(shared ? "shared" : undefined) + `
   <main class="pad" style="flex:1;width:100%;max-width:1360px;margin:0 auto;padding:40px 48px 80px;">
-    ${switcher(offer.id)}
+    ${shared ? sharedBanner : switcher(offer.id)}
     <div class="no-print" style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:32px;flex-wrap:wrap;">
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">${tags}</div>
-      <button class="btn btn-secondary" data-print style="font-size:13px;padding:7px 16px;">↓ Save as PDF</button>
-    </div>
+      <div style="display:flex;gap:10px;">
+        ${shared ? "" : `<button class="btn btn-secondary" data-share style="font-size:13px;padding:7px 16px;">${state.sharedCopied ? "Link copied ✓" : "↗ Share"}</button>`}
+        <button class="btn btn-secondary" data-print style="font-size:13px;padding:7px 16px;">↓ Save as PDF</button>
+      </div>
+    </div>${shared ? "" : ""}
 
     <section class="grid-collapse" style="display:grid;grid-template-columns:250px 1fr;gap:44px;padding-bottom:32px;border-bottom:1px solid var(--color-divider);">
       <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:left;">
@@ -981,19 +1072,46 @@ function compare() {
 }
 
 /* ─────────────────────────  render + events  ───────────────────────── */
-const MARKETING_PAGES = { how: pageHow, features: pageInside, pricing: pagePricing };
+/* ─────────────────────────  faq  ───────────────────────── */
+function pageFaq() {
+  const qs = [
+    ["Is this legal advice?", "No. Bailey is an educational tool, not a law firm — it doesn't provide legal, financial, or tax advice, and it isn't a substitute for a licensed attorney or CPA. What it does is read your offer the way an informed mentor would, so you walk into any review or negotiation knowing exactly what to ask about and what it's worth."],
+    ["How is this different from hiring a lawyer?", "A lawyer is the right call for the final sign-off. Bailey is the fast, affordable first pass that tells you whether you even need one — and what to point them at. A contract attorney often runs $500-$1,500; Bailey is $129 (or $79 for students) and takes about four minutes, so you spend legal dollars only where they matter."],
+    ["Is my contract data safe?", "Your contract is used to generate your analysis and nothing more — we don't sell it and we don't share it. As we grow, our plan is to analyze your document and then discard the original file, keeping only the report. Everything is served over an encrypted connection."],
+    ["How accurate is the analysis?", "Bailey benchmarks each term against real new-grad market ranges and shows its math, so you can see how every number was reached. Figures are illustrative estimates for education, not guarantees — your local market and specifics will vary, which is exactly why the final call should involve a professional."],
+    ["Who is Bailey for?", "Early-career clinicians signing their first contracts — dentists, physicians, pharmacists, NPs, PAs, and residents moving into attending roles. If it's a clinical employment offer or associate agreement, Bailey can read it."],
+    ["What does it cost?", "One flat price per review — $129, or $79 for students with a .edu email. No subscription and no auto-renewal. Comparing multiple offers is $199 (students $149)."],
+    ["Do I need to create an account?", "Not to try it. You can upload an offer and get your full analysis right now, with no signup required."],
+  ];
+  return navBar("faq") + `
+  <main class="pad" style="flex:1;width:100%;max-width:1360px;margin:0 auto;padding:64px 48px 20px;">
+    ${pageHeader("FAQ", "Questions, answered.", "The honest version — what Bailey is, what it isn't, and how your information is handled.")}
+    <div style="max-width:800px;">
+      ${qs.map(([q, a], i) => `<div style="padding:26px 0;${i ? 'border-top:1px solid var(--color-divider);' : ''}">
+        <h3 style="font-size:21px;margin:0 0 10px;">${q}</h3>
+        <p class="text-muted" style="font-size:15px;line-height:1.7;margin:0;">${a}</p>
+      </div>`).join("")}
+    </div>
+    ${ctaBlock()}
+  </main>` + siteFooter();
+}
+
+const MARKETING_PAGES = { how: pageHow, features: pageInside, pricing: pagePricing, faq: pageFaq };
 function goPage(p) {
   clearInterval(stepTimer);
-  set({ stage: p, error: "" });
+  clearHash();
+  set({ stage: p, error: "", sharedOffer: null });
   window.scrollTo(0, 0);
 }
 
 function render() {
   if (state.stage === "analyzing") app.innerHTML = analyzing();
+  else if (state.stage === "shared" && state.sharedOffer) app.innerHTML = report();
   else if (state.stage === "compare" && state.offers.length >= 2) app.innerHTML = compare();
   else if (state.stage === "report" && activeOffer()) app.innerHTML = report();
   else if (MARKETING_PAGES[state.stage]) app.innerHTML = MARKETING_PAGES[state.stage]();
   else app.innerHTML = landing();
+  if (state.pickerOpen) app.insertAdjacentHTML("beforeend", samplePicker());
   wire();
 }
 
@@ -1002,7 +1120,14 @@ function wire() {
     const file = e.target.files && e.target.files[0];
     if (file) analyzeFile(file);
   }));
-  app.querySelectorAll("[data-sample]").forEach(b => b.addEventListener("click", analyzeSample));
+  app.querySelectorAll("[data-sample]").forEach(b => b.addEventListener("click", () => analyzeSample()));
+  app.querySelectorAll("[data-samples]").forEach(b => b.addEventListener("click", () => set({ pickerOpen: true })));
+  app.querySelectorAll("[data-pick]").forEach(b => b.addEventListener("click", () => { const id = b.getAttribute("data-pick"); set({ pickerOpen: false }); analyzeSample(id); }));
+  app.querySelectorAll("[data-modal-close]").forEach(b => b.addEventListener("click", () => set({ pickerOpen: false })));
+  const modal = app.querySelector("[data-modal]");
+  if (modal) modal.addEventListener("click", ev => { if (ev.target === modal) set({ pickerOpen: false }); });
+  const shareBtn = app.querySelector("[data-share]");
+  if (shareBtn) shareBtn.addEventListener("click", shareReport);
   app.querySelectorAll("[data-open]").forEach(b => b.addEventListener("click", () => openReport(b.getAttribute("data-open"))));
   app.querySelectorAll("[data-remove]").forEach(b => b.addEventListener("click", ev => { ev.stopPropagation(); removeOffer(b.getAttribute("data-remove")); }));
   app.querySelectorAll("[data-compare]").forEach(b => b.addEventListener("click", openCompare));
@@ -1030,6 +1155,8 @@ function wire() {
 }
 
 render();
+openSharedFromHash();
+window.addEventListener("hashchange", openSharedFromHash);
 </script>
 </body>
 </html>
