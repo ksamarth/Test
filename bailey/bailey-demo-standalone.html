@@ -396,8 +396,11 @@ function saveOffers() {
 }
 
 const PROFILE_KEY = "bailey.profile.v1";
+const ASKED_KEY = "bailey.quizasked.v1";
 function loadProfile() { try { return JSON.parse(localStorage.getItem(PROFILE_KEY)) || null; } catch (e) { return null; } }
 function saveProfile() { try { localStorage.setItem(PROFILE_KEY, JSON.stringify(state.profile)); } catch (e) { /* ignore */ } }
+function loadAsked() { try { return localStorage.getItem(ASKED_KEY) === "1"; } catch (e) { return false; } }
+function saveAsked() { try { localStorage.setItem(ASKED_KEY, "1"); } catch (e) { /* ignore */ } }
 
 /* Optional "tell Bailey about your situation" questionnaire \u2014 re-weights the
    review to the reader's life. Kept short; answers live only in the browser. */
@@ -422,7 +425,24 @@ const state = {
   profile: loadProfile(), // optional questionnaire answers
   quizOpen: false,      // questionnaire modal
   quizDraft: {},        // in-progress questionnaire selections
+  quizAsked: loadAsked(), // have we already offered the questionnaire once?
+  pendingAction: null,  // analysis to run after the pre-review questionnaire
 };
+
+/* Offer the questionnaire once, right before the first review \u2014 then run the
+   analysis whether they fill it out or skip. */
+function maybeQuizThen(action) {
+  if (state.profile || state.quizAsked) { action(); return; }
+  state.pendingAction = action;
+  set({ quizOpen: true, quizDraft: {} });
+}
+function closeQuiz(save) {
+  if (save) { state.profile = Object.assign({}, state.quizDraft); saveProfile(); }
+  state.quizAsked = true; saveAsked();
+  const action = state.pendingAction; state.pendingAction = null;
+  state.quizOpen = false;
+  if (action) action(); else render();
+}
 let stepTimer = null;
 
 function set(patch) { Object.assign(state, patch); render(); }
@@ -722,11 +742,6 @@ function landing() {
             <button class="btn btn-secondary" style="font-size:16px;padding:15px 34px;" data-samples>Try a sample offer</button>
           </div>
           <p class="text-muted" style="font-size:13px;margin-top:16px;">$129 a review \xb7 <strong style="color:var(--color-accent-800);font-weight:600;">students $79</strong> with a .edu email</p>
-          <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--color-divider);max-width:44ch;">
-            ${state.profile
-              ? `<span class="text-muted" style="font-size:13.5px;">Reviews are personalized for your situation <span style="color:var(--color-accent-700);">&#10003;</span> <button class="btn btn-ghost" data-quiz style="font-size:12.5px;padding:2px 6px;">Edit</button></span>`
-              : `<button class="btn btn-ghost" data-quiz style="font-size:14px;padding:4px 8px;">First, tell Bailey about your situation &rarr;</button><div class="text-muted" style="font-size:12.5px;margin-top:4px;">Optional. It shapes the whole review around your life \u2014 not just a footnote.</div>`}
-          </div>
         </div>
         <div class="card elev-md lift" style="padding:36px 40px;">
           <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:24px;">Sample diagnosis</div>
@@ -939,9 +954,9 @@ function quizModal() {
     <div class="card" style="background:var(--color-bg);max-width:600px;width:100%;max-height:90vh;overflow:auto;padding:30px 30px 26px;box-shadow:var(--shadow-lg);">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
         <div>
-          <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Tailor your review</div>
-          <h3 style="font-size:24px;margin:6px 0 0;">Tell Bailey about your situation</h3>
-          <p class="text-muted" style="font-size:13.5px;line-height:1.55;margin:8px 0 0;max-width:52ch;">Optional, about 30 seconds. It changes which clauses Bailey flags as urgent for you \u2014 nothing is stored beyond your own browser.</p>
+          <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Before your review</div>
+          <h3 style="font-size:24px;margin:6px 0 0;">First, tell Bailey about you</h3>
+          <p class="text-muted" style="font-size:13.5px;line-height:1.55;margin:8px 0 0;max-width:54ch;">Five quick questions, about 30 seconds. Bailey builds your review around your life \u2014 re-ranking the red flags and the negotiation plan for what matters most to you. Optional, and nothing leaves your browser.</p>
         </div>
         <button data-quiz-close aria-label="Close" style="background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--color-neutral-500);">\xd7</button>
       </div>
@@ -954,8 +969,8 @@ function quizModal() {
         </div>`).join("")}
       </div>
       <div style="margin-top:26px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
-        <button class="btn btn-solid" data-quiz-save style="font-size:15px;padding:12px 26px;">Apply to my review</button>
-        <button class="btn btn-ghost" data-quiz-close style="font-size:13px;">Skip for now</button>
+        <button class="btn btn-solid" data-quiz-save style="font-size:15px;padding:12px 26px;">Personalize my review</button>
+        <button class="btn btn-ghost" data-quiz-close style="font-size:13px;">Skip &mdash; just review the offer</button>
       </div>
     </div>
   </div>`;
@@ -1353,12 +1368,12 @@ function render() {
 function wire() {
   app.querySelectorAll("[data-file]").forEach(fi => fi.addEventListener("change", e => {
     const file = e.target.files && e.target.files[0];
-    if (file) analyzeFile(file);
+    if (file) maybeQuizThen(() => analyzeFile(file));
   }));
-  app.querySelectorAll("[data-sample]").forEach(b => b.addEventListener("click", () => analyzeSample()));
+  app.querySelectorAll("[data-sample]").forEach(b => b.addEventListener("click", () => maybeQuizThen(() => analyzeSample())));
   app.querySelectorAll("[data-samples]").forEach(b => b.addEventListener("click", () => set({ pickerOpen: true })));
-  app.querySelectorAll("[data-pick]").forEach(b => b.addEventListener("click", () => { const id = b.getAttribute("data-pick"); set({ pickerOpen: false }); analyzeSample(id); }));
-  app.querySelectorAll("[data-compare-samples]").forEach(b => b.addEventListener("click", loadCompareSamples));
+  app.querySelectorAll("[data-pick]").forEach(b => b.addEventListener("click", () => { const id = b.getAttribute("data-pick"); state.pickerOpen = false; maybeQuizThen(() => analyzeSample(id)); }));
+  app.querySelectorAll("[data-compare-samples]").forEach(b => b.addEventListener("click", () => { state.pickerOpen = false; maybeQuizThen(loadCompareSamples); }));
   app.querySelectorAll("[data-modal-close]").forEach(b => b.addEventListener("click", () => set({ pickerOpen: false })));
   const modal = app.querySelector("[data-modal]");
   if (modal) modal.addEventListener("click", ev => { if (ev.target === modal) set({ pickerOpen: false }); });
@@ -1371,10 +1386,10 @@ function wire() {
     d[k] = d[k] === v ? undefined : v;
     set({ quizDraft: d });
   }));
-  app.querySelectorAll("[data-quiz-save]").forEach(b => b.addEventListener("click", () => { state.profile = Object.assign({}, state.quizDraft); saveProfile(); set({ quizOpen: false }); }));
-  app.querySelectorAll("[data-quiz-close]").forEach(b => b.addEventListener("click", () => set({ quizOpen: false })));
+  app.querySelectorAll("[data-quiz-save]").forEach(b => b.addEventListener("click", () => closeQuiz(true)));
+  app.querySelectorAll("[data-quiz-close]").forEach(b => b.addEventListener("click", () => closeQuiz(false)));
   const quizM = app.querySelector("[data-modal-quiz]");
-  if (quizM) quizM.addEventListener("click", ev => { if (ev.target === quizM) set({ quizOpen: false }); });
+  if (quizM) quizM.addEventListener("click", ev => { if (ev.target === quizM) closeQuiz(false); });
   app.querySelectorAll("[data-open]").forEach(b => b.addEventListener("click", () => openReport(b.getAttribute("data-open"))));
   app.querySelectorAll("[data-remove]").forEach(b => b.addEventListener("click", ev => { ev.stopPropagation(); removeOffer(b.getAttribute("data-remove")); }));
   app.querySelectorAll("[data-compare]").forEach(b => b.addEventListener("click", openCompare));
