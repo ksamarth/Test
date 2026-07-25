@@ -714,6 +714,11 @@ function landing() {
             <button class="btn btn-secondary" style="font-size:16px;padding:15px 34px;" data-samples>Try a sample offer</button>
           </div>
           <p class="text-muted" style="font-size:13px;margin-top:16px;">$129 a review \xb7 <strong style="color:var(--color-accent-800);font-weight:600;">students $79</strong> with a .edu email</p>
+          <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--color-divider);max-width:44ch;">
+            ${state.profile
+              ? `<span class="text-muted" style="font-size:13.5px;">Reviews are personalized for your situation <span style="color:var(--color-accent-700);">&#10003;</span> <button class="btn btn-ghost" data-quiz style="font-size:12.5px;padding:2px 6px;">Edit</button></span>`
+              : `<button class="btn btn-ghost" data-quiz style="font-size:14px;padding:4px 8px;">First, tell Bailey about your situation &rarr;</button><div class="text-muted" style="font-size:12.5px;margin-top:4px;">Optional. It shapes the whole review around your life \u2014 not just a footnote.</div>`}
+          </div>
         </div>
         <div class="card elev-md lift" style="padding:36px 40px;">
           <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:24px;">Sample diagnosis</div>
@@ -782,21 +787,21 @@ function pageHow() {
         <div style="padding:0 32px;${i<2?'border-right:1px solid var(--color-divider);':''}${i===0?'padding-left:0;':''}${i===2?'padding-right:0;':''}"><div style="font-family:var(--font-heading);font-size:34px;color:var(--color-accent);font-feature-settings:'tnum';">${ROMAN[i]}</div><strong style="font-size:16px;">${t}</strong><p class="text-muted" style="font-size:13.5px;margin-top:6px;line-height:1.6;">${b}</p></div>`).join("")}
     </div>
 
-    <section style="margin-top:66px;border-top:1px solid var(--color-divider);padding-top:44px;">
+    <section style="margin-top:60px;border-top:1px solid var(--color-divider);padding-top:40px;">
       <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Under the hood</div>
-      <h3 style="font-size:30px;margin:8px 0 6px;">What Bailey does in those four minutes</h3>
-      <p class="text-muted" style="font-size:15px;line-height:1.6;max-width:58ch;margin:0;">Six passes over your contract \u2014 each one turns a clause into a number you can actually act on.</p>
-      <div style="max-width:900px;margin-top:14px;">
+      <h3 style="font-size:30px;margin:8px 0 4px;">What Bailey does in those four minutes</h3>
+      <p class="text-muted" style="font-size:15px;line-height:1.6;max-width:52ch;margin:0;">Six passes over your contract, each turning a clause into a number you can act on.</p>
+      <div class="grid-collapse feature-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:26px 56px;margin-top:30px;max-width:1000px;">
         ${[
-          ["Reads every clause","Bailey parses the whole agreement \u2014 compensation, guarantees, production splits, non-compete, tail coverage, termination, records ownership \u2014 and pulls out every term that carries money or risk, including the ones buried in the definitions."],
-          ["Benchmarks against real offers","Each term is measured against real clinician employment contracts and compensation data in your field, so you can see where your offer lands: above, at, or below what clinicians are actually signing right now."],
-          ["Models what you'd really earn","Conservative, expected, and strong scenarios with the arithmetic shown \u2014 collection rates, lab fees, guarantees and all \u2014 so you see your likely take-home, not just the headline percentage."],
-          ["Totals the cost of leaving","Clawbacks, malpractice tail, the true reach of the non-compete \u2014 Bailey itemizes and prices what walking away would cost, the number almost no offer spells out for you."],
-          ["Prices every red flag","No vague warnings. Each issue gets a dollar figure and a timing \u2014 \u201cabout $20,000 a year, ongoing\u201d \u2014 so you know exactly what's worth negotiating and what to let go."],
-          ["Writes your negotiation email","Bailey ranks your asks by dollar impact and folds them into a ready-to-send email in a warm, professional tone \u2014 the part most people find hardest, done for you."],
-        ].map(([t,b],i)=>`<div style="display:grid;grid-template-columns:46px 1fr;gap:18px;padding:22px 0;${i?'border-top:1px solid var(--color-divider);':''}">
-          <span style="font-family:var(--font-heading);font-size:26px;color:var(--color-accent);font-feature-settings:'tnum';line-height:1.2;">${ROMAN[i]}</span>
-          <div><strong style="font-size:16.5px;">${t}</strong><p class="text-muted" style="font-size:14px;line-height:1.65;margin:5px 0 0;max-width:74ch;">${b}</p></div>
+          ["Reads every clause","Every material term \u2014 including the ones buried in the definitions."],
+          ["Benchmarks against real offers","Measured against real clinician contracts and pay data in your field."],
+          ["Models what you'd really earn","Three scenarios, arithmetic shown \u2014 your real take-home, not the headline."],
+          ["Totals the cost of leaving","Clawbacks, tail, and the non-compete's reach, itemized and priced."],
+          ["Prices every red flag","A dollar figure and a timing on every issue \u2014 no vague warnings."],
+          ["Writes your negotiation email","Your asks, ranked by impact and drafted, ready to send."],
+        ].map(([t,b],i)=>`<div style="display:flex;gap:14px;align-items:baseline;">
+          <span style="font-family:var(--font-heading);font-size:20px;color:var(--color-accent);font-feature-settings:'tnum';min-width:24px;">${ROMAN[i]}</span>
+          <div><strong style="font-size:15.5px;">${t}</strong><p class="text-muted" style="font-size:13.5px;line-height:1.55;margin:4px 0 0;">${b}</p></div>
         </div>`).join("")}
       </div>
     </section>
@@ -977,12 +982,27 @@ function personalInsights(a, p) {
   return out.slice(0, 3);
 }
 
+/* How much a given clause/ask matters to THIS reader, from their answers.
+   Used to re-rank the report so the terms that matter most to them rise. */
+function personalBoost(str, p) {
+  if (!p) return 0;
+  const s = (str || "").toLowerCase();
+  const nc = /non-?compete|covenant|restrict|liquidated|non-?solicit/.test(s);
+  const pay = /compensation|collection|guarantee|\bpay\b|split|management fee|production|1099|classif|clawback|bonus/.test(s);
+  const life = /\bpto\b|\bce\b|schedule|termination|notice|on-call|weekend|records|patient|flexib/.test(s);
+  let b = 0;
+  if (nc) { if (p.ties === "rooted") b += 3; else if (p.ties === "open" || p.plans === "relocate") b -= 2; }
+  if (pay) { if (p.debt === "high") b += 3; else if (p.debt === "mid") b += 2; if (p.priority === "income" || p.priority === "stability") b += 2; if (p.plans === "home") b += 2; }
+  if (life) { if (p.plans === "family") b += 3; if (p.priority === "flexibility") b += 2; }
+  return b;
+}
+
 function tailoredPanel(a) {
   const p = state.profile;
   if (!p) {
     return `<section class="no-print" style="margin-top:32px;border:1px dashed var(--color-accent-400);border-radius:16px;padding:22px 26px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;background:color-mix(in srgb, var(--color-accent-100) 45%, transparent);">
-      <div><strong style="font-family:var(--font-heading);font-size:18px;">Make this personal.</strong><div class="text-muted" style="font-size:14px;line-height:1.5;margin-top:3px;max-width:64ch;">Answer four quick questions and Bailey re-weights this review for your life \u2014 your debt, your roots, your plans.</div></div>
-      <button class="btn btn-solid" data-quiz style="font-size:14px;padding:11px 22px;">Tailor to me &rarr;</button>
+      <div><strong style="font-family:var(--font-heading);font-size:18px;">Make this review yours.</strong><div class="text-muted" style="font-size:14px;line-height:1.5;margin-top:3px;max-width:66ch;">Answer five quick questions and Bailey rebuilds this review around your life \u2014 re-ranking the red flags and the negotiation plan for what matters most to you.</div></div>
+      <button class="btn btn-solid" data-quiz style="font-size:14px;padding:11px 22px;">Personalize &rarr;</button>
     </section>`;
   }
   const ins = personalInsights(a, p);
@@ -1008,6 +1028,9 @@ function report() {
   const a = offer.analysis;
   const x = a.extraction;
   const s = a.score;
+  // The reader's profile personalizes their own reviews (not shared ones).
+  const prof = state.stage === "shared" ? null : state.profile;
+  const forYouTag = `<span class="tag tag-accent-2">Priority for you</span>`;
 
   const categories = s.categories.map(c => `
     <div style="padding:11px 0;border-top:1px solid var(--color-divider);">
@@ -1055,9 +1078,11 @@ function report() {
   }).join("");
 
   const SEV_ORDER = { high: 0, medium: 1, low: 2 };
-  const flags = a.red_flags.slice()
-    .sort((p, q) => (SEV_ORDER[p.severity] ?? 9) - (SEV_ORDER[q.severity] ?? 9))
-    .map((fl, i) => {
+  const flagRanked = a.red_flags.map(fl => ({ fl, boost: personalBoost((fl.title || "") + " " + (fl.explanation || ""), prof) }));
+  flagRanked.sort((p, q) => (q.boost - p.boost) || ((SEV_ORDER[p.fl.severity] ?? 9) - (SEV_ORDER[q.fl.severity] ?? 9)));
+  const topFlag = (prof && flagRanked[0] && flagRanked[0].boost > 0) ? flagRanked[0].fl : null;
+  const flags = flagRanked
+    .map(({ fl }, i) => {
       const rank = String(i + 1).padStart(2, "0");
       const sevCls = fl.severity === "high" ? "tag tag-accent" : "tag tag-neutral";
       const sevLabel = fl.severity === "high" ? "High risk" : "Worth fixing";
@@ -1068,6 +1093,7 @@ function report() {
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
           <span style="font-family:var(--font-heading);font-size:20px;">${esc(fl.title)}</span>
           <span class="${sevCls}">${sevLabel}</span>
+          ${fl === topFlag ? forYouTag : ""}
           ${fl.timing ? `<span class="tag tag-outline">${esc(fl.timing)}</span>` : ""}
         </div>
         <div class="flag-body" style="display:grid;grid-template-columns:150px 1fr;gap:22px;align-items:start;">
@@ -1081,10 +1107,13 @@ function report() {
     </div>`;
     }).join("");
 
-  const asks = a.negotiation_playbook.map(k => `
+  const askRanked = a.negotiation_playbook.map(k => ({ k, boost: personalBoost((k.topic || "") + " " + (k.suggested_ask || "") + " " + (k.rationale || ""), prof) }));
+  askRanked.sort((p, q) => (q.boost - p.boost) || ((p.k.priority || 9) - (q.k.priority || 9)));
+  const topAsk = (prof && askRanked[0] && askRanked[0].boost > 0) ? askRanked[0].k : null;
+  const asks = askRanked.map(({ k }, i) => `
     <div class="ask-row" style="display:grid;grid-template-columns:48px 1fr 190px;gap:16px;padding:15px 0;border-bottom:1px solid var(--color-divider);">
-      <span style="font-family:var(--font-heading);font-size:20px;color:var(--color-accent);font-feature-settings:'tnum';">${k.priority}</span>
-      <div><strong style="font-size:15px;">${esc(k.topic)}</strong><div class="text-muted" style="font-size:13px;margin-top:4px;font-style:italic;">${esc(k.suggested_ask)}</div></div>
+      <span style="font-family:var(--font-heading);font-size:20px;color:var(--color-accent);font-feature-settings:'tnum';">${i + 1}</span>
+      <div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><strong style="font-size:15px;">${esc(k.topic)}</strong>${k === topAsk ? forYouTag : ""}</div><div class="text-muted" style="font-size:13px;margin-top:4px;font-style:italic;">${esc(k.suggested_ask)}</div></div>
       ${k.estimated_value ? `<span class="ask-worth" style="font-size:14px;font-feature-settings:'tnum';text-align:right;border-bottom:1px solid var(--color-accent);align-self:start;justify-self:end;">worth ${esc(k.estimated_value)}</span>` : `<span></span>`}
     </div>`).join("");
 
@@ -1156,13 +1185,13 @@ function report() {
       <div style="display:flex;align-items:baseline;gap:14px;border-bottom:1px solid var(--color-divider);padding-bottom:8px;">
         <span style="font-family:var(--font-heading);font-size:19px;color:var(--color-accent);font-feature-settings:'tnum';">v.</span>
         <h3 style="font-size:13px;font-weight:600;font-family:var(--font-body);letter-spacing:0.14em;text-transform:uppercase;margin:0;flex:1;">Red flags, by priority</h3>
-        <span class="text-muted" style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;">Highest risk first</span>
+        <span class="text-muted" style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;">${topFlag ? "Ranked for your situation" : "Highest risk first"}</span>
       </div>
       <div style="display:flex;flex-direction:column;">${flags}</div>
     </section>
 
     <section style="margin-top:44px;">${sectionHead(5, "The negotiation playbook")}
-      <p class="text-muted" style="font-size:13px;margin-top:12px;">Asks ranked by dollar impact. Every one is standard in associate agreements.</p>
+      <p class="text-muted" style="font-size:13px;margin-top:12px;">${topAsk ? "Ranked for your situation, then by dollar impact." : "Asks ranked by dollar impact."} Every one is standard in associate agreements.</p>
       <div>${asks}</div>
       <div style="border:1px solid var(--color-divider);margin-top:26px;border-radius:14px;overflow:hidden;">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:14px 24px;border-bottom:1px solid var(--color-divider);">
