@@ -419,6 +419,7 @@ const state = {
   quizDraft: {},        // in-progress questionnaire selections
   quizAsked: loadAsked(), // have we already offered the questionnaire once?
   pendingAction: null,  // analysis to run after the pre-review questionnaire
+  org: null,            // active institutional partner (co-branded mode)
 };
 
 /* Offer the questionnaire once, right before the first review \u2014 then run the
@@ -634,6 +635,33 @@ const SAMPLES = [
   { id: "private", grade: "B", label: "Private-practice associate", blurb: "A stronger small-practice offer \u2014 still worth tuning before signing." },
   { id: "rough", grade: "D+", label: "A rough first offer", blurb: "See what Bailey catches on a one-sided, predatory contract." },
 ];
+
+/* Institutional partners \u2014 a co-branded portal for a school + a career-services
+   dashboard. Reachable at #org=<id> and #org=<id>-admin. */
+const ORGS = {
+  osu: {
+    id: "osu",
+    name: "Ohio State College of Dentistry",
+    full: "The Ohio State University College of Dentistry",
+    accent: "#BB0000",
+    ink: "#ffffff",
+    discipline: "dentistry",
+    classYear: "Class of 2026",
+    classSize: 110,
+    // Synthetic aggregate figures for the dashboard demo.
+    stats: {
+      reviewed: 74, offers: 96, avgGrade: "B-", medianGross: "$172,000",
+      avgExitExposure: "$18,400", avgNegotiable: "$22,500", negotiatedPct: 41,
+    },
+    topFlags: [
+      ["Collections-based pay with pre-split lab fees", 61],
+      ["Provider-paid malpractice tail", 58],
+      ["Non-compete measured from every DSO office", 44],
+      ["Sign-on clawback with no pro-rating", 39],
+      ["Daily guarantee expires under 6 months", 33],
+    ],
+  },
+};
 function samplePicker() {
   return `<div class="sample-modal" data-modal style="position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:20px;background:color-mix(in srgb, #201f1d 55%, transparent);">
     <div class="card" style="background:var(--color-bg);max-width:560px;width:100%;padding:30px 30px 32px;box-shadow:var(--shadow-lg);">
@@ -809,7 +837,7 @@ function pageHow() {
       <div class="grid-collapse feature-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:26px 56px;margin-top:30px;max-width:1000px;">
         ${[
           ["Reads every clause","Every material term \u2014 including the ones buried in the definitions."],
-          ["Benchmarks against real offers","Measured against real clinician contracts and pay data in your field."],
+          ["Benchmarks against the market","Measured against the prevailing ranges for clinician contracts in your field."],
           ["Models what you'd really earn","Three scenarios, arithmetic shown \u2014 your real take-home, not the headline."],
           ["Totals the cost of leaving","Clawbacks, tail, and the non-compete's reach, itemized and priced."],
           ["Prices every red flag","A dollar figure and a timing on every issue \u2014 no vague warnings."],
@@ -1315,10 +1343,10 @@ function compare() {
 /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  faq  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
 function pageFaq() {
   const qs = [
-    ["What is Bailey?", "Bailey is a contract-intelligence tool for clinicians. Upload an offer and it reads every clause, benchmarks each term against real clinician employment contracts and market data, and hands back a grade, the dollar figures behind every red flag, and a ready-to-send negotiation email \u2014 in about four minutes."],
-    ["What is the analysis based on?", "Bailey is built on a large, growing base of real clinician employment contracts and compensation data across dentistry, medicine, pharmacy, and nursing. Your offer is measured against what clinicians are actually being offered and signing today \u2014 not a generic template \u2014 and Bailey shows its math, so you can see exactly how each benchmark was reached."],
+    ["What is Bailey?", "Bailey is a contract-intelligence tool for clinicians. Upload an offer and it reads every clause, benchmarks each term against the prevailing standards for clinician employment agreements, and hands back a grade, the dollar figures behind every red flag, and a ready-to-send negotiation email \u2014 in about four minutes."],
+    ["What is the analysis based on?", "Bailey reads your contract with a model trained on a broad base of employment-contract and compensation knowledge, and measures each term against the established norms for new-grad healthcare agreements in your field \u2014 dental associate contracts, physician employment agreements, DSO and hospital structures. It shows its math on every benchmark, so you can see how each range was reached. And as more clinicians use Bailey, it's building an anonymized benchmark set from real reviews to sharpen those ranges over time."],
     ["Who is Bailey for?", "Any clinician weighing an offer, at any stage \u2014 from a new grad's first associate agreement to an experienced physician considering a partnership, a hospital contract, or a move across the country. Most of our users are early in their careers, where a first contract carries the most risk, but the analysis works whether it's your first offer or your fifth."],
-    ["How accurate is it?", "Every figure is benchmarked against real market data and shown with the math behind it \u2014 nothing is a black box. The numbers are careful estimates for planning, and your local market and situation shape the final picture, but they're grounded in what clinicians in your field are actually being offered."],
+    ["How accurate is it?", "Every figure is benchmarked against established market ranges and shown with the math behind it \u2014 nothing is a black box. The numbers are careful estimates for planning, and your local market and situation shape the final picture, but they're grounded in the norms for your field and practice type."],
     ["Is my information safe?", "Your contract is used to generate your analysis and nothing else \u2014 we never sell it and never share it. Our approach is to analyze your document and keep only the resulting report, not the original file, with everything served over an encrypted connection."],
     ["What does it cost?", "One flat price per review \u2014 $129, or $79 for students with a .edu email. Comparing multiple offers side by side is $199 (students $149). No subscription, no auto-renewal."],
     ["Do I need an account to try it?", "No. Upload an offer and get your full analysis right now \u2014 no signup required."],
@@ -1337,6 +1365,119 @@ function pageFaq() {
   </main>` + siteFooter();
 }
 
+/* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  institutional (co-branded)  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+function orgBar(org, view) {
+  return `<div style="background:${org.accent};color:${org.ink};">
+    <div class="pad" style="max-width:1360px;margin:0 auto;padding:12px 48px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+        <span style="font-family:var(--font-heading);font-size:19px;line-height:1.1;">${esc(org.full)}</span>
+        <span style="opacity:0.6;">\xd7</span>
+        <span style="font-family:var(--font-heading);font-size:17px;letter-spacing:0.02em;">Bailey</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:20px;font-size:13px;">
+        ${view === "admin"
+          ? `<button data-orgportal style="background:none;border:none;color:${org.ink};cursor:pointer;font:inherit;font-size:13px;opacity:0.9;">&larr; Student view</button>`
+          : `<button data-orgadmin style="background:none;border:none;color:${org.ink};cursor:pointer;font:inherit;font-size:13px;opacity:0.9;">Career services &rarr;</button>`}
+      </div>
+    </div>
+  </div>`;
+}
+
+function orgPortal(org) {
+  const err = state.error
+    ? `<div style="max-width:1360px;margin:16px auto 0;padding:0 48px;"><div class="card" style="border-color:var(--color-accent);color:var(--color-accent-800);background:var(--color-accent-100);">${esc(state.error)}</div></div>`
+    : "";
+  return orgBar(org) + err + `
+  <main style="flex:1;width:100%;">
+    <section class="pad hero-section" style="max-width:1360px;margin:0 auto;padding:80px 48px 72px;">
+      <div class="grid-collapse hero-grid" style="display:grid;grid-template-columns:1fr 0.9fr;gap:60px;align-items:center;">
+        <div style="text-align:left;">
+          <div class="hero-eyebrow" style="font-size:13px;letter-spacing:0.16em;text-transform:uppercase;color:${org.accent};margin-bottom:24px;">A benefit from your College</div>
+          <h1 class="hero-title" style="font-size:64px;line-height:1.04;margin-bottom:16px;">Your first contract,<br>reviewed \u2014 <em style="color:${org.accent};">on us.</em></h1>
+          <p style="font-size:20px;line-height:1.55;max-width:40ch;margin:0 0 8px;">${esc(org.full)} has partnered with Bailey to give every graduating student a professional review of their first job offer.</p>
+          <p class="text-muted" style="font-size:15px;margin:0;">Upload your offer and get a grade, the real numbers, the priced red flags, and a ready-to-send negotiation email \u2014 in about four minutes.</p>
+          <div style="display:flex;gap:14px;justify-content:flex-start;margin-top:34px;flex-wrap:wrap;">
+            <label class="btn btn-solid" style="cursor:pointer;font-size:16px;padding:15px 34px;background:${org.accent};border-color:${org.accent};color:${org.ink};">Review my offer<input type="file" accept=".pdf,.docx,.txt" data-file style="display:none;"></label>
+            <button class="btn btn-secondary" style="font-size:16px;padding:15px 34px;" data-samples>Try a sample offer</button>
+          </div>
+          <p class="text-muted" style="font-size:13px;margin-top:16px;"><span style="color:${org.accent};font-weight:600;">Covered by the College of Dentistry</span> \u2014 no cost to you. Your contract is never shared with the school.</p>
+        </div>
+        <div class="card elev-md" style="padding:36px 40px;">
+          <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:24px;">Sample diagnosis</div>
+          <div class="hero-card-body" style="display:grid;grid-template-columns:180px 1fr;gap:36px;align-items:center;">
+            <div class="hero-ring" style="width:180px;height:180px;border-radius:50%;border:1.5px solid var(--color-accent);background:var(--color-accent-100);display:flex;flex-direction:column;align-items:center;justify-content:center;">
+              <span style="font-family:var(--font-heading);font-size:68px;line-height:1;">B&minus;</span>
+              <span style="font-size:12px;font-feature-settings:'tnum';color:var(--color-accent-700);letter-spacing:0.1em;margin-top:6px;">80 / 100</span>
+            </div>
+            <div>
+              <p style="font-family:var(--font-heading);font-style:italic;font-size:20px;line-height:1.32;margin:0 0 18px;">"A solid, market-rate offer \u2014 with one clause that could still cost you $20,000 at exit."</p>
+              <div style="display:flex;flex-direction:column;gap:11px;">
+                ${[["Compensation",82],["Covenants",74],["Insurance",78],["Termination",80]].map(([n,v]) => `<div style="display:grid;grid-template-columns:112px 1fr 28px;gap:10px;align-items:center;font-size:12.5px;"><span>${n}</span><div style="height:3px;border-radius:2px;background:var(--color-neutral-200);"><div style="height:3px;border-radius:2px;width:${v}%;background:var(--color-accent);"></div></div><span style="text-align:right;font-feature-settings:'tnum';color:var(--color-accent-700);">${v}</span></div>`).join("")}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pad" style="max-width:1360px;margin:0 auto;padding:0 48px 84px;">
+      <div class="grid-collapse feature-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:44px;border-top:1px solid var(--color-divider);padding-top:40px;">
+        ${[["Upload","Any offer letter or associate agreement."],["Bailey reads it","Every clause, benchmarked and priced."],["You get the diagnosis","A grade, the math, the email."]].map(([t,b],i) => `
+          <div><div style="font-family:var(--font-heading);font-size:30px;color:${org.accent};font-feature-settings:'tnum';margin-bottom:8px;">${ROMAN[i]}</div><strong style="font-size:16px;">${t}</strong><p class="text-muted" style="font-size:13.5px;margin-top:5px;">${b}</p></div>`).join("")}
+      </div>
+    </section>
+  </main>
+  <footer style="border-top:1px solid var(--color-divider);background:var(--color-surface);">
+    <div class="pad" style="max-width:1360px;margin:0 auto;padding:32px 48px;">
+      <p class="text-muted" style="font-size:12px;margin:0;">Provided by ${esc(org.full)} in partnership with Bailey. Bailey is an educational tool, not legal, financial, or tax advice. Your uploaded contract is used only to generate your review and is never shared with the College.</p>
+    </div>
+  </footer>`;
+}
+
+function orgDashboard(org) {
+  const st = org.stats;
+  const pct = Math.round((st.reviewed / org.classSize) * 100);
+  const tile = (n, l, sub) => `<div style="padding:22px 24px;border:1px solid var(--color-divider);border-radius:14px;background:var(--color-neutral-100);">
+    <div style="font-family:var(--font-heading);font-size:34px;font-feature-settings:'tnum';line-height:1;color:${org.accent};">${n}</div>
+    <div class="text-muted" style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;margin-top:8px;">${l}</div>
+    ${sub ? `<div class="text-muted" style="font-size:12px;margin-top:4px;">${sub}</div>` : ""}
+  </div>`;
+  return orgBar(org, "admin") + `
+  <main class="pad" style="flex:1;width:100%;max-width:1360px;margin:0 auto;padding:52px 48px 80px;">
+    <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:${org.accent};">Career services \xb7 Contract review dashboard</div>
+    <h2 style="font-size:40px;margin:8px 0 4px;">${esc(org.classYear)}</h2>
+    <p class="text-muted" style="font-size:15px;margin:0 0 34px;max-width:70ch;">How your graduating class is doing on their first contracts \u2014 aggregated and anonymized. Individual reviews stay private to each student.</p>
+
+    <div class="stats-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+      ${tile(st.reviewed + " / " + org.classSize, "Students reviewed", pct + "% of the class")}
+      ${tile(st.offers, "Offers analyzed", "some compared multiple")}
+      ${tile(st.avgGrade, "Average offer grade", "across all reviewed offers")}
+      ${tile(st.medianGross, "Median year-one gross", "modeled from actual pay terms")}
+      ${tile(st.avgExitExposure, "Avg. exit-cost exposure", "clawbacks, tail, covenants")}
+      ${tile(st.avgNegotiable, "Avg. negotiable value found", "per student, in surfaced asks")}
+    </div>
+
+    <section style="margin-top:48px;">
+      <h3 style="font-size:22px;margin:0 0 6px;">Most common red flags in your students' offers</h3>
+      <p class="text-muted" style="font-size:13.5px;margin:0 0 22px;">Share of reviewed offers where Bailey flagged each issue \u2014 useful for a targeted contracts talk before Match/graduation.</p>
+      <div style="display:flex;flex-direction:column;gap:16px;max-width:820px;">
+        ${org.topFlags.map(([label, p]) => `<div style="display:grid;grid-template-columns:1fr 52px;gap:16px;align-items:center;">
+          <div>
+            <div style="font-size:14.5px;margin-bottom:6px;">${esc(label)}</div>
+            <div style="height:8px;border-radius:4px;background:var(--color-neutral-200);"><div style="height:8px;border-radius:4px;width:${p}%;background:${org.accent};"></div></div>
+          </div>
+          <div style="font-family:var(--font-heading);font-size:18px;font-feature-settings:'tnum';text-align:right;color:${org.accent};">${p}%</div>
+        </div>`).join("")}
+      </div>
+    </section>
+
+    <section style="margin-top:44px;border-top:1px solid var(--color-divider);padding-top:24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+      <p class="text-muted" style="font-size:12.5px;margin:0;max-width:70ch;">Figures are aggregated across your students' reviews; no individual contract, student, or employer is identifiable in this view. ${st.negotiatedPct}% of surveyed students reported negotiating at least one term after their review.</p>
+      <button class="btn btn-secondary" data-orgportal style="font-size:13px;">View the student portal &rarr;</button>
+    </section>
+  </main>`;
+}
+
 const MARKETING_PAGES = { how: pageHow, features: pageInside, pricing: pagePricing, faq: pageFaq };
 function goPage(p) {
   clearInterval(stepTimer);
@@ -1345,8 +1486,22 @@ function goPage(p) {
   window.scrollTo(0, 0);
 }
 
+function routeHash() {
+  const m = (location.hash || "").match(/^#org=([a-z0-9]+)(-admin)?$/i);
+  if (m && ORGS[m[1].toLowerCase()]) {
+    state.org = ORGS[m[1].toLowerCase()];
+    set({ stage: m[2] ? "orgadmin" : "org", error: "" });
+    window.scrollTo(0, 0);
+    return true;
+  }
+  return false;
+}
+function onRoute() { if (!routeHash()) openSharedFromHash(); }
+
 function render() {
   if (state.stage === "analyzing") app.innerHTML = analyzing();
+  else if (state.stage === "org" && state.org) app.innerHTML = orgPortal(state.org);
+  else if (state.stage === "orgadmin" && state.org) app.innerHTML = orgDashboard(state.org);
   else if (state.stage === "shared" && state.sharedOffer) app.innerHTML = report();
   else if (state.stage === "compare" && state.offers.length >= 2) app.innerHTML = compare();
   else if (state.stage === "report" && activeOffer()) app.innerHTML = report();
@@ -1371,6 +1526,8 @@ function wire() {
   if (modal) modal.addEventListener("click", ev => { if (ev.target === modal) set({ pickerOpen: false }); });
   const shareBtn = app.querySelector("[data-share]");
   if (shareBtn) shareBtn.addEventListener("click", shareReport);
+  app.querySelectorAll("[data-orgadmin]").forEach(b => b.addEventListener("click", () => { if (state.org) { history.replaceState(null, "", "#org=" + state.org.id + "-admin"); set({ stage: "orgadmin" }); window.scrollTo(0, 0); } }));
+  app.querySelectorAll("[data-orgportal]").forEach(b => b.addEventListener("click", () => { if (state.org) { history.replaceState(null, "", "#org=" + state.org.id); set({ stage: "org" }); window.scrollTo(0, 0); } }));
   app.querySelectorAll("[data-quiz]").forEach(b => b.addEventListener("click", () => set({ quizOpen: true, quizDraft: Object.assign({}, state.profile || {}) })));
   app.querySelectorAll("[data-quiz-opt]").forEach(b => b.addEventListener("click", () => {
     const parts = b.getAttribute("data-quiz-opt").split(":"), k = parts[0], v = parts[1];
@@ -1409,6 +1566,6 @@ function wire() {
 }
 
 render();
-openSharedFromHash();
-window.addEventListener("hashchange", openSharedFromHash);
+onRoute();
+window.addEventListener("hashchange", onRoute);
 </script>

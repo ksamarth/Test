@@ -6,11 +6,12 @@ import os
 import secrets
 from pathlib import Path
 
-from fastapi import FastAPI, File, HTTPException, Request, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from analyzer import analyze_offer
+from datastore import record_analysis
 
 MAX_UPLOAD_BYTES = 25 * 1024 * 1024
 ALLOWED_SUFFIXES = {".pdf", ".docx", ".txt"}
@@ -80,7 +81,7 @@ def health() -> dict:
 
 
 @app.post("/api/analyze")
-async def analyze(file: UploadFile = File(...)) -> JSONResponse:
+async def analyze(file: UploadFile = File(...), profile: str = Form(None), org: str = Form(None)) -> JSONResponse:
     suffix = Path(file.filename or "").suffix.lower()
     if suffix not in ALLOWED_SUFFIXES:
         raise HTTPException(400, f"Unsupported file type '{suffix}'. Upload a PDF, DOCX, or TXT file.")
@@ -97,6 +98,15 @@ async def analyze(file: UploadFile = File(...)) -> JSONResponse:
         analysis = analyze_offer(file.filename or "offer", data)
     except RuntimeError as exc:
         raise HTTPException(422, str(exc))
+
+    # Bank a de-identified benchmark record (best-effort; never blocks the review).
+    prof = None
+    if profile:
+        try:
+            prof = json.loads(profile)
+        except Exception:
+            prof = None
+    record_analysis(analysis, prof, source=(f"org:{org}" if org else "upload"))
 
     return JSONResponse({"filename": file.filename, "analysis": analysis.model_dump(mode="json")})
 
