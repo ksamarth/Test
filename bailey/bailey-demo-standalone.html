@@ -645,7 +645,7 @@ function testimonialCards() {
 
 function ctaBlock(note) {
   return `<div style="margin-top:56px;border-top:1px solid var(--color-divider);padding-top:36px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
-    <label class="btn btn-solid" style="cursor:pointer;font-size:16px;padding:15px 34px;">Upload an offer<input type="file" accept=".pdf,.docx,.txt" data-file style="display:none;"></label>
+    <button class="btn btn-solid" style="font-size:16px;padding:15px 34px;" data-upload>Upload an offer</button><input type="file" accept=".pdf,.docx,.txt" data-file style="display:none;">
     <button class="btn btn-secondary" style="font-size:16px;padding:15px 34px;" data-samples>See a sample analysis</button>
     <span class="text-muted" style="font-size:13px;">${note || "$129 a review \xb7 students $79 with a .edu email"}</span>
   </div>`;
@@ -782,7 +782,7 @@ function landing() {
           <div style="width:64px;height:1px;background:var(--color-accent);margin:38px 0;"></div>
           <p style="font-size:20px;line-height:1.6;max-width:42ch;margin:0;">Upload your clinical job offer \u2014 dental, medical, pharmacy, nursing, any specialty. Bailey grades it, prices the clauses that could cost you, and writes the email to fix them \u2014 in about four minutes.</p>
           <div style="display:flex;gap:14px;justify-content:flex-start;margin-top:48px;flex-wrap:wrap;">
-            <label class="btn btn-solid" style="cursor:pointer;font-size:16px;padding:15px 34px;">Upload an offer<input type="file" accept=".pdf,.docx,.txt" data-file style="display:none;"></label>
+            <button class="btn btn-solid" style="font-size:16px;padding:15px 34px;" data-upload>Upload an offer</button><input type="file" accept=".pdf,.docx,.txt" data-file style="display:none;">
             <button class="btn btn-secondary" style="font-size:16px;padding:15px 34px;" data-samples>Try a sample offer</button>
           </div>
           <p class="text-muted" style="font-size:13px;margin-top:16px;">$129 a review \xb7 <strong style="color:var(--color-accent-800);font-weight:600;">students $79</strong> with a .edu email</p>
@@ -1579,10 +1579,17 @@ function render() {
 }
 
 function wire() {
+  // The file picker only opens after payment (see data-upload), so a chosen
+  // file just runs the review. Institution portals wire data-file directly and
+  // are covered, so this stays free for them too.
   app.querySelectorAll("[data-file]").forEach(fi => fi.addEventListener("change", e => {
     const file = e.target.files && e.target.files[0];
-    if (file) startPaidReview(() => analyzeFile(file));
+    if (file) maybeQuizThen(() => analyzeFile(file));
   }));
+  app.querySelectorAll("[data-upload]").forEach(b => b.addEventListener("click", () => startPaidReview(() => {
+    const fi = app.querySelector("[data-file]");
+    if (fi) fi.click();
+  })));
   app.querySelectorAll("[data-sample]").forEach(b => b.addEventListener("click", () => startPaidReview(() => analyzeSample())));
   app.querySelectorAll("[data-samples]").forEach(b => b.addEventListener("click", () => set({ pickerOpen: true })));
   app.querySelectorAll("[data-pick]").forEach(b => b.addEventListener("click", () => { const id = b.getAttribute("data-pick"); state.pickerOpen = false; maybeQuizThen(() => analyzeSample(id)); }));
@@ -1601,8 +1608,8 @@ function wire() {
   if (stu) stu.addEventListener("change", () => set({ checkoutStudent: stu.checked }));
   app.querySelectorAll("[data-pay]").forEach(b => b.addEventListener("click", () => {
     const action = state.pendingPaidAction; state.pendingPaidAction = null;
-    state.checkoutOpen = false;
-    if (action) maybeQuizThen(action); else render();
+    set({ checkoutOpen: false });   // close the modal, then run the paid action
+    if (action) maybeQuizThen(action);
   }));
   const cm = app.querySelector("[data-modal-checkout]");
   if (cm) cm.addEventListener("click", ev => { if (ev.target === cm) { state.pendingPaidAction = null; set({ checkoutOpen: false }); } });
