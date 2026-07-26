@@ -363,8 +363,16 @@ const state = {
   quizDraft: {},        // in-progress questionnaire selections
   quizAsked: loadAsked(), // have we already offered the questionnaire once?
   pendingAction: null,  // analysis to run after the pre-review questionnaire
+  pendingPaidAction: null, // analysis to run once payment clears
   org: null,            // active institutional partner (co-branded mode)
+  checkoutOpen: false,  // payment modal
+  checkoutStudent: false,
+  adminOpen: false,     // institution sign-in modal
+  adminError: "",
 };
+
+// Demo institution access codes → org id. Real product: magic-link / SSO per school.
+const ADMIN_CODES = { osu2026: "osu" };
 
 /* Offer the questionnaire once, right before the first review — then run the
    analysis whether they fill it out or skip. */
@@ -379,6 +387,15 @@ function closeQuiz(save) {
   const action = state.pendingAction; state.pendingAction = null;
   state.quizOpen = false;
   if (action) action(); else render();
+}
+
+/* Reviewing your OWN offer is paid: collect payment first, then run the
+   analysis. Institution-covered readers skip the paywall entirely. Free
+   sample previews never come through here. */
+function startPaidReview(action) {
+  if (state.org) { maybeQuizThen(action); return; }
+  state.pendingPaidAction = action;
+  set({ checkoutOpen: true });
 }
 let stepTimer = null;
 
@@ -673,6 +690,7 @@ function siteFooter() {
         <span style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);">Explore</span>
         <button class="foot-link" data-page="landing" style="background:none;border:none;cursor:pointer;font:inherit;font-size:13.5px;color:var(--color-neutral-700);padding:0;text-align:left;">Home</button>
         ${links}
+        <button class="foot-link" data-admin style="background:none;border:none;cursor:pointer;font:inherit;font-size:13.5px;color:var(--color-neutral-700);padding:0;text-align:left;">For institutions</button>
       </div>
     </div>
   </footer>`;
@@ -1338,6 +1356,46 @@ function pageFaq() {
   </main>` + siteFooter();
 }
 
+/* ── paywall + checkout (real-user payment flow) ── */
+function checkoutModal() {
+  const student = state.checkoutStudent;
+  const price = student ? 79 : 129;
+  return `<div class="sample-modal" data-modal-checkout style="position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:20px;background:color-mix(in srgb, #201f1d 55%, transparent);">
+    <div class="card" style="background:var(--color-bg);max-width:460px;width:100%;padding:30px;box-shadow:var(--shadow-lg);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">Checkout</div><h3 style="font-size:23px;margin:6px 0 0;">Get your contract review</h3></div>
+        <button data-checkout-close aria-label="Close" style="background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--color-neutral-500);">×</button>
+      </div>
+      <p class="text-muted" style="font-size:13.5px;line-height:1.55;margin:12px 0 4px;">Your full review — grade, the money math, every red flag priced, and a ready-to-send email — runs the moment payment clears.</p>
+      <div style="display:flex;justify-content:space-between;align-items:center;border:1px solid var(--color-divider);border-radius:12px;padding:16px 18px;margin:16px 0 14px;">
+        <div><div style="font-size:15px;">Bailey full contract review</div><div class="text-muted" style="font-size:12.5px;">One-time · no subscription</div></div>
+        <div style="font-family:var(--font-heading);font-size:26px;font-feature-settings:'tnum';">$${price}</div>
+      </div>
+      <label style="display:flex;align-items:center;gap:10px;font-size:13.5px;cursor:pointer;margin-bottom:20px;">
+        <input type="checkbox" data-student ${student ? "checked" : ""}> I'm a student — $79 with a .edu email
+      </label>
+      <button class="btn btn-solid btn-block" data-pay style="font-size:16px;padding:14px;">Pay $${price} &amp; run my review</button>
+      <p class="text-muted" style="font-size:11.5px;text-align:center;margin:14px 0 0;">Demo checkout — no card, no charge. Real payments run through Stripe.</p>
+    </div>
+  </div>`;
+}
+
+/* ── institution sign-in (admin access to the dashboard) ── */
+function adminModal() {
+  return `<div class="sample-modal" data-modal-admin style="position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:20px;background:color-mix(in srgb, #201f1d 55%, transparent);">
+    <div class="card" style="background:var(--color-bg);max-width:440px;width:100%;padding:30px;box-shadow:var(--shadow-lg);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);">For institutions</div><h3 style="font-size:23px;margin:6px 0 0;">Career-services sign-in</h3></div>
+        <button data-admin-close aria-label="Close" style="background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--color-neutral-500);">×</button>
+      </div>
+      <p class="text-muted" style="font-size:13.5px;line-height:1.55;margin:10px 0 18px;">Enter your program's access code to open your class dashboard. ${state.adminError ? `<span style="color:#9e3b2b;">${esc(state.adminError)}</span>` : ""}</p>
+      <input data-admin-code placeholder="Access code" style="width:100%;padding:12px 14px;font:inherit;font-size:15px;border:1px solid var(--color-divider);border-radius:10px;margin-bottom:14px;" />
+      <button class="btn btn-solid btn-block" data-admin-go style="font-size:15px;padding:13px;">Open dashboard</button>
+      <p class="text-muted" style="font-size:12px;text-align:center;margin:16px 0 0;">Not a partner yet? <a href="mailto:partners@bailey.example">Bring Bailey to your school &rarr;</a></p>
+    </div>
+  </div>`;
+}
+
 /* ─────────────────────────  institutional (co-branded)  ───────────────────────── */
 function orgBar(org, view) {
   return `<div style="background:${org.accent};color:${org.ink};">
@@ -1482,15 +1540,17 @@ function render() {
   else app.innerHTML = landing();
   if (state.pickerOpen) app.insertAdjacentHTML("beforeend", samplePicker());
   if (state.quizOpen) app.insertAdjacentHTML("beforeend", quizModal());
+  if (state.checkoutOpen) app.insertAdjacentHTML("beforeend", checkoutModal());
+  if (state.adminOpen) app.insertAdjacentHTML("beforeend", adminModal());
   wire();
 }
 
 function wire() {
   app.querySelectorAll("[data-file]").forEach(fi => fi.addEventListener("change", e => {
     const file = e.target.files && e.target.files[0];
-    if (file) maybeQuizThen(() => analyzeFile(file));
+    if (file) startPaidReview(() => analyzeFile(file));
   }));
-  app.querySelectorAll("[data-sample]").forEach(b => b.addEventListener("click", () => maybeQuizThen(() => analyzeSample())));
+  app.querySelectorAll("[data-sample]").forEach(b => b.addEventListener("click", () => startPaidReview(() => analyzeSample())));
   app.querySelectorAll("[data-samples]").forEach(b => b.addEventListener("click", () => set({ pickerOpen: true })));
   app.querySelectorAll("[data-pick]").forEach(b => b.addEventListener("click", () => { const id = b.getAttribute("data-pick"); state.pickerOpen = false; maybeQuizThen(() => analyzeSample(id)); }));
   app.querySelectorAll("[data-compare-samples]").forEach(b => b.addEventListener("click", () => { state.pickerOpen = false; maybeQuizThen(loadCompareSamples); }));
@@ -1501,6 +1561,30 @@ function wire() {
   if (shareBtn) shareBtn.addEventListener("click", shareReport);
   app.querySelectorAll("[data-orgadmin]").forEach(b => b.addEventListener("click", () => { if (state.org) { history.replaceState(null, "", "#org=" + state.org.id + "-admin"); set({ stage: "orgadmin" }); window.scrollTo(0, 0); } }));
   app.querySelectorAll("[data-orgportal]").forEach(b => b.addEventListener("click", () => { if (state.org) { history.replaceState(null, "", "#org=" + state.org.id); set({ stage: "org" }); window.scrollTo(0, 0); } }));
+  // checkout / paywall
+  app.querySelectorAll("[data-checkout]").forEach(b => b.addEventListener("click", () => set({ checkoutOpen: true })));
+  app.querySelectorAll("[data-checkout-close]").forEach(b => b.addEventListener("click", () => { state.pendingPaidAction = null; set({ checkoutOpen: false }); }));
+  const stu = app.querySelector("[data-student]");
+  if (stu) stu.addEventListener("change", () => set({ checkoutStudent: stu.checked }));
+  app.querySelectorAll("[data-pay]").forEach(b => b.addEventListener("click", () => {
+    const action = state.pendingPaidAction; state.pendingPaidAction = null;
+    state.checkoutOpen = false;
+    if (action) maybeQuizThen(action); else render();
+  }));
+  const cm = app.querySelector("[data-modal-checkout]");
+  if (cm) cm.addEventListener("click", ev => { if (ev.target === cm) { state.pendingPaidAction = null; set({ checkoutOpen: false }); } });
+  // institution sign-in
+  app.querySelectorAll("[data-admin]").forEach(b => b.addEventListener("click", () => set({ adminOpen: true, adminError: "" })));
+  app.querySelectorAll("[data-admin-close]").forEach(b => b.addEventListener("click", () => set({ adminOpen: false })));
+  app.querySelectorAll("[data-admin-go]").forEach(b => b.addEventListener("click", () => {
+    const inp = app.querySelector("[data-admin-code]");
+    const code = ((inp && inp.value) || "").trim().toLowerCase();
+    const orgId = ADMIN_CODES[code];
+    if (orgId && ORGS[orgId]) { state.org = ORGS[orgId]; state.adminOpen = false; history.replaceState(null, "", "#org=" + orgId + "-admin"); set({ stage: "orgadmin", adminError: "" }); window.scrollTo(0, 0); }
+    else { set({ adminError: "That code didn't match. Check with your program coordinator." }); }
+  }));
+  const am = app.querySelector("[data-modal-admin]");
+  if (am) am.addEventListener("click", ev => { if (ev.target === am) set({ adminOpen: false }); });
   app.querySelectorAll("[data-quiz]").forEach(b => b.addEventListener("click", () => set({ quizOpen: true, quizDraft: Object.assign({}, state.profile || {}) })));
   app.querySelectorAll("[data-quiz-opt]").forEach(b => b.addEventListener("click", () => {
     const parts = b.getAttribute("data-quiz-opt").split(":"), k = parts[0], v = parts[1];
