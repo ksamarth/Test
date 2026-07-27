@@ -1151,6 +1151,68 @@ function report() {
       ${k.estimated_value ? `<span class="ask-worth" style="font-size:14px;font-feature-settings:'tnum';text-align:right;border-bottom:1px solid var(--color-accent);align-self:start;justify-self:end;">worth ${esc(k.estimated_value)}</span>` : `<span></span>`}
     </div>`).join("");
 
+  // ── redesigned report: verdict tier, at-a-glance, top actions, clause cards ──
+  const TIERS = [
+    { min: 80, label: "Strong", rank: 4, color: "#177268", soft: "#dcebe8" },
+    { min: 65, label: "Fair", rank: 3, color: "#9a6c1f", soft: "#eee1c9" },
+    { min: 50, label: "Below market", rank: 2, color: "#a8402c", soft: "#f2dbd4" },
+    { min: -1, label: "One-sided", rank: 1, color: "#8f2f1f", soft: "#f2dbd4" },
+  ];
+  const tier = TIERS.find(t => s.overall >= t.min) || TIERS[TIERS.length - 1];
+  const tierScale = [1, 2, 3, 4].map(n => `<span style="width:30px;height:6px;border-radius:3px;background:${n <= tier.rank ? tier.color : "var(--color-neutral-200)"};"></span>`).join("");
+  const expSc = f.scenarios.find(z => /expect/i.test(z.label)) || f.scenarios[Math.floor(f.scenarios.length / 2)] || f.scenarios[0];
+  const highCount = a.red_flags.filter(fl => fl.severity === "high").length;
+  const topRiskTitle = flagRanked[0] ? flagRanked[0].fl.title : "—";
+  const glance = [
+    expSc ? { l: "Expected first-year", v: money(expSc.estimated_annual_gross), sub: "gross, typical volume" } : null,
+    { l: "Biggest risk", v: esc(topRiskTitle), sub: highCount ? highCount + " high-severity flag" + (highCount > 1 ? "s" : "") : "worth a look", clamp: true },
+    (e && e.estimated_total) ? { l: "Cost of leaving early", v: esc(e.estimated_total), sub: "if it ends at 12 months" } : null,
+    { l: "Red flags found", v: String(a.red_flags.length), sub: "priced & prioritized" },
+  ].filter(Boolean);
+  const glanceHtml = glance.map(g => `<div style="background:#faf9f6;padding:16px 16px 15px;">
+      <div style="font-family:var(--font-body);font-size:10.5px;letter-spacing:0.09em;text-transform:uppercase;color:var(--color-neutral-600);">${g.l}</div>
+      <div style="font-family:var(--font-heading);font-size:${g.clamp ? 18 : 22}px;margin-top:8px;line-height:1.12;${g.clamp ? "display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;" : ""}">${g.v}</div>
+      <div style="font-size:11.5px;color:var(--color-neutral-800);margin-top:5px;">${g.sub}</div>
+    </div>`).join("");
+  const actionCards = askRanked.slice(0, 3).map(({ k }, i) => `
+    <div style="background:#faf9f6;border:1px solid var(--color-divider);border-radius:15px;padding:19px 21px;display:grid;grid-template-columns:30px 1fr;gap:15px;">
+      <div style="font-family:var(--font-heading);font-size:21px;color:var(--color-accent);border-right:1px solid var(--color-divider);padding-right:13px;">${i + 1}</div>
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span style="font-size:17px;font-weight:600;">${esc(k.topic)}</span>${k === topAsk ? forYouTag : ""}</div>
+        <div style="font-size:14px;color:var(--color-neutral-800);margin-top:6px;">${esc(k.rationale)}</div>
+        ${k.suggested_ask ? `<div style="font-size:13px;color:var(--color-neutral-600);font-style:italic;margin-top:6px;">Ask: “${esc(k.suggested_ask)}”</div>` : ""}
+        ${k.estimated_value ? `<span style="display:inline-block;margin-top:11px;font-family:var(--font-body);font-size:12px;font-weight:600;background:var(--color-accent-100);color:var(--color-accent-800);padding:4px 12px;border-radius:999px;">Worth ${esc(k.estimated_value)}</span>` : ""}
+      </div>
+    </div>`).join("");
+  const moreAsks = askRanked.slice(3);
+  const moreAsksHtml = moreAsks.map(({ k }, i) => `
+      <div class="ask-row" style="display:grid;grid-template-columns:48px 1fr 190px;gap:16px;padding:15px 0;border-bottom:1px solid var(--color-divider);">
+        <span style="font-family:var(--font-heading);font-size:20px;color:var(--color-accent);">${i + 4}</span>
+        <div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><strong style="font-size:15px;">${esc(k.topic)}</strong>${k === topAsk ? forYouTag : ""}</div><div class="text-muted" style="font-size:13px;margin-top:4px;font-style:italic;">${esc(k.suggested_ask)}</div></div>
+        ${k.estimated_value ? `<span class="ask-worth" style="font-size:14px;text-align:right;border-bottom:1px solid var(--color-accent);align-self:start;justify-self:end;">worth ${esc(k.estimated_value)}</span>` : `<span></span>`}
+      </div>`).join("");
+  const clauseCards = flagRanked.map(({ fl }) => {
+    const sev = fl.severity === "high" ? { lbl: "Problem", c: "#a8402c", soft: "#f2dbd4" }
+      : fl.severity === "medium" ? { lbl: "Watch", c: "#9a6c1f", soft: "#eee1c9" }
+      : { lbl: "Minor", c: "#177268", soft: "#dcebe8" };
+    return `<div style="background:#faf9f6;border:1px solid var(--color-divider);border-left:3px solid ${sev.c};border-radius:12px;padding:17px 19px;">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span style="font-family:var(--font-heading);font-size:17px;">${esc(fl.title)}</span>
+        ${fl === topFlag ? forYouTag : ""}
+        ${fl.timing ? `<span class="tag tag-outline">${esc(fl.timing)}</span>` : ""}
+        <span style="margin-left:auto;font-family:var(--font-body);font-size:10.5px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;background:${sev.soft};color:${sev.c};padding:3px 10px;border-radius:999px;">${sev.lbl}</span>
+      </div>
+      <p style="font-size:13.5px;color:var(--color-neutral-800);line-height:1.6;margin:10px 0 0;">${esc(fl.explanation)}</p>
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:11px;padding-top:11px;border-top:1px solid var(--color-divider);font-size:13.5px;">
+        <span style="max-width:74ch;"><strong style="color:var(--color-accent-800);">Do:</strong> ${esc(fl.what_to_do)}</span>
+        ${fl.cost_if_ignored ? `<span style="font-family:var(--font-body);font-size:12.5px;color:#a8402c;white-space:nowrap;">${esc(fl.cost_if_ignored)}</span>` : ""}
+      </div>
+    </div>`;
+  }).join("");
+  const strengthsHtml = (a.strengths && a.strengths.length)
+    ? a.strengths.map(z => `<div style="display:grid;grid-template-columns:20px 1fr;gap:10px;padding:7px 0;font-size:14px;"><span style="color:#177268;">&#10003;</span><span>${esc(z)}</span></div>`).join("")
+    : `<p class="text-muted" style="font-size:14px;">No standout strengths were flagged in this offer.</p>`;
+
   const tags = [
     x.employer_name ? `<span class="tag tag-accent">${esc(x.employer_name)}</span>` : "",
     (x.position_title || x.location) ? `<span class="tag tag-neutral">${esc([x.position_title, x.location].filter(Boolean).join(" · "))}</span>` : "",
@@ -1172,69 +1234,86 @@ function report() {
       </div>
     </div>${shared ? "" : ""}
 
-    <section class="grid-collapse" style="display:grid;grid-template-columns:250px 1fr;gap:44px;padding-bottom:32px;border-bottom:1px solid var(--color-divider);">
-      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:left;">
-        <div class="grade-ring-lg" style="width:200px;height:200px;border-radius:50%;border:1.5px solid var(--color-accent);display:flex;flex-direction:column;align-items:center;justify-content:center;">
-          <span class="grade-letter" style="font-family:var(--font-heading);font-size:76px;line-height:1;color:var(--color-text);">${esc(s.grade)}</span>
-          <span style="font-size:13px;font-feature-settings:'tnum';color:var(--color-accent-700);letter-spacing:0.1em;">${s.overall} / 100</span>
-        </div>
-        <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);margin-top:14px;">Offer grade</div>
+    <style>
+      .rsec{ border-top:1px solid var(--color-divider); }
+      .rsec>summary{ list-style:none; cursor:pointer; padding:20px 0; display:flex; align-items:center; gap:14px; }
+      .rsec>summary::-webkit-details-marker{ display:none; }
+      .rsec>summary:focus-visible{ outline:2px solid var(--color-accent); outline-offset:3px; border-radius:6px; }
+      .rchev{ width:22px; height:22px; border-radius:50%; border:1px solid var(--color-neutral-300); display:inline-flex; align-items:center; justify-content:center; font-size:12px; color:var(--color-neutral-600); transition:transform .2s; flex:none; }
+      .rsec[open] .rchev{ transform:rotate(90deg); }
+      .rtitle{ font-family:var(--font-heading); font-size:21px; }
+      .rhint{ margin-left:auto; font-size:12px; color:var(--color-neutral-600); text-align:right; }
+      .rbody{ padding:2px 0 30px; }
+      .r-glance{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px; background:var(--color-divider); border:1px solid var(--color-divider); border-radius:14px; overflow:hidden; }
+      @media print{ .rbody{ display:block!important; } .rsec>*:not(summary){ display:revert!important; } .rchev{ display:none; } }
+    </style>
+
+    <section style="padding-bottom:34px;border-bottom:1px solid var(--color-divider);">
+      <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;">
+        <span style="display:inline-flex;align-items:center;gap:10px;padding:9px 17px;border-radius:999px;background:${tier.soft};color:${tier.color};border:1px solid ${tier.color}55;">
+          <span style="width:9px;height:9px;border-radius:50%;background:${tier.color};"></span>
+          <strong style="font-family:var(--font-heading);font-weight:600;font-size:18px;">${tier.label}</strong>
+        </span>
+        <span style="display:flex;gap:5px;align-items:center;">${tierScale}<small class="no-print" style="font-size:11px;color:var(--color-neutral-600);margin-left:8px;">Strong &middot; Fair &middot; Below market &middot; One-sided</small></span>
       </div>
-      <div>
-        <h2 style="font-size:31px;line-height:1.18;margin-bottom:22px;">${esc(s.headline)}</h2>
-        <div style="display:flex;flex-direction:column;">${categories}</div>
-      </div>
+      <h2 style="font-family:var(--font-heading);font-weight:500;font-size:clamp(26px,4vw,36px);line-height:1.14;margin:22px 0 0;max-width:24ch;">${esc(s.headline)}</h2>
+      <p style="font-size:clamp(16px,2.2vw,18px);color:var(--color-neutral-800);margin:16px 0 0;max-width:64ch;">${esc(a.summary)}</p>
+      <div class="r-glance" style="margin-top:30px;">${glanceHtml}</div>
     </section>
     ${shared ? "" : tailoredPanel(a)}
 
-    <section style="border-left:2px solid var(--color-accent);padding:6px 0 6px 26px;margin:32px 0;">
-      <p style="font-size:16.5px;font-family:var(--font-heading);font-style:italic;max-width:60ch;margin:0;">${esc(a.value_at_stake)}</p>
-      <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);margin-top:8px;">Why this review pays for itself</div>
-    </section>
+    <section style="margin-top:40px;">
+      <div style="font-family:var(--font-body);font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-800);font-weight:600;">Do this before you sign</div>
+      <h2 style="font-family:var(--font-heading);font-weight:500;font-size:clamp(21px,3vw,27px);margin:8px 0 0;">Your move, in order of what it's worth.</h2>
+      <p class="text-muted" style="font-size:14px;margin:10px 0 0;max-width:66ch;">You don't need to read the rest to act — the analysis below is the receipts. ${esc(a.value_at_stake)}</p>
+      <div style="display:flex;flex-direction:column;gap:13px;margin-top:22px;">${actionCards}</div>
 
-    <section style="margin-top:40px;">${sectionHead(0, "The offer in plain English")}
-      <p style="font-size:15.5px;max-width:76ch;margin-top:16px;">${esc(a.summary)}</p>
-    </section>
-
-    <section style="margin-top:44px;">${sectionHead(1, "What you'd actually earn — year one")}
-      <div class="table-wrap"><table class="table" style="margin-top:10px;min-width:620px;">
-        <thead><tr><th>Scenario</th><th>Assumed production</th><th>Est. gross</th><th style="width:46%;">How it's calculated</th></tr></thead>
-        <tbody>${scenarios}</tbody>
-      </table></div>
-      ${breakeven}${split}${assumptions}
-    </section>
-
-    <section style="margin-top:44px;">${sectionHead(2, "The price of leaving")}
-      <p class="text-muted" style="font-size:13px;margin-top:12px;">${esc(e.scenario)}:</p>
-      ${leaving}
-      <div style="display:flex;justify-content:space-between;padding:15px 0;border-bottom:2px solid var(--color-text);font-size:15px;"><em>Exit bill total</em><strong style="font-feature-settings:'tnum';">${esc(e.estimated_total)}</strong></div>
-      <p class="text-muted" style="font-size:12.5px;margin-top:12px;max-width:80ch;">${esc(e.note)}</p>
-    </section>
-
-    <section style="margin-top:44px;">${sectionHead(3, "Every term vs. the market")}
-      <div style="margin-top:12px;"><div class="mkt-head" style="display:grid;grid-template-columns:150px 1fr 1fr 130px;gap:16px;padding:10px 0;border-bottom:1px solid var(--color-divider);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-neutral-600);"><span>Term</span><span>This offer</span><span>Typical new grad</span><span></span></div>${benchmarks}</div>
-    </section>
-
-    <section style="margin-top:44px;">
-      <div style="display:flex;align-items:baseline;gap:14px;border-bottom:1px solid var(--color-divider);padding-bottom:8px;">
-        <span style="font-family:var(--font-heading);font-size:19px;color:var(--color-accent);font-feature-settings:'tnum';">v.</span>
-        <h3 style="font-size:13px;font-weight:600;font-family:var(--font-body);letter-spacing:0.14em;text-transform:uppercase;margin:0;flex:1;">Red flags, by priority</h3>
-        <span class="text-muted" style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;">${topFlag ? "Ranked for your situation" : "Highest risk first"}</span>
-      </div>
-      <div style="display:flex;flex-direction:column;">${flags}</div>
-    </section>
-
-    <section style="margin-top:44px;">${sectionHead(5, "The negotiation playbook")}
-      <p class="text-muted" style="font-size:13px;margin-top:12px;">${topAsk ? "Ranked for your situation, then by dollar impact." : "Asks ranked by dollar impact."} Every one is standard in associate agreements.</p>
-      <div>${asks}</div>
-      <div style="border:1px solid var(--color-divider);margin-top:26px;border-radius:14px;overflow:hidden;">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:14px 24px;border-bottom:1px solid var(--color-divider);">
-          <span style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);">Ready-to-send negotiation email</span>
+      <div style="margin-top:22px;border:1px solid var(--color-divider);border-radius:15px;overflow:hidden;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:#faf9f6;padding:13px 22px;border-bottom:1px solid var(--color-divider);">
+          <span style="font-family:var(--font-body);font-size:11.5px;letter-spacing:0.09em;text-transform:uppercase;color:var(--color-neutral-600);">Your negotiation email &middot; ready to send</span>
           <button class="btn btn-primary no-print" data-copy>${state.copied ? "Copied ✓" : "Copy email"}</button>
         </div>
-        <div style="padding:26px 30px;font-size:14px;line-height:1.75;white-space:pre-wrap;color:var(--color-neutral-800);">${esc(a.negotiation_email)}</div>
+        <div style="background:#faf9f6;padding:22px 26px;font-size:14px;line-height:1.75;white-space:pre-wrap;color:var(--color-neutral-800);">${esc(a.negotiation_email)}</div>
       </div>
     </section>
+
+    <div style="margin-top:40px;">
+      <details class="rsec">
+        <summary><span class="rchev">&#9656;</span><span class="rtitle">The money — what you'd really earn</span><span class="rhint">the CPA read &middot; ${f.scenarios.length} scenarios</span></summary>
+        <div class="rbody">
+          <div class="table-wrap"><table class="table" style="margin-top:6px;min-width:620px;">
+            <thead><tr><th>Scenario</th><th>Assumed production</th><th>Est. gross</th><th style="width:46%;">How it's calculated</th></tr></thead>
+            <tbody>${scenarios}</tbody>
+          </table></div>
+          ${breakeven}${split}${assumptions}
+          <h3 style="font-family:var(--font-heading);font-weight:500;font-size:18px;margin:32px 0 4px;">The price of leaving</h3>
+          <p class="text-muted" style="font-size:13px;margin:0 0 4px;">${esc(e.scenario)}:</p>
+          ${leaving}
+          <div style="display:flex;justify-content:space-between;padding:15px 0;border-bottom:2px solid var(--color-text);font-size:15px;"><em>Exit bill total</em><strong style="font-feature-settings:'tnum';">${esc(e.estimated_total)}</strong></div>
+          <p class="text-muted" style="font-size:12.5px;margin-top:12px;max-width:80ch;">${esc(e.note)}</p>
+        </div>
+      </details>
+
+      <details class="rsec">
+        <summary><span class="rchev">&#9656;</span><span class="rtitle">The contract, flagged</span><span class="rhint">the lawyer's read &middot; ${a.red_flags.length} findings${topFlag ? " &middot; ranked for you" : ""}</span></summary>
+        <div class="rbody"><div style="display:flex;flex-direction:column;gap:12px;">${clauseCards}</div></div>
+      </details>
+
+      <details class="rsec">
+        <summary><span class="rchev">&#9656;</span><span class="rtitle">Every term vs. the market</span><span class="rhint">${a.market_comparison.length} terms benchmarked</span></summary>
+        <div class="rbody"><div class="mkt-head" style="display:grid;grid-template-columns:150px 1fr 1fr 130px;gap:16px;padding:10px 0;border-bottom:1px solid var(--color-divider);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-neutral-600);"><span>Term</span><span>This offer</span><span>Typical new grad</span><span></span></div>${benchmarks}</div>
+      </details>
+
+      ${moreAsks.length ? `<details class="rsec">
+        <summary><span class="rchev">&#9656;</span><span class="rtitle">The rest of the playbook</span><span class="rhint">${moreAsks.length} more ask${moreAsks.length > 1 ? "s" : ""}</span></summary>
+        <div class="rbody">${moreAsksHtml}</div>
+      </details>` : ""}
+
+      <details class="rsec">
+        <summary><span class="rchev">&#9656;</span><span class="rtitle">What's genuinely good</span><span class="rhint">${(a.strengths && a.strengths.length) || 0} strength${((a.strengths && a.strengths.length) === 1) ? "" : "s"}</span></summary>
+        <div class="rbody">${strengthsHtml}</div>
+      </details>
+    </div>
 
     <section style="margin-top:52px;border-top:2px solid var(--color-text);padding-top:22px;">
       <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:10px;">Bottom line</div>
