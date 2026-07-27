@@ -1214,15 +1214,14 @@ function report() {
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span style="font-size:17px;font-weight:600;">${esc(k.topic)}</span>${k === topAsk ? forYouTag : ""}</div>
         <div style="font-size:14px;color:var(--color-neutral-800);margin-top:6px;">${esc(k.rationale)}</div>
         ${k.suggested_ask ? `<div style="font-size:13px;color:var(--color-neutral-600);font-style:italic;margin-top:6px;">Ask: \u201c${esc(k.suggested_ask)}\u201d</div>` : ""}
-        ${k.estimated_value ? `<span style="display:inline-block;margin-top:11px;font-family:var(--font-body);font-size:12px;font-weight:600;background:var(--color-accent-100);color:var(--color-accent-800);padding:4px 12px;border-radius:999px;">Worth ${esc(k.estimated_value)}</span>` : ""}
+        ${k.estimated_value ? `<span style="display:inline-block;margin-top:11px;font-family:var(--font-body);font-size:12px;font-weight:600;background:var(--color-accent-100);color:var(--color-accent-800);padding:4px 12px;border-radius:999px;">${/[$\d]/.test(k.estimated_value) ? "Worth " : ""}${esc(k.estimated_value)}</span>` : ""}
       </div>
     </div>`).join("");
   const moreAsks = askRanked.slice(3);
   const moreAsksHtml = moreAsks.map(({ k }, i) => `
-      <div class="ask-row" style="display:grid;grid-template-columns:48px 1fr 190px;gap:16px;padding:15px 0;border-bottom:1px solid var(--color-divider);">
-        <span style="font-family:var(--font-heading);font-size:20px;color:var(--color-accent);">${i + 4}</span>
+      <div class="ask-row" style="display:grid;grid-template-columns:1fr 190px;gap:16px;padding:15px 0;border-bottom:1px solid var(--color-divider);">
         <div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><strong style="font-size:15px;">${esc(k.topic)}</strong>${k === topAsk ? forYouTag : ""}</div><div class="text-muted" style="font-size:13px;margin-top:4px;font-style:italic;">${esc(k.suggested_ask)}</div></div>
-        ${k.estimated_value ? `<span class="ask-worth" style="font-size:14px;text-align:right;border-bottom:1px solid var(--color-accent);align-self:start;justify-self:end;">worth ${esc(k.estimated_value)}</span>` : `<span></span>`}
+        ${k.estimated_value ? `<span class="ask-worth" style="font-size:14px;text-align:right;${/[$\d]/.test(k.estimated_value) ? "border-bottom:1px solid var(--color-accent);" : ""}align-self:start;justify-self:end;">${/[$\d]/.test(k.estimated_value) ? "worth " : ""}${esc(k.estimated_value)}</span>` : `<span></span>`}
       </div>`).join("");
   const clauseCards = flagRanked.map(({ fl }) => {
     const sev = fl.severity === "high" ? { lbl: "Problem", c: "#a8402c", soft: "#f2dbd4" }
