@@ -76,7 +76,20 @@ production-based; lab fees deducted before the split; daily guarantees that expi
 repayable; non-competes measured from every office of a multi-site DSO; claims-made malpractice \
 with provider-paid tail; sign-on clawbacks with long service commitments and no pro-rating; vague \
 for-cause termination triggers; 1099 status for functional employment; auto-renewal with narrow \
-exit windows; the employer keeping all patient records and goodwill."""
+exit windows; the employer keeping all patient records and goodwill; indemnification or \
+"hold harmless" clauses that make the provider cover the employer's or a company's liability \
+(often excluded by malpractice policies as contractually-assumed liability); "sole responsibility" \
+clauses; unilateral overpayment recoupment or retroactive denial of care already provided, clawed \
+back from future payments; liquidated-damages clauses that fix a penalty for breach; \
+most-favored-nation clauses capping what the provider may charge; policy/procedure manuals or \
+provider handbooks incorporated by reference but never disclosed, and changeable by the other side \
+without consent; and merger / "entire agreement" clauses that make verbal promises unenforceable.
+
+If the document is a payer or managed-care participation agreement rather than an employment offer, \
+apply the same rigor to its terms: "all-products"/all-plans clauses that force participation in \
+every plan, ERISA self-insured-plan obligations, silent-PPO or affiliate leasing of the network, \
+and utilization-review or peer-review provisions that could pressure clinical judgment. This \
+coverage mirrors the checklist in the ADA Division of Legal Affairs' contract-review guidance."""
 
 _DEMO = os.environ.get("BAILEY_DEMO", "").lower() in ("1", "true", "yes")
 
